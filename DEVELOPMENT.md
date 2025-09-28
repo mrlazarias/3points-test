@@ -73,6 +73,18 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Justificativa**: Facilita testes e demonstração das funcionalidades.
 
+### 6. Sistema de Autenticação
+
+**Decisão**: Implementei sistema completo de autenticação com:
+
+- **AuthController** centralizado para login, registro e logout
+- **Páginas responsivas** com design dark theme consistente
+- **Validação robusta** de formulários com tratamento de erros
+- **Interface dinâmica** que adapta header baseado no status de login
+- **Segurança** com CSRF protection, hash de senhas e validações
+
+**Justificativa**: Base sólida para funcionalidades interativas (votos, comentários) e experiência de usuário personalizada.
+
 ## Processo de Desenvolvimento
 
 ### Etapas Concluídas ✅
@@ -82,14 +94,15 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 3. **Painel administrativo** - Resources do Filament configurados
 4. **Dados de exemplo** - Seeders com conteúdo realista
 5. **Controle de qualidade** - Strict types, PHPDoc, code style
+6. **Frontend** - Páginas principais (Home, Subreddit, Post) com design dark theme
+7. **Sistema de autenticação** - Login, registro e logout funcionais
 
 ### Próximas Etapas 🚧
 
-1. **Frontend** - Páginas principais (Home, Subreddit, Post)
-2. **Autenticação** - Sistema de login/registro para usuários
-3. **Sistema de votos** - Implementação de upvote/downvote
-4. **Comentários** - Interface para comentários aninhados
-5. **Testes** - Cobertura de testes unitários e funcionais
+1. **Página de perfil** - Edição de dados do usuário
+2. **Sistema de votos** - Implementação de upvote/downvote
+3. **Comentários** - Interface para comentários aninhados
+4. **Testes** - Cobertura de testes unitários e funcionais
 
 ## Trade-offs e Decisões
 
@@ -125,6 +138,7 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ✅ **Funcional**: Painel administrativo completo para gerenciar subreddits e posts
 ✅ **Dados**: Seeders com conteúdo de exemplo funcionando
 ✅ **Qualidade**: Código com padrões rigorosos implementados
-🚧 **Frontend**: Próxima etapa principal
-🚧 **Autenticação**: Sistema de usuários para frontend
-🚧 **Interatividade**: Votos e comentários
+✅ **Frontend**: Páginas principais com design dark theme responsivo
+✅ **Autenticação**: Sistema completo de login/registro/logout
+🚧 **Perfil**: Página de edição de dados do usuário
+🚧 **Interatividade**: Sistema de votos e comentários
