@@ -4,30 +4,55 @@ declare(strict_types=1);
 
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>3Pontos Community</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-gray-900 text-white">
+    <body style="background-color: #111827; color: #f9fafb; min-height: 100vh">
         <!-- Header -->
-        <header class="border-b border-gray-700 bg-gray-800 px-6 py-4">
-            <div class="mx-auto flex max-w-7xl items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500">
-                            <span class="text-sm font-bold text-white">3P</span>
+        <header style="background-color: #1f2937; border-bottom: 1px solid #374151; padding: 1rem 1.5rem">
+            <div
+                style="
+                    max-width: 80rem;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                "
+            >
+                <div style="display: flex; align-items: center; gap: 1rem">
+                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                        <div
+                            style="
+                                width: 2rem;
+                                height: 2rem;
+                                background-color: #f97316;
+                                border-radius: 0.5rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <span style="color: white; font-weight: bold; font-size: 0.875rem">3P</span>
                         </div>
-                        <span class="text-xl font-semibold">3Pontos</span>
-                        <span class="text-sm text-gray-400">Community</span>
+                        <span style="font-size: 1.25rem; font-weight: 600">3Pontos</span>
+                        <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-4">
-                    <button class="rounded-lg p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="display: flex; align-items: center; gap: 1rem">
+                    <button
+                        style="padding: 0.5rem; color: #9ca3af; border-radius: 0.5rem; background: none; border: none"
+                    >
+                        <svg
+                            style="width: 1.25rem; height: 1.25rem"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -36,39 +61,68 @@ declare(strict_types=1);
                             ></path>
                         </svg>
                     </button>
-                    <button class="rounded-lg p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
-                            ></path>
-                        </svg>
-                    </button>
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
-                        <span class="text-sm font-medium text-white">$</span>
+                    <div
+                        style="
+                            width: 2rem;
+                            height: 2rem;
+                            background-color: #2563eb;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        "
+                    >
+                        <span style="color: white; font-size: 0.875rem; font-weight: 500">$</span>
                     </div>
                 </div>
             </div>
         </header>
 
-        <div class="mx-auto max-w-7xl px-6 py-8">
+        <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1.5rem">
             <!-- Welcome Section -->
-            <div class="mb-8">
-                <h1 class="mb-2 text-2xl font-bold">
+            <div style="margin-bottom: 2rem">
+                <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem">
                     Olá,
-                    <span class="text-blue-400">$user</span>
+                    <span style="color: #60a5fa">$user</span>
                 </h1>
-                <p class="text-gray-400">Confira as estatísticas das comunidades que você segue</p>
+                <p style="color: #9ca3af">Confira as estatísticas das comunidades que você segue</p>
             </div>
 
             <!-- Stats Cards -->
-            <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600">
-                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div
+                style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 1.5rem;
+                    margin-bottom: 2rem;
+                "
+            >
+                <div
+                    style="
+                        background-color: #1f2937;
+                        border: 1px solid #374151;
+                        border-radius: 0.75rem;
+                        padding: 1.5rem;
+                    "
+                >
+                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                        <div
+                            style="
+                                width: 3rem;
+                                height: 3rem;
+                                background-color: #2563eb;
+                                border-radius: 0.5rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <svg
+                                style="width: 1.5rem; height: 1.5rem; color: white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -78,16 +132,38 @@ declare(strict_types=1);
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-400">Quantidade de usuários</p>
-                            <p class="text-2xl font-bold">10000</p>
+                            <p style="color: #9ca3af; font-size: 0.875rem">Quantidade de usuários</p>
+                            <p style="font-size: 1.5rem; font-weight: bold">10000</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-600">
-                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div
+                    style="
+                        background-color: #1f2937;
+                        border: 1px solid #374151;
+                        border-radius: 0.75rem;
+                        padding: 1.5rem;
+                    "
+                >
+                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                        <div
+                            style="
+                                width: 3rem;
+                                height: 3rem;
+                                background-color: #16a34a;
+                                border-radius: 0.5rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <svg
+                                style="width: 1.5rem; height: 1.5rem; color: white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -97,16 +173,38 @@ declare(strict_types=1);
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-400">Quantidade de posts</p>
-                            <p class="text-2xl font-bold">{{ $posts->total() }}</p>
+                            <p style="color: #9ca3af; font-size: 0.875rem">Quantidade de posts</p>
+                            <p style="font-size: 1.5rem; font-weight: bold">{{ $posts->total() }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-600">
-                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div
+                    style="
+                        background-color: #1f2937;
+                        border: 1px solid #374151;
+                        border-radius: 0.75rem;
+                        padding: 1.5rem;
+                    "
+                >
+                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                        <div
+                            style="
+                                width: 3rem;
+                                height: 3rem;
+                                background-color: #9333ea;
+                                border-radius: 0.5rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <svg
+                                style="width: 1.5rem; height: 1.5rem; color: white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -116,20 +214,25 @@ declare(strict_types=1);
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-400">Quantidade de replies</p>
-                            <p class="text-2xl font-bold">10000</p>
+                            <p style="color: #9ca3af; font-size: 0.875rem">Quantidade de replies</p>
+                            <p style="font-size: 1.5rem; font-weight: bold">10000</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
+            <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
                 <!-- Sidebar -->
-                <div class="lg:col-span-1">
+                <div>
                     <!-- Navigation -->
-                    <nav class="mb-6">
-                        <div class="mb-4 flex items-center space-x-2">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <nav style="margin-bottom: 1.5rem">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem">
+                            <svg
+                                style="width: 1.25rem; height: 1.25rem; color: #9ca3af"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -137,16 +240,16 @@ declare(strict_types=1);
                                     d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
                                 ></path>
                             </svg>
-                            <span class="font-medium text-white">Home</span>
+                            <span style="font-weight: 500">Home</span>
                         </div>
                     </nav>
 
                     <!-- Communities -->
-                    <div class="rounded-xl border border-gray-700 bg-gray-800">
-                        <div class="border-b border-gray-700 p-4">
-                            <h3 class="font-medium text-gray-200">Minhas comunidades</h3>
+                    <div style="background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem">
+                        <div style="padding: 1rem; border-bottom: 1px solid #374151">
+                            <h3 style="font-weight: 500; color: #e5e7eb">Minhas comunidades</h3>
                         </div>
-                        <div class="p-2">
+                        <div style="padding: 0.5rem">
                             @foreach ($subreddits as $subreddit)
                                 @php
                                     $icons = ['🎨', '🔥', '🌱', '💻', '⚡'];
@@ -155,13 +258,25 @@ declare(strict_types=1);
 
                                 <a
                                     href="{{ route('subreddit.show', $subreddit->slug) }}"
-                                    class="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-gray-700"
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                        padding: 0.75rem;
+                                        border-radius: 0.5rem;
+                                        text-decoration: none;
+                                        color: inherit;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#374151'"
+                                    onmouseout="this.style.backgroundColor='transparent'"
                                 >
-                                    <div class="flex items-center space-x-3">
-                                        <span class="text-lg">{{ $icon }}</span>
-                                        <span class="text-gray-200">{{ $subreddit->name }}</span>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                                        <span style="font-size: 1.125rem">{{ $icon }}</span>
+                                        <span style="color: #e5e7eb">{{ $subreddit->name }}</span>
                                     </div>
-                                    <span class="text-sm text-gray-400">+{{ $subreddit->posts_count }}</span>
+                                    <span style="color: #9ca3af; font-size: 0.875rem">
+                                        +{{ $subreddit->posts_count }}
+                                    </span>
                                 </a>
                             @endforeach
                         </div>
@@ -169,30 +284,47 @@ declare(strict_types=1);
                 </div>
 
                 <!-- Main Content -->
-                <div class="lg:col-span-3">
-                    <div class="mb-6">
-                        <h2 class="mb-2 text-xl font-bold">Veja os últimos posts das comunidades que você segue</h2>
+                <div>
+                    <div style="margin-bottom: 1.5rem">
+                        <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem">
+                            Veja os últimos posts das comunidades que você segue
+                        </h2>
                     </div>
 
-                    <div class="space-y-4">
+                    <div style="display: flex; flex-direction: column; gap: 1rem">
                         @forelse ($posts as $post)
-                            <article class="overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                                <div class="p-6">
+                            <article
+                                style="
+                                    background-color: #1f2937;
+                                    border: 1px solid #374151;
+                                    border-radius: 0.75rem;
+                                    overflow: hidden;
+                                "
+                            >
+                                <div style="padding: 1.5rem">
                                     <!-- Post Header -->
-                                    <div class="mb-4 flex items-center space-x-3">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
                                         @php
                                             $icons = ['👨‍💻', '🔧', '🎯', '💡', '🚀'];
                                             $icon = $icons[array_rand($icons)];
                                         @endphp
 
                                         <div
-                                            class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-700"
+                                            style="
+                                                width: 2.5rem;
+                                                height: 2.5rem;
+                                                background-color: #374151;
+                                                border-radius: 50%;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                            "
                                         >
-                                            <span class="text-lg">{{ $icon }}</span>
+                                            <span style="font-size: 1.125rem">{{ $icon }}</span>
                                         </div>
                                         <div>
-                                            <div class="flex items-center space-x-2">
-                                                <span class="font-medium text-gray-300">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem">
+                                                <span style="font-weight: 500; color: #d1d5db">
                                                     r/{{ $post->subreddit->slug }}
                                                 </span>
                                             </div>
@@ -200,17 +332,36 @@ declare(strict_types=1);
                                     </div>
 
                                     <!-- Post Content -->
-                                    <h3 class="mb-3 text-lg font-semibold text-white">{{ $post->title }}</h3>
-                                    <p class="mb-4 leading-relaxed text-gray-300">
+                                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                                        <a
+                                            href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                                            style="color: inherit; text-decoration: none"
+                                            onmouseover="this.style.color='#60a5fa'"
+                                            onmouseout="this.style.color='inherit'"
+                                        >
+                                            {{ $post->title }}
+                                        </a>
+                                    </h3>
+                                    <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem">
                                         {{ Str::limit(strip_tags($post->content), 200) }}
                                     </p>
 
                                     <!-- Post Actions -->
-                                    <div class="flex items-center space-x-6">
-                                        <div class="flex items-center space-x-2">
-                                            <button class="flex items-center space-x-1 text-gray-400 hover:text-white">
+                                    <div style="display: flex; align-items: center; gap: 1.5rem">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem">
+                                            <button
+                                                style="
+                                                    display: flex;
+                                                    align-items: center;
+                                                    gap: 0.25rem;
+                                                    color: #9ca3af;
+                                                    background: none;
+                                                    border: none;
+                                                    cursor: pointer;
+                                                "
+                                            >
                                                 <svg
-                                                    class="h-5 w-5"
+                                                    style="width: 1.25rem; height: 1.25rem"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -222,16 +373,23 @@ declare(strict_types=1);
                                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                                                     ></path>
                                                 </svg>
-                                                <span class="text-sm">{{ $post->comment_count }}</span>
+                                                <span style="font-size: 0.875rem">{{ $post->comment_count }}</span>
                                             </button>
                                         </div>
 
-                                        <div class="flex items-center space-x-2">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem">
                                             <button
-                                                class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-green-400/10 hover:text-green-400"
+                                                style="
+                                                    padding: 0.5rem;
+                                                    color: #9ca3af;
+                                                    border-radius: 0.5rem;
+                                                    background: none;
+                                                    border: none;
+                                                    cursor: pointer;
+                                                "
                                             >
                                                 <svg
-                                                    class="h-5 w-5"
+                                                    style="width: 1.25rem; height: 1.25rem"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -244,12 +402,21 @@ declare(strict_types=1);
                                                     ></path>
                                                 </svg>
                                             </button>
-                                            <span class="text-sm font-medium">{{ $post->vote_score }}</span>
+                                            <span style="font-size: 0.875rem; font-weight: 500">
+                                                {{ $post->vote_score }}
+                                            </span>
                                             <button
-                                                class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-400/10 hover:text-red-400"
+                                                style="
+                                                    padding: 0.5rem;
+                                                    color: #9ca3af;
+                                                    border-radius: 0.5rem;
+                                                    background: none;
+                                                    border: none;
+                                                    cursor: pointer;
+                                                "
                                             >
                                                 <svg
-                                                    class="h-5 w-5"
+                                                    style="width: 1.25rem; height: 1.25rem"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -265,7 +432,15 @@ declare(strict_types=1);
                                         </div>
 
                                         <button
-                                            class="rounded-lg bg-gray-700 px-4 py-2 text-sm text-gray-200 transition-colors hover:bg-gray-600"
+                                            style="
+                                                padding: 0.5rem 1rem;
+                                                background-color: #374151;
+                                                color: #e5e7eb;
+                                                border-radius: 0.5rem;
+                                                border: none;
+                                                font-size: 0.875rem;
+                                                cursor: pointer;
+                                            "
                                         >
                                             Responder
                                         </button>
@@ -273,16 +448,26 @@ declare(strict_types=1);
                                 </div>
                             </article>
                         @empty
-                            <div class="rounded-xl border border-gray-700 bg-gray-800 p-8 text-center">
-                                <p class="text-gray-400">Nenhum post encontrado.</p>
-                                <p class="mt-2 text-sm text-gray-500">Seja o primeiro a compartilhar algo!</p>
+                            <div
+                                style="
+                                    background-color: #1f2937;
+                                    border: 1px solid #374151;
+                                    border-radius: 0.75rem;
+                                    padding: 2rem;
+                                    text-align: center;
+                                "
+                            >
+                                <p style="color: #9ca3af">Nenhum post encontrado.</p>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem">
+                                    Seja o primeiro a compartilhar algo!
+                                </p>
                             </div>
                         @endforelse
                     </div>
 
                     <!-- Pagination -->
                     @if ($posts->hasPages())
-                        <div class="mt-8">
+                        <div style="margin-top: 2rem">
                             {{ $posts->links() }}
                         </div>
                     @endif

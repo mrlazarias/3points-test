@@ -4,209 +4,427 @@ declare(strict_types=1);
 
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{ $post->title }} - r/{{ $post->subreddit->slug }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-gray-900 text-white">
+    <body style="background-color: #111827; color: #f9fafb; min-height: 100vh">
         <!-- Header -->
-        <header class="border-b border-gray-700 bg-gray-800 px-6 py-4">
-            <div class="mx-auto flex max-w-7xl items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('home') }}" class="flex items-center space-x-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500">
-                            <span class="text-sm font-bold text-white">3P</span>
+        <header style="background-color: #1f2937; border-bottom: 1px solid #374151; padding: 1rem 1.5rem">
+            <div
+                style="
+                    max-width: 80rem;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                "
+            >
+                <div style="display: flex; align-items: center; gap: 1rem">
+                    <a
+                        href="/"
+                        style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit"
+                    >
+                        <div
+                            style="
+                                width: 2rem;
+                                height: 2rem;
+                                background-color: #f97316;
+                                border-radius: 0.5rem;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <span style="color: white; font-weight: bold; font-size: 0.875rem">3P</span>
                         </div>
-                        <span class="text-xl font-semibold">3Pontos</span>
-                        <span class="text-sm text-gray-400">Community</span>
+                        <span style="font-size: 1.25rem; font-weight: 600">3Pontos</span>
+                        <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
                     </a>
                 </div>
 
-                <div class="flex items-center space-x-4">
+                <div style="display: flex; align-items: center; gap: 1rem">
                     <a
                         href="{{ route('subreddit.show', $post->subreddit->slug) }}"
-                        class="text-gray-400 hover:text-white"
+                        style="color: #9ca3af; text-decoration: none; font-size: 0.875rem"
+                        onmouseover="this.style.color='#f9fafb'"
+                        onmouseout="this.style.color='#9ca3af'"
                     >
                         ← Voltar para r/{{ $post->subreddit->slug }}
                     </a>
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
-                        <span class="text-sm font-medium text-white">$</span>
+                    <div
+                        style="
+                            width: 2rem;
+                            height: 2rem;
+                            background-color: #2563eb;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        "
+                    >
+                        <span style="color: white; font-size: 0.875rem; font-weight: 500">$</span>
                     </div>
                 </div>
             </div>
         </header>
 
-        <div class="mx-auto max-w-4xl px-6 py-8">
-            <!-- Post -->
-            <article class="mb-8 overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                <div class="p-6">
-                    <!-- Post Header -->
-                    <div class="mb-6 flex items-center space-x-3">
-                        <div
-                            class="flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold text-white"
-                            style="background-color: {{ $post->subreddit->color }}"
-                        >
-                            {{ strtoupper(substr($post->subreddit->name, 0, 1)) }}
-                        </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <a
-                                    href="{{ route('subreddit.show', $post->subreddit->slug) }}"
-                                    class="font-medium text-blue-400 hover:underline"
+        <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1.5rem">
+            <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
+                <!-- Main Content - Post Details -->
+                <div>
+                    <article
+                        style="
+                            background-color: #1f2937;
+                            border: 1px solid #374151;
+                            border-radius: 0.75rem;
+                            overflow: hidden;
+                            margin-bottom: 1.5rem;
+                        "
+                    >
+                        <div style="padding: 1.5rem">
+                            <!-- Post Header -->
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem">
+                                <div
+                                    style="
+                                        width: 3rem;
+                                        height: 3rem;
+                                        border-radius: 50%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 1.25rem;
+                                        font-weight: bold;
+                                        color: white;
+                                    "
+                                    style="background-color: {{ $post->subreddit->color }}"
                                 >
-                                    r/{{ $post->subreddit->slug }}
-                                </a>
-                                <span class="text-gray-500">•</span>
-                                <span class="text-gray-400">Por {{ $post->user->name }}</span>
-                                <span class="text-gray-500">•</span>
-                                <span class="text-gray-400">{{ $post->created_at->diffForHumans() }}</span>
+                                    {{ strtoupper(substr($post->subreddit->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem">
+                                        <a
+                                            href="{{ route('subreddit.show', $post->subreddit->slug) }}"
+                                            style="font-weight: 500; color: #60a5fa; text-decoration: none"
+                                            onmouseover="this.style.textDecoration='underline'"
+                                            onmouseout="this.style.textDecoration='none'"
+                                        >
+                                            r/{{ $post->subreddit->slug }}
+                                        </a>
+                                        <span style="color: #6b7280">•</span>
+                                        <span style="color: #9ca3af">Por {{ $post->user->name }}</span>
+                                        <span style="color: #6b7280">•</span>
+                                        <span style="color: #9ca3af">{{ $post->created_at->diffForHumans() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Post Title -->
+                            <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 1rem 0">
+                                {{ $post->title }}
+                            </h1>
+
+                            <!-- Post Content -->
+                            @if ($post->content)
+                                <div style="color: #d1d5db; line-height: 1.6; margin-bottom: 1.5rem">
+                                    {!! \Illuminate\Support\Str::markdown($post->content) !!}
+                                </div>
+                            @endif
+
+                            @if ($post->type === 'link' && $post->url)
+                                <div style="margin-bottom: 1.5rem">
+                                    <a
+                                        href="{{ $post->url }}"
+                                        target="_blank"
+                                        style="
+                                            display: inline-flex;
+                                            align-items: center;
+                                            padding: 0.75rem 1rem;
+                                            background-color: #2563eb;
+                                            color: white;
+                                            border-radius: 0.5rem;
+                                            text-decoration: none;
+                                            font-size: 0.875rem;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                        onmouseout="this.style.backgroundColor='#2563eb'"
+                                    >
+                                        <svg
+                                            style="width: 1.25rem; height: 1.25rem; margin-right: 0.5rem"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                            ></path>
+                                        </svg>
+                                        Acessar link: {{ parse_url($post->url, PHP_URL_HOST) }}
+                                    </a>
+                                </div>
+                            @endif
+
+                            <!-- Post Actions -->
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1.5rem;
+                                    border-top: 1px solid #374151;
+                                    padding-top: 1rem;
+                                "
+                            >
+                                <div style="display: flex; align-items: center; gap: 0.5rem">
+                                    <button
+                                        style="
+                                            padding: 0.5rem;
+                                            color: #9ca3af;
+                                            border-radius: 0.5rem;
+                                            background: none;
+                                            border: none;
+                                            cursor: pointer;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#16a34a'; this.style.color='white'"
+                                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                    >
+                                        <svg
+                                            style="width: 1.25rem; height: 1.25rem"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M5 15l7-7 7 7"
+                                            ></path>
+                                        </svg>
+                                    </button>
+                                    <span style="font-size: 0.875rem; font-weight: 500">{{ $post->vote_score }}</span>
+                                    <button
+                                        style="
+                                            padding: 0.5rem;
+                                            color: #9ca3af;
+                                            border-radius: 0.5rem;
+                                            background: none;
+                                            border: none;
+                                            cursor: pointer;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#dc2626'; this.style.color='white'"
+                                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                    >
+                                        <svg
+                                            style="width: 1.25rem; height: 1.25rem"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M19 9l-7 7-7-7"
+                                            ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 0.5rem">
+                                    <svg
+                                        style="width: 1.25rem; height: 1.25rem; color: #9ca3af"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                        ></path>
+                                    </svg>
+                                    <span style="color: #9ca3af; font-size: 0.875rem">
+                                        {{ $post->comment_count }} comentários
+                                    </span>
+                                </div>
+
+                                <button
+                                    style="
+                                        padding: 0.5rem 1rem;
+                                        background-color: #2563eb;
+                                        color: white;
+                                        border-radius: 0.5rem;
+                                        border: none;
+                                        font-size: 0.875rem;
+                                        cursor: pointer;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                    onmouseout="this.style.backgroundColor='#2563eb'"
+                                >
+                                    Comentar
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- Post Content -->
-                    <h1 class="mb-4 text-2xl font-bold text-white">{{ $post->title }}</h1>
+                    <!-- Comments Section -->
+                    <div
+                        style="
+                            background-color: #1f2937;
+                            border: 1px solid #374151;
+                            border-radius: 0.75rem;
+                            padding: 1.5rem;
+                        "
+                    >
+                        <h2 style="font-size: 1.25rem; font-weight: bold; margin: 0 0 1rem 0">
+                            Comentários ({{ $comments->count() }})
+                        </h2>
 
-                    @if ($post->content)
-                        <div class="prose prose-invert mb-6 max-w-none">
-                            {!! \Illuminate\Support\Str::markdown($post->content) !!}
-                        </div>
-                    @endif
-
-                    @if ($post->type === 'link' && $post->url)
-                        <div class="mb-6">
-                            <a
-                                href="{{ $post->url }}"
-                                target="_blank"
-                                class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-3 text-white transition-colors hover:bg-blue-700"
+                        @forelse ($comments as $comment)
+                            <div
+                                style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #374151; last-child: border-bottom: none"
                             >
-                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                    ></path>
-                                </svg>
-                                Acessar link: {{ parse_url($post->url, PHP_URL_HOST) }}
-                            </a>
-                        </div>
-                    @endif
-
-                    <!-- Post Actions -->
-                    <div class="flex items-center space-x-6 border-t border-gray-700 pt-4">
-                        <div class="flex items-center space-x-2">
-                            <button
-                                class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-green-400/10 hover:text-green-400"
-                            >
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 15l7-7 7 7"
-                                    ></path>
-                                </svg>
-                            </button>
-                            <span class="text-sm font-medium">{{ $post->vote_score }}</span>
-                            <button
-                                class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-400/10 hover:text-red-400"
-                            >
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 9l-7 7-7-7"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center space-x-2">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                ></path>
-                            </svg>
-                            <span class="text-sm text-gray-400">{{ $post->comment_count }} comentários</span>
-                        </div>
-
-                        <button
-                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
-                        >
-                            Comentar
-                        </button>
+                                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem">
+                                    <div
+                                        style="
+                                            width: 2rem;
+                                            height: 2rem;
+                                            background-color: #374151;
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                        "
+                                    >
+                                        <span style="font-size: 0.875rem; color: white">
+                                            {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="font-weight: 500; color: #d1d5db">
+                                            {{ $comment->user->name }}
+                                        </span>
+                                        <span style="color: #6b7280; font-size: 0.875rem; margin-left: 0.5rem">
+                                            {{ $comment->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="color: #d1d5db; line-height: 1.6; margin-bottom: 0.75rem">
+                                    {!! \Illuminate\Support\Str::markdown($comment->content) !!}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 1rem">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem">
+                                        <button
+                                            style="
+                                                padding: 0.25rem;
+                                                color: #9ca3af;
+                                                border-radius: 0.25rem;
+                                                background: none;
+                                                border: none;
+                                                cursor: pointer;
+                                            "
+                                            onmouseover="this.style.backgroundColor='#16a34a'; this.style.color='white'"
+                                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                        >
+                                            <svg
+                                                style="width: 1rem; height: 1rem"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M5 15l7-7 7 7"
+                                                ></path>
+                                            </svg>
+                                        </button>
+                                        <span style="font-size: 0.75rem">{{ $comment->vote_score }}</span>
+                                        <button
+                                            style="
+                                                padding: 0.25rem;
+                                                color: #9ca3af;
+                                                border-radius: 0.25rem;
+                                                background: none;
+                                                border: none;
+                                                cursor: pointer;
+                                            "
+                                            onmouseover="this.style.backgroundColor='#dc2626'; this.style.color='white'"
+                                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                        >
+                                            <svg
+                                                style="width: 1rem; height: 1rem"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M19 9l-7 7-7-7"
+                                                ></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <button
+                                        style="
+                                            color: #9ca3af;
+                                            background: none;
+                                            border: none;
+                                            font-size: 0.875rem;
+                                            cursor: pointer;
+                                        "
+                                        onmouseover="this.style.color='#f9fafb'"
+                                        onmouseout="this.style.color='#9ca3af'"
+                                    >
+                                        Responder
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div style="text-align: center; padding: 2rem">
+                                <p style="color: #9ca3af; margin: 0">Nenhum comentário ainda.</p>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin: 0.5rem 0 0 0">
+                                    Seja o primeiro a comentar!
+                                </p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
-            </article>
 
-            <!-- Comments Section -->
-            <div class="space-y-4">
-                <h2 class="text-xl font-bold">Comentários</h2>
-
-                @forelse ($comments as $comment)
-                    <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
-                        <div class="mb-3 flex items-center space-x-3">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700">
-                                <span class="text-sm">👤</span>
-                            </div>
-                            <div>
-                                <span class="font-medium text-gray-300">{{ $comment->user->name }}</span>
-                                <span class="ml-2 text-sm text-gray-500">
-                                    {{ $comment->created_at->diffForHumans() }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="prose prose-invert mb-4 max-w-none">
-                            {!! \Illuminate\Support\Str::markdown($comment->content) !!}
-                        </div>
-
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <button
-                                    class="rounded p-1 text-gray-400 transition-colors hover:bg-green-400/10 hover:text-green-400"
-                                >
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M5 15l7-7 7 7"
-                                        ></path>
-                                    </svg>
-                                </button>
-                                <span class="text-sm">{{ $comment->vote_score }}</span>
-                                <button
-                                    class="rounded p-1 text-gray-400 transition-colors hover:bg-red-400/10 hover:text-red-400"
-                                >
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 9l-7 7-7-7"
-                                        ></path>
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <button class="text-sm text-gray-400 hover:text-white">Responder</button>
+                <!-- Sidebar -->
+                <div>
+                    <div
+                        style="
+                            background-color: #1f2937;
+                            border: 1px solid #374151;
+                            border-radius: 0.75rem;
+                            padding: 1.5rem;
+                        "
+                    >
+                        <h3 style="font-weight: 500; color: #e5e7eb; margin: 0 0 1rem 0">
+                            Sobre r/{{ $post->subreddit->slug }}
+                        </h3>
+                        <p style="color: #9ca3af; font-size: 0.875rem; line-height: 1.5; margin: 0 0 1rem 0">
+                            {{ $post->subreddit->description }}
+                        </p>
+                        <div style="border-top: 1px solid #374151; padding-top: 1rem">
+                            <p style="color: #6b7280; font-size: 0.75rem; margin: 0">
+                                Criado por {{ $post->subreddit->creator->name }} em
+                                {{ $post->subreddit->created_at->format('d/m/Y') }}
+                            </p>
                         </div>
                     </div>
-                @empty
-                    <div class="rounded-xl border border-gray-700 bg-gray-800 p-8 text-center">
-                        <p class="text-gray-400">Nenhum comentário ainda.</p>
-                        <p class="mt-2 text-sm text-gray-500">Seja o primeiro a comentar!</p>
-                    </div>
-                @endforelse
+                </div>
             </div>
         </div>
     </body>
