@@ -66,7 +66,51 @@ declare(strict_types=1);
                     @auth
                         <!-- User Menu -->
                         <div style="display: flex; align-items: center; gap: 0.75rem">
-                            <span style="color: #d1d5db; font-size: 0.875rem">{{ Auth::user()->name }}</span>
+                            <a
+                                href="{{ route('profile.show') }}"
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    color: #d1d5db;
+                                    text-decoration: none;
+                                    font-size: 0.875rem;
+                                "
+                                onmouseover="this.style.color='#f9fafb'"
+                                onmouseout="this.style.color='#d1d5db'"
+                            >
+                                @if (Auth::user()->getFirstMedia('profile-pictures'))
+                                    <img
+                                        src="{{ Auth::user()->getFirstMedia('profile-pictures')->getUrl() }}"
+                                        alt="Foto de perfil"
+                                        style="
+                                            width: 1.5rem;
+                                            height: 1.5rem;
+                                            border-radius: 50%;
+                                            object-fit: cover;
+                                            border: 1px solid #374151;
+                                        "
+                                    />
+                                @else
+                                    <div
+                                        style="
+                                            width: 1.5rem;
+                                            height: 1.5rem;
+                                            background-color: #2563eb;
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 0.75rem;
+                                            font-weight: bold;
+                                            color: white;
+                                        "
+                                    >
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                {{ Auth::user()->name }}
+                            </a>
                             <form method="POST" action="{{ route('logout') }}" style="margin: 0">
                                 @csrf
                                 <button

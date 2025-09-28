@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -267,4 +268,5 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
-<?php 
+
+<?php

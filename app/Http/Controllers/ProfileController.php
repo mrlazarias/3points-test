@@ -96,4 +96,39 @@ final class ProfileController extends Controller
         return redirect()->route('profile.show')
             ->with('success', 'Senha alterada com sucesso!');
     }
+
+    /**
+     * Faz upload da foto de perfil
+     */
+    public function uploadPhoto(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        // Remove foto anterior se existir
+        $user->clearMediaCollection('profile-pictures');
+
+        // Adiciona nova foto
+        $user->addMediaFromRequest('photo')
+            ->toMediaCollection('profile-pictures');
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Foto de perfil atualizada com sucesso!');
+    }
+
+    /**
+     * Remove a foto de perfil
+     */
+    public function removePhoto(): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $user->clearMediaCollection('profile-pictures');
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Foto de perfil removida com sucesso!');
+    }
 }

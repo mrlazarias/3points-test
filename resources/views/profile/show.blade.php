@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -145,23 +146,144 @@ declare(strict_types=1);
                         "
                     >
                         <div style="text-align: center; margin-bottom: 1.5rem">
-                            <div
-                                style="
-                                    width: 4rem;
-                                    height: 4rem;
-                                    background-color: #2563eb;
-                                    border-radius: 50%;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    margin: 0 auto 1rem auto;
-                                    font-size: 1.5rem;
-                                    font-weight: bold;
-                                    color: white;
-                                "
-                            >
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            <div style="position: relative; display: inline-block; margin-bottom: 1rem">
+                                @if ($user->getFirstMedia('profile-pictures'))
+                                    <img
+                                        src="{{ $user->getFirstMedia('profile-pictures')->getUrl() }}"
+                                        alt="Foto de perfil"
+                                        style="
+                                            width: 4rem;
+                                            height: 4rem;
+                                            border-radius: 50%;
+                                            object-fit: cover;
+                                            border: 2px solid #374151;
+                                        "
+                                    />
+                                @else
+                                    <div
+                                        style="
+                                            width: 4rem;
+                                            height: 4rem;
+                                            background-color: #2563eb;
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 1.5rem;
+                                            font-weight: bold;
+                                            color: white;
+                                        "
+                                    >
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+
+                                <!-- Upload/Remove Photo Buttons -->
+                                <div
+                                    style="
+                                        position: absolute;
+                                        bottom: -0.5rem;
+                                        right: -0.5rem;
+                                        display: flex;
+                                        gap: 0.25rem;
+                                    "
+                                >
+                                    <form
+                                        method="POST"
+                                        action="{{ route('profile.upload-photo') }}"
+                                        enctype="multipart/form-data"
+                                        style="margin: 0"
+                                    >
+                                        @csrf
+                                        <input
+                                            type="file"
+                                            name="photo"
+                                            id="photo-upload"
+                                            accept="image/*"
+                                            style="display: none"
+                                            onchange="this.form.submit()"
+                                        />
+                                        <label
+                                            for="photo-upload"
+                                            style="
+                                                width: 1.5rem;
+                                                height: 1.5rem;
+                                                background-color: #2563eb;
+                                                border-radius: 50%;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                cursor: pointer;
+                                                border: 2px solid #1f2937;
+                                            "
+                                            title="Alterar foto"
+                                        >
+                                            <svg
+                                                style="width: 0.75rem; height: 0.75rem; color: white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                                                ></path>
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                                                ></path>
+                                            </svg>
+                                        </label>
+                                    </form>
+
+                                    @if ($user->getFirstMedia('profile-pictures'))
+                                        <form
+                                            method="POST"
+                                            action="{{ route('profile.remove-photo') }}"
+                                            style="margin: 0"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+                                            <button
+                                                type="submit"
+                                                style="
+                                                    width: 1.5rem;
+                                                    height: 1.5rem;
+                                                    background-color: #dc2626;
+                                                    border-radius: 50%;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    cursor: pointer;
+                                                    border: 2px solid #1f2937;
+                                                    color: white;
+                                                "
+                                                title="Remover foto"
+                                                onclick="return confirm('Tem certeza que deseja remover sua foto de perfil?')"
+                                            >
+                                                <svg
+                                                    style="width: 0.75rem; height: 0.75rem"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    ></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </div>
+
                             <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">
                                 {{ $user->name }}
                             </h1>
@@ -441,4 +563,5 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
-<?php 
+
+<?php
