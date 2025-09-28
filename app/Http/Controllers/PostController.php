@@ -6,12 +6,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Subreddit;
 use Illuminate\Contracts\View\View;
 
 final class PostController extends Controller
 {
-    public function show(Post $post): View
+    public function show(Subreddit $subreddit, Post $post): View
     {
+        // Verificar se o post pertence ao subreddit
+        abort_if($post->subreddit_id !== $subreddit->id, 404);
+
         $post->load(['subreddit', 'user']);
 
         $comments = Comment::query()
