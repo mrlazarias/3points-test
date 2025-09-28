@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubredditController;
+use App\Http\Controllers\VoteController;
 use App\Models\Post;
 use App\Models\Subreddit;
 use Illuminate\Contracts\View\Factory;
@@ -57,4 +58,9 @@ Route::middleware('auth')->group(function (): void {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
     Route::delete('/profile/photo', [ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
+
+    // Rotas de Votação
+    Route::post('/vote', [VoteController::class, 'vote'])->name('vote');
+    Route::delete('/vote', [VoteController::class, 'removeVote'])->name('vote.remove');
+    Route::get('/vote/user', [VoteController::class, 'getUserVote'])->name('vote.user');
 });

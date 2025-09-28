@@ -9,6 +9,7 @@ declare(strict_types=1);
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
         <title>r/{{ $subreddit->slug }} - 3Pontos Community</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -322,57 +323,139 @@ declare(strict_types=1);
                                         </div>
 
                                         <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            <button
+                                            @auth
+                                                <button
+                                                    onclick="votePost({{ $post->id }}, 'up')"
+                                                    id="upvote-{{ $post->id }}"
+                                                    style="
+                                                        padding: 0.5rem;
+                                                        color: #9ca3af;
+                                                        border-radius: 0.5rem;
+                                                        background: none;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        transition: all 0.2s;
+                                                    "
+                                                    onmouseover="this.style.backgroundColor='#374151'"
+                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                >
+                                                    <svg
+                                                        style="width: 1.25rem; height: 1.25rem"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 15l7-7 7 7"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                            @else
+                                                <button
+                                                    onclick="showLoginAlert()"
+                                                    style="
+                                                        padding: 0.5rem;
+                                                        color: #9ca3af;
+                                                        border-radius: 0.5rem;
+                                                        background: none;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        transition: all 0.2s;
+                                                    "
+                                                    onmouseover="this.style.backgroundColor='#374151'"
+                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                >
+                                                    <svg
+                                                        style="width: 1.25rem; height: 1.25rem"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 15l7-7 7 7"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                            @endauth
+
+                                            <span
+                                                id="vote-score-{{ $post->id }}"
                                                 style="
-                                                    padding: 0.5rem;
-                                                    color: #9ca3af;
-                                                    border-radius: 0.5rem;
-                                                    background: none;
-                                                    border: none;
-                                                    cursor: pointer;
+                                                    font-size: 0.875rem;
+                                                    font-weight: 500;
+                                                    min-width: 2rem;
+                                                    text-align: center;
                                                 "
                                             >
-                                                <svg
-                                                    style="width: 1.25rem; height: 1.25rem"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M5 15l7-7 7 7"
-                                                    ></path>
-                                                </svg>
-                                            </button>
-                                            <span style="font-size: 0.875rem; font-weight: 500">
                                                 {{ $post->vote_score }}
                                             </span>
-                                            <button
-                                                style="
-                                                    padding: 0.5rem;
-                                                    color: #9ca3af;
-                                                    border-radius: 0.5rem;
-                                                    background: none;
-                                                    border: none;
-                                                    cursor: pointer;
-                                                "
-                                            >
-                                                <svg
-                                                    style="width: 1.25rem; height: 1.25rem"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
+
+                                            @auth
+                                                <button
+                                                    onclick="votePost({{ $post->id }}, 'down')"
+                                                    id="downvote-{{ $post->id }}"
+                                                    style="
+                                                        padding: 0.5rem;
+                                                        color: #9ca3af;
+                                                        border-radius: 0.5rem;
+                                                        background: none;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        transition: all 0.2s;
+                                                    "
+                                                    onmouseover="this.style.backgroundColor='#374151'"
+                                                    onmouseout="this.style.backgroundColor='transparent'"
                                                 >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 9l-7 7-7-7"
-                                                    ></path>
-                                                </svg>
-                                            </button>
+                                                    <svg
+                                                        style="width: 1.25rem; height: 1.25rem"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 9l-7 7-7-7"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                            @else
+                                                <button
+                                                    onclick="showLoginAlert()"
+                                                    style="
+                                                        padding: 0.5rem;
+                                                        color: #9ca3af;
+                                                        border-radius: 0.5rem;
+                                                        background: none;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        transition: all 0.2s;
+                                                    "
+                                                    onmouseover="this.style.backgroundColor='#374151'"
+                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                >
+                                                    <svg
+                                                        style="width: 1.25rem; height: 1.25rem"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 9l-7 7-7-7"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                            @endauth
                                         </div>
 
                                         <button
@@ -443,6 +526,86 @@ declare(strict_types=1);
                 </div>
             </div>
         </div>
+
+        <!-- JavaScript para funcionalidade de votação -->
+        <script>
+            // CSRF Token para requisições AJAX
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            // Função para votar em posts
+            async function votePost(postId, voteType) {
+                try {
+                    const response = await fetch('{{ route('vote') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            voteable_type: 'post',
+                            voteable_id: postId,
+                            vote_type: voteType,
+                        }),
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Atualizar o score do voto
+                        const scoreElement = document.getElementById(`vote-score-${postId}`);
+                        if (scoreElement) {
+                            scoreElement.textContent = data.vote_score;
+                        }
+
+                        // Atualizar visual dos botões
+                        updateVoteButtons(postId, data.vote_type, data.action);
+                    } else {
+                        console.error('Erro ao votar:', data.message);
+                        alert('Erro ao votar. Tente novamente.');
+                    }
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    alert('Erro de conexão. Tente novamente.');
+                }
+            }
+
+            // Função para atualizar visual dos botões de votação
+            function updateVoteButtons(postId, voteType, action) {
+                const upButton = document.getElementById(`upvote-${postId}`);
+                const downButton = document.getElementById(`downvote-${postId}`);
+
+                // Resetar todos os botões
+                if (upButton) {
+                    upButton.style.color = '#9ca3af';
+                    upButton.style.backgroundColor = 'transparent';
+                }
+                if (downButton) {
+                    downButton.style.color = '#9ca3af';
+                    downButton.style.backgroundColor = 'transparent';
+                }
+
+                // Aplicar estilo baseado na ação
+                if (action === 'removed') {
+                    // Nenhum voto ativo
+                    return;
+                }
+
+                if (voteType === 'up' && upButton) {
+                    upButton.style.color = '#10b981';
+                    upButton.style.backgroundColor = '#064e3b';
+                } else if (voteType === 'down' && downButton) {
+                    downButton.style.color = '#ef4444';
+                    downButton.style.backgroundColor = '#7f1d1d';
+                }
+            }
+
+            // Função para mostrar alerta de login
+            function showLoginAlert() {
+                alert('Você precisa fazer login para votar. Redirecionando...');
+                window.location.href = '{{ route('login') }}';
+            }
+        </script>
     </body>
 </html>
 
