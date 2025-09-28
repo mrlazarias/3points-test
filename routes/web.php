@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\View\View;
-use Illuminate\Contracts\View\Factory;
-use App\Models\Post;
-use App\Models\Subreddit;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SubredditController;
+use App\Models\Post;
+use App\Models\Subreddit;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
 // Home - Lista todos os posts
@@ -38,3 +39,10 @@ Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('s
 
 // Post - Visualização de um post específico
 Route::get('/r/{subreddit:slug}/{post:slug}', [PostController::class, 'show'])->name('post.show');
+
+// Rotas de Autenticação
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

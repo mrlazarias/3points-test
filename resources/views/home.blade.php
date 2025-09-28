@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -61,19 +62,66 @@ declare(strict_types=1);
                             ></path>
                         </svg>
                     </button>
-                    <div
-                        style="
-                            width: 2rem;
-                            height: 2rem;
-                            background-color: #2563eb;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        "
-                    >
-                        <span style="color: white; font-size: 0.875rem; font-weight: 500">$</span>
-                    </div>
+
+                    @auth
+                        <!-- User Menu -->
+                        <div style="display: flex; align-items: center; gap: 0.75rem">
+                            <span style="color: #d1d5db; font-size: 0.875rem">{{ Auth::user()->name }}</span>
+                            <form method="POST" action="{{ route('logout') }}" style="margin: 0">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    style="
+                                        padding: 0.5rem 1rem;
+                                        background-color: #dc2626;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 0.5rem;
+                                        font-size: 0.875rem;
+                                        cursor: pointer;
+                                        transition: background-color 0.2s;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#b91c1c'"
+                                    onmouseout="this.style.backgroundColor='#dc2626'"
+                                >
+                                    Sair
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <!-- Auth Links -->
+                        <div style="display: flex; align-items: center; gap: 0.75rem">
+                            <a
+                                href="{{ route('login') }}"
+                                style="
+                                    color: #9ca3af;
+                                    text-decoration: none;
+                                    font-size: 0.875rem;
+                                    transition: color 0.2s;
+                                "
+                                onmouseover="this.style.color='#f9fafb'"
+                                onmouseout="this.style.color='#9ca3af'"
+                            >
+                                Entrar
+                            </a>
+                            <a
+                                href="{{ route('register') }}"
+                                style="
+                                    padding: 0.5rem 1rem;
+                                    background-color: #2563eb;
+                                    color: white;
+                                    text-decoration: none;
+                                    border-radius: 0.5rem;
+                                    font-size: 0.875rem;
+                                    transition: background-color 0.2s;
+                                "
+                                onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                onmouseout="this.style.backgroundColor='#2563eb'"
+                            >
+                                Registrar
+                            </a>
+                        </div>
+                    @endauth
                 </div>
             </div>
         </header>
@@ -82,8 +130,12 @@ declare(strict_types=1);
             <!-- Welcome Section -->
             <div style="margin-bottom: 2rem">
                 <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem">
-                    Olá,
-                    <span style="color: #60a5fa">$user</span>
+                    @auth
+                        Olá,
+                        <span style="color: #60a5fa">{{ Auth::user()->name }}</span>
+                    @else
+                        Olá, visitante!
+                    @endauth
                 </h1>
                 <p style="color: #9ca3af">Confira as estatísticas das comunidades que você segue</p>
             </div>
@@ -476,4 +528,5 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
-<?php 
+
+<?php
