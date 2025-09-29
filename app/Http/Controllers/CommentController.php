@@ -54,4 +54,35 @@ final class CommentController extends Controller
             ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])
             ->with('success', 'Resposta adicionada com sucesso!');
     }
+
+    public function update(Request $request, Comment $comment): RedirectResponse
+    {
+        // Verificar se o usuário é o dono do comentário
+        abort_if($comment->user_id !== Auth::id(), 403);
+
+        $validated = $request->validate([
+            'content' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $comment->update([
+            'content' => $validated['content'],
+        ]);
+
+        return redirect()
+            ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])
+            ->with('success', 'Comentário atualizado com sucesso!');
+    }
+
+    public function destroy(Comment $comment): RedirectResponse
+    {
+        // Verificar se o usuário é o dono do comentário
+        abort_if($comment->user_id !== Auth::id(), 403);
+
+        // Soft delete para manter a thread
+        $comment->softDelete();
+
+        return redirect()
+            ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])
+            ->with('success', 'Comentário excluído com sucesso!');
+    }
 }

@@ -448,7 +448,7 @@ declare(strict_types=1);
                                     class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm"
                                 >
                                     <h3 class="mb-4 text-lg font-semibold text-white">Adicionar Comentário</h3>
-                                    <form action="{{ route('comments.store', $post->id) }}" method="POST">
+                                    <form action="{{ route('comments.store', $post->slug) }}" method="POST">
                                         @csrf
                                         <textarea
                                             name="content"
@@ -487,9 +487,34 @@ declare(strict_types=1);
                                 </div>
                             @endauth
 
+                            <!-- Comments Sorting -->
+                            <div class="mb-6 flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-white">
+                                    Comentários ({{ $comments->count() }})
+                                </h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-slate-400">Ordenar por:</span>
+                                    <select
+                                        id="comment-sort"
+                                        class="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        onchange="sortComments(this.value)"
+                                    >
+                                        <option value="top" {{ $sortBy === 'top' ? 'selected' : '' }}>
+                                            Mais votados
+                                        </option>
+                                        <option value="new" {{ $sortBy === 'new' ? 'selected' : '' }}>
+                                            Mais novos
+                                        </option>
+                                        <option value="old" {{ $sortBy === 'old' ? 'selected' : '' }}>
+                                            Mais antigos
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <!-- Comments List -->
                             <div class="space-y-4">
-                                @forelse ($post->comments->where('parent_id', null) as $comment)
+                                @forelse ($comments as $comment)
                                     @include('components.comment', ['comment' => $comment, 'depth' => 0])
                                 @empty
                                     <div
@@ -559,6 +584,13 @@ declare(strict_types=1);
                 if (form) {
                     form.style.display = form.style.display === 'none' ? 'block' : 'none';
                 }
+            }
+
+            // Sort comments function
+            function sortComments(sortBy) {
+                const currentUrl = new URL(window.location);
+                currentUrl.searchParams.set('sort', sortBy);
+                window.location.href = currentUrl.toString();
             }
 
             // Load user votes on page load

@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/vote/user', [VoteController::class, 'getUserVote'])->name('vote.user');
 
     // Rotas de Comentários
-    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/posts/{post:slug}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });

@@ -16,7 +16,7 @@ use Illuminate\Validation\Rule;
 
 final class PostController extends Controller
 {
-    public function show(Subreddit $subreddit, Post $post): View
+    public function show(Subreddit $subreddit, Post $post, Request $request): View
     {
         // Verificar se o post pertence ao subreddit
         abort_if($post->subreddit_id !== $subreddit->id, 404);
@@ -26,16 +26,29 @@ final class PostController extends Controller
         // Carregar contagem de posts do subreddit relacionado ao post
         $post->subreddit->loadCount('posts');
 
-        $comments = Comment::query()
+        // Parâmetro de ordenação dos comentários
+        $sortBy = $request->get('sort', 'top'); // top, new, old
+
+        $commentsQuery = Comment::query()
             ->with(['user', 'replies.user'])
             ->where('post_id', $post->id)
             ->whereNull('parent_id')
-            ->where('is_deleted', false)
-            ->orderByDesc('vote_score')
-            ->orderByDesc('created_at')
-            ->get();
+            ->where('is_deleted', false);
 
-        return view('post.show', ['post' => $post, 'comments' => $comments]);
+        // Aplicar ordenação baseada no parâmetro
+        match ($sortBy) {
+            'new' => $commentsQuery->orderByDesc('created_at'),
+            'old' => $commentsQuery->orderBy('created_at'),
+            default => $commentsQuery->orderByDesc('vote_score')->orderByDesc('created_at'),
+        };
+
+        $comments = $commentsQuery->get();
+
+        return view('post.show', [
+            'post' => $post,
+            'comments' => $comments,
+            'sortBy' => $sortBy,
+        ]);
     }
 
     public function create(Subreddit $subreddit): View
