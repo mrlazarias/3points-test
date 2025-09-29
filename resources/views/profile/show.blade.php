@@ -149,7 +149,7 @@ declare(strict_types=1);
                             <div style="position: relative; display: inline-block; margin-bottom: 1rem">
                                 @if ($user->getFirstMedia('profile-pictures'))
                                     <img
-                                        src="{{ $user->getFirstMedia('profile-pictures')->getUrl() }}"
+                                        src="{{ $user->getFirstMedia('profile-pictures')->getUrl('') }}"
                                         alt="Foto de perfil"
                                         style="
                                             width: 4rem;
