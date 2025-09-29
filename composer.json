@@ -12,6 +12,7 @@
         "filament/filament": "^4.0.20",
         "filament/spatie-laravel-media-library-plugin": "^4.0.20",
         "laravel/framework": "^12.31.1",
+        "laravel/reverb": "^1.6",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
