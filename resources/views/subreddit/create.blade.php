@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 
 @section('title', 'Criar Comunidade')
@@ -202,4 +203,3 @@ declare(strict_types=1);
         });
     </script>
 @endsection
-<?php 
