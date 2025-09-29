@@ -553,7 +553,7 @@ declare(strict_types=1);
                                     <h3 class="mb-4 text-lg font-semibold text-white">Adicionar Comentário</h3>
                                     <form
                                         id="comment-form"
-                                        action="{{ route('comments.store', $post->slug) }}"
+                                        action="{{ route('comments.store', [$post->subreddit->slug, $post->slug]) }}"
                                         method="POST"
                                     >
                                         @csrf

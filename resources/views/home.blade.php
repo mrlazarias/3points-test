@@ -445,8 +445,10 @@ declare(strict_types=1);
 
                                     <!-- Post Actions -->
                                     <div style="display: flex; align-items: center; gap: 1.5rem">
+                                        <!-- Comments Button -->
                                         <div style="display: flex; align-items: center; gap: 0.5rem">
                                             <button
+                                                onclick="openCommentsModal({{ $post->id }}, '{{ $post->title }}', '{{ $post->subreddit->slug }}', '{{ $post->slug }}')"
                                                 style="
                                                     display: flex;
                                                     align-items: center;
@@ -455,7 +457,12 @@ declare(strict_types=1);
                                                     background: none;
                                                     border: none;
                                                     cursor: pointer;
+                                                    padding: 0.5rem;
+                                                    border-radius: 0.5rem;
+                                                    transition: all 0.2s;
                                                 "
+                                                onmouseover="this.style.backgroundColor='#374151'; this.style.color='#d1d5db'"
+                                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
                                             >
                                                 <svg
                                                     style="width: 1.25rem; height: 1.25rem"
@@ -474,143 +481,139 @@ declare(strict_types=1);
                                             </button>
                                         </div>
 
+                                        <!-- Vote Section -->
                                         <div style="display: flex; align-items: center; gap: 0.5rem">
                                             @auth
+                                                <!-- Like Button -->
                                                 <button
                                                     onclick="votePost({{ $post->id }}, 'up')"
                                                     id="upvote-{{ $post->id }}"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
+                                                    data-vote-type="up"
+                                                    data-target-id="{{ $post->id }}"
+                                                    data-target-type="post"
                                                 >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
+                                                    <div
+                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
                                                     >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M5 15l7-7 7 7"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            @else
-                                                <button
-                                                    onclick="showLoginAlert()"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
-                                                >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
+                                                        <svg
+                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2.5"
+                                                                d="M5 15l7-7 7 7"
+                                                            ></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span
+                                                        id="likes-count-{{ $post->id }}"
+                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
                                                     >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M5 15l7-7 7 7"
-                                                        ></path>
-                                                    </svg>
+                                                        {{ $post->likes_count ?? 0 }}
+                                                    </span>
                                                 </button>
-                                            @endauth
 
-                                            <span
-                                                id="vote-score-{{ $post->id }}"
-                                                style="
-                                                    font-size: 0.875rem;
-                                                    font-weight: 500;
-                                                    min-width: 2rem;
-                                                    text-align: center;
-                                                "
-                                            >
-                                                {{ $post->vote_score }}
-                                            </span>
-
-                                            @auth
+                                                <!-- Dislike Button -->
                                                 <button
                                                     onclick="votePost({{ $post->id }}, 'down')"
                                                     id="downvote-{{ $post->id }}"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
+                                                    data-vote-type="down"
+                                                    data-target-id="{{ $post->id }}"
+                                                    data-target-type="post"
                                                 >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
+                                                    <div
+                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
                                                     >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 9l-7 7-7-7"
-                                                        ></path>
-                                                    </svg>
+                                                        <svg
+                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2.5"
+                                                                d="M19 9l-7 7-7-7"
+                                                            ></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span
+                                                        id="dislikes-count-{{ $post->id }}"
+                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                                                    >
+                                                        {{ $post->dislikes_count ?? 0 }}
+                                                    </span>
                                                 </button>
                                             @else
+                                                <!-- Like Button (Not Logged In) -->
                                                 <button
                                                     onclick="showLoginAlert()"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
+                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
                                                 >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
+                                                    <div
+                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
                                                     >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 9l-7 7-7-7"
-                                                        ></path>
-                                                    </svg>
+                                                        <svg
+                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2.5"
+                                                                d="M5 15l7-7 7 7"
+                                                            ></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span
+                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
+                                                    >
+                                                        {{ $post->likes_count ?? 0 }}
+                                                    </span>
+                                                </button>
+
+                                                <!-- Dislike Button (Not Logged In) -->
+                                                <button
+                                                    onclick="showLoginAlert()"
+                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
+                                                >
+                                                    <div
+                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
+                                                    >
+                                                        <svg
+                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="2.5"
+                                                                d="M19 9l-7 7-7-7"
+                                                            ></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span
+                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                                                    >
+                                                        {{ $post->dislikes_count ?? 0 }}
+                                                    </span>
                                                 </button>
                                             @endauth
                                         </div>
 
-                                        <button
+                                        <a
+                                            href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
                                             style="
                                                 padding: 0.5rem 1rem;
                                                 background-color: #374151;
@@ -619,10 +622,15 @@ declare(strict_types=1);
                                                 border: none;
                                                 font-size: 0.875rem;
                                                 cursor: pointer;
+                                                text-decoration: none;
+                                                display: inline-block;
+                                                transition: all 0.2s;
                                             "
+                                            onmouseover="this.style.backgroundColor='#4b5563'"
+                                            onmouseout="this.style.backgroundColor='#374151'"
                                         >
-                                            Responder
-                                        </button>
+                                            Ver Post
+                                        </a>
                                     </div>
                                 </div>
                             </article>
@@ -656,13 +664,13 @@ declare(strict_types=1);
 
         <!-- JavaScript para funcionalidade de votação -->
         <script>
-            // CSRF Token para requisições AJAX
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            // Variáveis globais
+            let csrfToken = null;
 
             // Função para votar em posts
             async function votePost(postId, voteType) {
                 try {
-                    const response = await fetch('{{ route("vote") }}', {
+                    const response = await fetch('/vote', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -676,17 +684,83 @@ declare(strict_types=1);
                         })
                     });
 
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
                     const data = await response.json();
 
                     if (data.success) {
-                        // Atualizar o score do voto
-                        const scoreElement = document.getElementById(`vote-score-${postId}`);
-                        if (scoreElement) {
-                            scoreElement.textContent = data.vote_score;
+                        // Atualizar contadores de likes e dislikes
+                        const likesElement = document.getElementById(`likes-count-${postId}`);
+                        const dislikesElement = document.getElementById(`dislikes-count-${postId}`);
+
+                        if (likesElement) {
+                            likesElement.textContent = data.likes || 0;
+                            likesElement.classList.add('vote-count', 'updated');
+                            setTimeout(() => likesElement.classList.remove('updated'), 600);
+                        }
+                        if (dislikesElement) {
+                            dislikesElement.textContent = data.dislikes || 0;
+                            dislikesElement.classList.add('vote-count', 'updated');
+                            setTimeout(() => dislikesElement.classList.remove('updated'), 600);
                         }
 
-                        // Atualizar visual dos botões
-                        updateVoteButtons(postId, data.vote_type, data.action);
+                        // Update button states using the centralized function
+                        if (data.vote_type) {
+                            applyVoteState(postId, data.vote_type);
+
+                            // Add pulse animation for new votes (temporary)
+                            const activeBtn = document.querySelector(
+                                `[data-target-id="${postId}"][data-vote-type="${data.vote_type}"]`,
+                            );
+                            if (activeBtn) {
+                                if (data.vote_type === 'up') {
+                                    activeBtn.style.animation = 'pulse-glow 2s infinite';
+                                } else {
+                                    activeBtn.style.animation = 'pulse-glow-red 2s infinite';
+                                }
+
+                                // Remove animation after 3 seconds
+                                setTimeout(() => {
+                                    activeBtn.style.animation = '';
+                                    if (data.vote_type === 'up') {
+                                        activeBtn.style.boxShadow = '0 0 8px rgba(34, 197, 94, 0.3)';
+                                    } else {
+                                        activeBtn.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.3)';
+                                    }
+                                }, 3000);
+                            }
+                        } else {
+                            // If no vote type, reset all buttons to default state
+                            const allButtons = document.querySelectorAll(`[data-target-id="${postId}"]`);
+                            allButtons.forEach(btn => {
+                                btn.classList.remove(
+                                    'bg-green-500/20',
+                                    'bg-red-500/20',
+                                    'text-green-400',
+                                    'text-red-400',
+                                    'border-green-500/30',
+                                    'border-red-500/30',
+                                    'active'
+                                );
+                                btn.classList.add('text-slate-400', 'border-transparent');
+                                btn.style.animation = '';
+
+                                // Reset icon containers
+                                const iconContainer = btn.querySelector('div');
+                                if (iconContainer) {
+                                    iconContainer.classList.remove('bg-green-500/20', 'bg-red-500/20', 'shadow-lg', 'shadow-green-500/20', 'shadow-red-500/20');
+                                }
+
+                                // Reset count spans
+                                const countSpan = btn.querySelector('span');
+                                if (countSpan) {
+                                    countSpan.classList.remove('text-green-400', 'text-red-400');
+                                    countSpan.classList.add('text-slate-400');
+                                }
+                            });
+                        }
                     } else {
                         console.error('Erro ao votar:', data.message);
                         alert('Erro ao votar. Tente novamente.');
@@ -694,36 +768,6 @@ declare(strict_types=1);
                 } catch (error) {
                     console.error('Erro na requisição:', error);
                     alert('Erro de conexão. Tente novamente.');
-                }
-            }
-
-            // Função para atualizar visual dos botões de votação
-            function updateVoteButtons(postId, voteType, action) {
-                const upButton = document.getElementById(`upvote-${postId}`);
-                const downButton = document.getElementById(`downvote-${postId}`);
-
-                // Resetar todos os botões
-                if (upButton) {
-                    upButton.style.color = '#9ca3af';
-                    upButton.style.backgroundColor = 'transparent';
-                }
-                if (downButton) {
-                    downButton.style.color = '#9ca3af';
-                    downButton.style.backgroundColor = 'transparent';
-                }
-
-                // Aplicar estilo baseado na ação
-                if (action === 'removed') {
-                    // Nenhum voto ativo
-                    return;
-                }
-
-                if (voteType === 'up' && upButton) {
-                    upButton.style.color = '#10b981';
-                    upButton.style.backgroundColor = '#064e3b';
-                } else if (voteType === 'down' && downButton) {
-                    downButton.style.color = '#ef4444';
-                    downButton.style.backgroundColor = '#7f1d1d';
                 }
             }
 
@@ -735,6 +779,9 @@ declare(strict_types=1);
 
             // Carregar votos do usuário ao carregar a página
             document.addEventListener('DOMContentLoaded', function() {
+                // Inicializar CSRF token
+                csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
                 @auth
                     // Carregar votos existentes do usuário
                     loadUserVotes();
@@ -744,19 +791,469 @@ declare(strict_types=1);
             // Função para carregar votos do usuário
             async function loadUserVotes() {
                 try {
-                    const response = await fetch('{{ route("vote.user") }}?voteable_type=post&voteable_id=0', {
+                    // Carregar votos para cada post individualmente
+                    const postElements = document.querySelectorAll('[data-target-id]');
+                    const postIds = [...new Set(Array.from(postElements).map(el => el.getAttribute('data-target-id')))];
+
+                    for (const postId of postIds) {
+                        const url = `{{ route("vote.user") }}?voteable_type=post&voteable_id=${postId}`;
+
+                        const response = await fetch(url, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.vote && data.vote.vote_type) {
+                                applyVoteState(postId, data.vote.vote_type);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar votos:', error);
+                }
+            }
+
+            // Função para aplicar estado visual do voto
+            function applyVoteState(postId, voteType) {
+                const activeBtn = document.querySelector(
+                    `[data-target-id="${postId}"][data-vote-type="${voteType}"]`,
+                );
+
+                if (activeBtn) {
+                    // Reset all buttons for this post first
+                    const allButtons = document.querySelectorAll(`[data-target-id="${postId}"]`);
+                    allButtons.forEach(btn => {
+                        btn.classList.remove(
+                            'bg-green-500/20',
+                            'bg-red-500/20',
+                            'text-green-400',
+                            'text-red-400',
+                            'border-green-500/30',
+                            'border-red-500/30',
+                            'active'
+                        );
+                        btn.classList.add('text-slate-400', 'border-transparent');
+
+                        // Reset icon containers
+                        const iconContainer = btn.querySelector('div');
+                        if (iconContainer) {
+                            iconContainer.classList.remove('bg-green-500/20', 'bg-red-500/20', 'shadow-lg', 'shadow-green-500/20', 'shadow-red-500/20');
+                        }
+
+                        // Reset count spans
+                        const countSpan = btn.querySelector('span');
+                        if (countSpan) {
+                            countSpan.classList.remove('text-green-400', 'text-red-400');
+                            countSpan.classList.add('text-slate-400');
+                        }
+                    });
+
+                    // Apply active state to the voted button
+                    activeBtn.classList.remove('text-slate-400', 'border-transparent');
+                    activeBtn.classList.add(
+                        voteType === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                        voteType === 'up' ? 'text-green-400' : 'text-red-400',
+                        voteType === 'up' ? 'border-green-500/30' : 'border-red-500/30',
+                        'active'
+                    );
+
+                    // Apply active state to icon container
+                    const iconContainer = activeBtn.querySelector('div');
+                    if (iconContainer) {
+                        iconContainer.classList.add(
+                            voteType === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                            'shadow-lg'
+                        );
+                        if (voteType === 'up') {
+                            iconContainer.classList.add('shadow-green-500/20');
+                        } else {
+                            iconContainer.classList.add('shadow-red-500/20');
+                        }
+                    }
+
+                    // Apply active state to count span
+                    const countSpan = activeBtn.querySelector('span');
+                    if (countSpan) {
+                        countSpan.classList.remove('text-slate-400');
+                        countSpan.classList.add(
+                            voteType === 'up' ? 'text-green-400' : 'text-red-400',
+                        );
+                    }
+
+                    // Add subtle glow effect for existing votes (no constant animation)
+                    if (voteType === 'up') {
+                        activeBtn.style.boxShadow = '0 0 8px rgba(34, 197, 94, 0.3)';
+                    } else {
+                        activeBtn.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.3)';
+                    }
+                }
+            }
+
+            // Variáveis globais para o modal de comentários
+            let currentPostId = null;
+            let currentPostTitle = '';
+            let currentSubredditSlug = '';
+            let currentPostSlug = '';
+
+            // Função para abrir o modal de comentários
+            function openCommentsModal(postId, postTitle, subredditSlug, postSlug) {
+                currentPostId = postId;
+                currentPostTitle = postTitle;
+                currentSubredditSlug = subredditSlug;
+                currentPostSlug = postSlug;
+
+                document.getElementById('modalTitle').textContent = `Comentários - ${postTitle}`;
+                document.getElementById('commentsModal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                // Carregar comentários
+                loadComments();
+            }
+
+            // Função para fechar o modal de comentários
+            function closeCommentsModal() {
+                document.getElementById('commentsModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+                currentPostId = null;
+            }
+
+            // Função para carregar comentários
+            async function loadComments() {
+                if (!currentPostId) return;
+
+                try {
+                    const response = await fetch(`/posts/${currentSubredditSlug}/${currentPostSlug}/comments`, {
                         headers: {
                             'Accept': 'application/json',
                         }
                     });
 
-                    // Esta função seria chamada para cada post individualmente
-                    // Por simplicidade, vamos implementar isso quando necessário
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayComments(data.comments || []);
+                    } else {
+                        document.getElementById('commentsList').innerHTML = `
+                            <div style="text-align: center; color: #ef4444; padding: 2rem">
+                                Erro ao carregar comentários
+                            </div>
+                        `;
+                    }
                 } catch (error) {
-                    console.error('Erro ao carregar votos:', error);
+                    console.error('Erro ao carregar comentários:', error);
+                    document.getElementById('commentsList').innerHTML = `
+                        <div style="text-align: center; color: #ef4444; padding: 2rem">
+                            Erro de conexão
+                        </div>
+                    `;
                 }
             }
+
+            // Função para exibir comentários
+            function displayComments(comments) {
+                const commentsList = document.getElementById('commentsList');
+
+                if (comments.length === 0) {
+                    commentsList.innerHTML = `
+                        <div style="text-align: center; color: #9ca3af; padding: 2rem">
+                            Nenhum comentário ainda. Seja o primeiro a comentar!
+                        </div>
+                    `;
+                    return;
+                }
+
+                commentsList.innerHTML = comments.map(comment => `
+                    <div style="
+                        background-color: #374151;
+                        border-radius: 0.5rem;
+                        padding: 1rem;
+                        margin-bottom: 1rem;
+                        border: 1px solid #4b5563;
+                    ">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem">
+                            <div style="
+                                width: 2rem;
+                                height: 2rem;
+                                background-color: #6b7280;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                                font-weight: bold;
+                                font-size: 0.875rem;
+                            ">
+                                ${comment.user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div style="font-weight: 500; color: #f9fafb">${comment.user.name}</div>
+                                <div style="font-size: 0.875rem; color: #9ca3af">${new Date(comment.created_at).toLocaleString('pt-BR')}</div>
+                            </div>
+                        </div>
+                        <div style="color: #d1d5db; line-height: 1.6; white-space: pre-wrap">${comment.content}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Função para enviar comentário
+            async function submitComment(event) {
+                event.preventDefault();
+
+                if (!currentPostId) return;
+
+                const content = document.getElementById('commentContent').value.trim();
+                if (!content) return;
+
+                try {
+                    const response = await fetch(`/posts/${currentSubredditSlug}/${currentPostSlug}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            content: content
+                        })
+                    });
+
+                    if (response.ok) {
+                        document.getElementById('commentContent').value = '';
+                        loadComments(); // Recarregar comentários
+
+                        // Atualizar contador de comentários na homepage
+                        const commentCountElement = document.querySelector(`[onclick*="openCommentsModal(${currentPostId}"] span`);
+                        if (commentCountElement) {
+                            const currentCount = parseInt(commentCountElement.textContent);
+                            commentCountElement.textContent = currentCount + 1;
+                        }
+                    } else {
+                        const data = await response.json();
+                        alert('Erro ao enviar comentário: ' + (data.message || 'Tente novamente'));
+                    }
+                } catch (error) {
+                    console.error('Erro ao enviar comentário:', error);
+                    alert('Erro de conexão. Tente novamente.');
+                }
+            }
+
+            // Fechar modal ao clicar fora dele
+            const commentsModal = document.getElementById('commentsModal');
+            if (commentsModal) {
+                commentsModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeCommentsModal();
+                    }
+                });
+            }
         </script>
+
+        <!-- CSS para animações de votação -->
+        <style>
+            @keyframes pulse-glow {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); /* Green */
+                }
+                50% {
+                    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1); /* Green */
+                }
+            }
+
+            @keyframes pulse-glow-red {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); /* Red */
+                }
+                50% {
+                    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1); /* Red */
+                }
+            }
+
+            .vote-count.updated {
+                animation: number-bounce 0.6s ease-in-out;
+            }
+
+            @keyframes number-bounce {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+            }
+        </style>
+
+        <!-- Comments Modal -->
+        <div
+            id="commentsModal"
+            style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 1000;
+                overflow-y: auto;
+            "
+        >
+            <div
+                style="
+                    position: relative;
+                    max-width: 800px;
+                    margin: 2rem auto;
+                    background-color: #1f2937;
+                    border-radius: 0.75rem;
+                    border: 1px solid #374151;
+                    max-height: 90vh;
+                    overflow: hidden;
+                "
+            >
+                <!-- Modal Header -->
+                <div
+                    style="
+                        padding: 1.5rem;
+                        border-bottom: 1px solid #374151;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    "
+                >
+                    <h3 id="modalTitle" style="font-size: 1.25rem; font-weight: 600; color: #f9fafb; margin: 0">
+                        Comentários
+                    </h3>
+                    <button
+                        onclick="closeCommentsModal()"
+                        style="
+                            background: none;
+                            border: none;
+                            color: #9ca3af;
+                            cursor: pointer;
+                            padding: 0.5rem;
+                            border-radius: 0.5rem;
+                            transition: all 0.2s;
+                        "
+                        onmouseover="this.style.backgroundColor='#374151'; this.style.color='#f9fafb'"
+                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                    >
+                        <svg
+                            style="width: 1.5rem; height: 1.5rem"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div style="padding: 1.5rem; max-height: 60vh; overflow-y: auto">
+                    <!-- Comment Form -->
+                    @auth
+                        <div style="margin-bottom: 2rem">
+                            <form id="commentForm" onsubmit="submitComment(event)">
+                                <textarea
+                                    id="commentContent"
+                                    placeholder="Adicione um comentário..."
+                                    style="
+                                        width: 100%;
+                                        min-height: 100px;
+                                        padding: 0.75rem;
+                                        background-color: #374151;
+                                        border: 1px solid #4b5563;
+                                        border-radius: 0.5rem;
+                                        color: #f9fafb;
+                                        resize: vertical;
+                                        font-family: inherit;
+                                    "
+                                    required
+                                ></textarea>
+                                <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem">
+                                    <button
+                                        type="button"
+                                        onclick="closeCommentsModal()"
+                                        style="
+                                            padding: 0.5rem 1rem;
+                                            background-color: #374151;
+                                            color: #d1d5db;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            cursor: pointer;
+                                            transition: all 0.2s;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#4b5563'"
+                                        onmouseout="this.style.backgroundColor='#374151'"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        style="
+                                            padding: 0.5rem 1rem;
+                                            background-color: #2563eb;
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            cursor: pointer;
+                                            transition: all 0.2s;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                        onmouseout="this.style.backgroundColor='#2563eb'"
+                                    >
+                                        Comentar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @else
+                        <div
+                            style="
+                                text-align: center;
+                                padding: 2rem;
+                                background-color: #374151;
+                                border-radius: 0.5rem;
+                                margin-bottom: 2rem;
+                            "
+                        >
+                            <p style="color: #9ca3af; margin-bottom: 1rem">Você precisa fazer login para comentar</p>
+                            <a
+                                href="{{ route('login') }}"
+                                style="
+                                    display: inline-block;
+                                    padding: 0.5rem 1rem;
+                                    background-color: #2563eb;
+                                    color: white;
+                                    text-decoration: none;
+                                    border-radius: 0.5rem;
+                                    transition: all 0.2s;
+                                "
+                                onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                onmouseout="this.style.backgroundColor='#2563eb'"
+                            >
+                                Fazer Login
+                            </a>
+                        </div>
+                    @endauth
+
+                    <!-- Comments List -->
+                    <div id="commentsList">
+                        <div style="text-align: center; color: #9ca3af; padding: 2rem">Carregando comentários...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
 
