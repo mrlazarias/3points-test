@@ -23,6 +23,9 @@ final class PostController extends Controller
 
         $post->load(['subreddit', 'user']);
 
+        // Carregar contagem de posts do subreddit relacionado ao post
+        $post->subreddit->loadCount('posts');
+
         $comments = Comment::query()
             ->with(['user', 'replies.user'])
             ->where('post_id', $post->id)

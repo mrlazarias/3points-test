@@ -300,7 +300,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 ### **Funcionalidades para Testar**
 
 ✅ **Criação de Posts** - Formulário dinâmico
-✅ **Sistema de Votos** - AJAX interativo  
+✅ **Sistema de Votos** - AJAX interativo
 ✅ **Comentários** - Hierárquicos e aninhados
 ✅ **Navegação** - Entre subreddits e posts
 ✅ **Autenticação** - Login/registro/logout
