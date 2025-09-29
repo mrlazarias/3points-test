@@ -440,7 +440,9 @@ declare(strict_types=1);
 
                         <!-- Comments Section -->
                         <div class="space-y-6">
-                            <h2 class="text-2xl font-bold text-white">Comentários ({{ $post->comment_count }})</h2>
+                            <h2 id="main-comment-count" class="text-2xl font-bold text-white">
+                                Comentários ({{ $post->comment_count }})
+                            </h2>
 
                             <!-- Comment Form -->
                             @auth
@@ -494,7 +496,7 @@ declare(strict_types=1);
 
                             <!-- Comments Sorting -->
                             <div class="mb-6 flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-white">
+                                <h3 id="sort-comment-count" class="text-lg font-semibold text-white">
                                     Comentários ({{ $comments->count() }})
                                 </h3>
                                 <div class="flex items-center space-x-2">
@@ -637,11 +639,11 @@ declare(strict_types=1);
                         document.getElementById('comment-content').value = '';
 
                         // Atualizar contador de comentários
-                        const commentCount = document.querySelector('h3');
-                        if (commentCount) {
-                            const match = commentCount.textContent.match(/\d+/);
+                        const mainCount = document.getElementById('main-comment-count');
+                        if (mainCount) {
+                            const match = mainCount.textContent.match(/\d+/);
                             const currentCount = match ? parseInt(match[0]) : 0;
-                            commentCount.textContent = `Comentários (${currentCount + 1})`;
+                            updateCommentCounts(currentCount + 1);
                         }
 
                         // Mostrar mensagem de sucesso
@@ -659,6 +661,19 @@ declare(strict_types=1);
                     submitLoading.classList.add('hidden');
                 }
             });
+
+            // Função para atualizar contadores de comentários
+            function updateCommentCounts(count) {
+                const mainCount = document.getElementById('main-comment-count');
+                const sortCount = document.getElementById('sort-comment-count');
+
+                if (mainCount) {
+                    mainCount.textContent = `Comentários (${count})`;
+                }
+                if (sortCount) {
+                    sortCount.textContent = `Comentários (${count})`;
+                }
+            }
 
             // Função para mostrar notificações
             function showNotification(message, type) {
@@ -684,9 +699,8 @@ declare(strict_types=1);
                         channel
                             .listen('.comment.created', (e) => {
                                 // Atualizar contador de comentários
-                                const commentCount = document.querySelector('h3');
-                                if (commentCount && e.post && e.post.comment_count !== undefined) {
-                                    commentCount.textContent = `Comentários (${e.post.comment_count})`;
+                                if (e.post && e.post.comment_count !== undefined) {
+                                    updateCommentCounts(e.post.comment_count);
                                 }
 
                                 // Adicionar novo comentário à lista
@@ -706,6 +720,25 @@ declare(strict_types=1);
 
                                 // Mostrar notificação
                                 showNotification('Novo comentário adicionado!', 'success');
+                            })
+                            .listen('.comment.deleted', (e) => {
+                                // Atualizar contador de comentários
+                                if (e.post && e.post.comment_count !== undefined) {
+                                    updateCommentCounts(e.post.comment_count);
+                                }
+
+                                // Remover comentário da lista
+                                if (e.comment && e.comment.id) {
+                                    const commentElement = document.querySelector(
+                                        `[data-comment-id="${e.comment.id}"]`,
+                                    );
+                                    if (commentElement) {
+                                        commentElement.remove();
+                                    }
+                                }
+
+                                // Mostrar notificação
+                                showNotification('Comentário removido!', 'success');
                             })
                             .error((error) => {
                                 console.error('Erro no Echo:', error);
