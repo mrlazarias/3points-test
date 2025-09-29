@@ -47,6 +47,12 @@ Route::get('/test-create', function (): Factory|View {
 // Subreddit - Posts de uma comunidade específica
 Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('subreddit.show');
 
+// Criação de comunidades (protegida por autenticação)
+Route::middleware('auth')->group(function (): void {
+    Route::get('/create-community', [SubredditController::class, 'create'])->name('subreddit.create');
+    Route::post('/create-community', [SubredditController::class, 'store'])->name('subreddit.store');
+});
+
 // Criação de posts (protegida por autenticação)
 Route::get('/r/{subreddit:slug}/create', [PostController::class, 'create'])->name('post.create');
 Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->name('post.store');

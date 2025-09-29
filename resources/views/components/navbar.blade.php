@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <header class="sticky top-0 z-50 border-b bg-white shadow-sm">
     <div class="container mx-auto px-4">
         <div class="flex h-16 items-center justify-between">
@@ -42,6 +43,23 @@ declare(strict_types=1);
 
             <!-- User Menu -->
             <div class="flex items-center space-x-4">
+                @auth
+                    <a
+                        href="{{ route('subreddit.create') }}"
+                        class="rounded-full bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                    >
+                        <svg class="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            ></path>
+                        </svg>
+                        Criar Comunidade
+                    </a>
+                @endauth
+
                 <button class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -63,4 +81,5 @@ declare(strict_types=1);
         </div>
     </div>
 </header>
-<?php 
+
+<?php
