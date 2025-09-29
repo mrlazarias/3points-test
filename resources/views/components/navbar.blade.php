@@ -46,9 +46,9 @@ declare(strict_types=1);
                 @auth
                     <a
                         href="{{ route('subreddit.create') }}"
-                        class="rounded-full bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                        class="flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-2.5 font-semibold text-white transition-all duration-200 hover:scale-105 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
                     >
-                        <svg class="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"

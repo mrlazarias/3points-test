@@ -46,6 +46,38 @@ declare(strict_types=1);
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 1rem">
+                    @auth
+                        <a
+                            href="{{ route('subreddit.create') }}"
+                            style="
+                                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                                color: white;
+                                padding: 0.75rem 1.5rem;
+                                border-radius: 0.75rem;
+                                text-decoration: none;
+                                font-weight: 600;
+                                font-size: 0.875rem;
+                                display: flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                                transition: all 0.2s;
+                                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                            "
+                            onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)'"
+                        >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                ></path>
+                            </svg>
+                            Criar Comunidade
+                        </a>
+                    @endauth
+
                     <button
                         style="padding: 0.5rem; color: #9ca3af; border-radius: 0.5rem; background: none; border: none"
                     >
@@ -1254,6 +1286,64 @@ declare(strict_types=1);
                 </div>
             </div>
         </div>
+
+        <!-- Botão Flutuante de Criar Comunidade -->
+        @auth
+            <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1000">
+                <a
+                    href="{{ route('subreddit.create') }}"
+                    style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        background: linear-gradient(135deg, #10b981, #059669);
+                        color: white;
+                        padding: 1rem 1.5rem;
+                        border-radius: 2rem;
+                        text-decoration: none;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+                        transition: all 0.3s ease;
+                        animation: pulse-glow 2s infinite;
+                    "
+                    onmouseover="
+                        this.style.transform='translateY(-3px) scale(1.05)';
+                        this.style.boxShadow='0 20px 40px -5px rgba(16, 185, 129, 0.6)';
+                        this.style.animation='none';
+                    "
+                    onmouseout="
+                        this.style.transform='translateY(0) scale(1)';
+                        this.style.boxShadow='0 10px 25px -5px rgba(16, 185, 129, 0.4)';
+                        this.style.animation='pulse-glow 2s infinite';
+                    "
+                >
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        ></path>
+                    </svg>
+                    <span>Criar Comunidade</span>
+                </a>
+            </div>
+
+            <style>
+                @keyframes pulse-glow {
+                    0%,
+                    100% {
+                        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+                    }
+                    50% {
+                        box-shadow:
+                            0 10px 25px -5px rgba(16, 185, 129, 0.6),
+                            0 0 0 10px rgba(16, 185, 129, 0.1);
+                    }
+                }
+            </style>
+        @endauth
     </body>
 </html>
 
