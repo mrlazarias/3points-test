@@ -43,7 +43,24 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Justificativa**: Garante type safety, melhor IDE support e código mais robusto.
 
-### 3. FilamentPHP - Painel Administrativo
+### 3. Sistema de Broadcasting Real-time
+
+**Decisão**: Implementei sistema de comentários em tempo real usando Laravel Reverb:
+
+- **Event Broadcasting**: Evento `CommentCreated` com `ShouldBroadcastNow` para transmissão imediata
+- **WebSocket Server**: Laravel Reverb configurado na porta 8080
+- **Frontend**: Laravel Echo + Pusher.js para recepção de eventos
+- **Ordenação Inteligente**: Comentários aparecem no início para filtro "mais novos", no final para outros filtros
+- **Avatares Dinâmicos**: UI Avatars para usuários sem foto de perfil
+
+**Justificativa**:
+
+- Melhora significativamente a experiência do usuário
+- Evita necessidade de refresh da página
+- Sistema escalável e performático
+- Fallback gracioso em caso de falha na conexão
+
+### 4. FilamentPHP - Painel Administrativo
 
 **Decisão**: Configurei Resources completos com:
 
@@ -241,11 +258,27 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 ## 🚀 **Como Testar a Aplicação**
 
-### **Iniciando o Servidor**
+### **Comandos de Desenvolvimento**
 
 ```bash
-cd /Users/muriloazarias/Documents/Devstuff/3points-test
+# Iniciar servidor web
 php artisan serve --host=0.0.0.0 --port=8000
+
+# Iniciar servidor WebSocket (Reverb)
+php artisan reverb:start --host=0.0.0.0 --port=8080
+
+# Compilar assets frontend
+npm run build
+# ou para desenvolvimento com hot reload
+npm run dev
+
+# Executar testes
+php artisan test
+
+# Limpar caches
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
 ```
 
 ### **Acessando a Aplicação**

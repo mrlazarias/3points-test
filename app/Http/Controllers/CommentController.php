@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\CommentCreated;
 use App\Models\Comment;
 use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 final class CommentController extends Controller
 {
-    public function store(Request $request, Post $post): RedirectResponse
+    public function store(Request $request, Post $post): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:10000'],
             'parent_id' => ['nullable', 'exists:comments,id'],
         ]);
 
-        Comment::query()->create([
+        $comment = Comment::query()->create([
             'content' => $validated['content'],
             'post_id' => $post->id,
             'user_id' => Auth::id(),
@@ -29,8 +31,23 @@ final class CommentController extends Controller
             'is_deleted' => false,
         ]);
 
+        // Carregar relacionamentos para o broadcast
+        $comment->load('user');
+
         // Atualizar contador de comentários do post
         $post->updateCommentCount();
+
+        // Disparar evento de broadcast
+        broadcast(new CommentCreated($comment, $post));
+
+        // Se for requisição AJAX, retornar JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Comentário adicionado com sucesso!',
+                'comment_count' => $post->fresh()->comment_count,
+            ]);
+        }
 
         return redirect()
             ->route('post.show', ['subreddit' => $post->subreddit->slug, 'post' => $post->slug])

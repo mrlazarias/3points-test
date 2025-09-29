@@ -10,9 +10,6 @@ declare(strict_types=1);
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="csrf-token" content="{{ csrf_token() }}" />
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-        <meta http-equiv="Pragma" content="no-cache" />
-        <meta http-equiv="Expires" content="0" />
         <title>{{ $post->title }} - r/{{ $post->subreddit->slug }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -451,17 +448,20 @@ declare(strict_types=1);
                                     class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm"
                                 >
                                     <h3 class="mb-4 text-lg font-semibold text-white">Adicionar Comentário</h3>
-                                    <form action="{{ route('comments.store', $post->slug) }}" method="POST">
+                                    <form
+                                        id="comment-form"
+                                        action="{{ route('comments.store', $post->slug) }}"
+                                        method="POST"
+                                    >
                                         @csrf
                                         <textarea
+                                            id="comment-content"
                                             name="content"
                                             rows="4"
                                             class="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-slate-400 backdrop-blur-sm transition-all duration-200 focus:border-blue-500 focus:bg-slate-700 focus:ring-2 focus:ring-blue-500/20"
                                             placeholder="Digite seu comentário..."
                                             required
-                                        >
-{{ old('content') }}</textarea
-                                        >
+                                        ></textarea>
                                         @error('content')
                                             <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                                         @enderror
@@ -469,9 +469,11 @@ declare(strict_types=1);
                                         <div class="mt-4 flex justify-end">
                                             <button
                                                 type="submit"
+                                                id="comment-submit"
                                                 class="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-medium text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-500/25"
                                             >
-                                                Comentar
+                                                <span id="comment-submit-text">Comentar</span>
+                                                <span id="comment-submit-loading" class="hidden">Enviando...</span>
                                             </button>
                                         </div>
                                     </form>
@@ -516,7 +518,7 @@ declare(strict_types=1);
                             </div>
 
                             <!-- Comments List -->
-                            <div class="space-y-4">
+                            <div id="comments-container" class="space-y-4">
                                 @forelse ($comments as $comment)
                                     @include('components.comment', ['comment' => $comment, 'depth' => 0])
                                 @empty
@@ -597,39 +599,226 @@ declare(strict_types=1);
             }
 
             // Debug: verificar se a página carregou corretamente
-            console.log('Página carregada, comentários:', {{ $comments->count() }});
 
-            // Forçar atualização da página após comentário
-            @if (session('commented'))
-                // Scroll para os comentários após comentário
+            // Interceptar formulário de comentário para AJAX
+            document.getElementById('comment-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const form = this;
+                const content = document.getElementById('comment-content').value;
+                const submitBtn = document.getElementById('comment-submit');
+                const submitText = document.getElementById('comment-submit-text');
+                const submitLoading = document.getElementById('comment-submit-loading');
+
+                if (!content.trim()) {
+                    return;
+                }
+
+                // Mostrar loading
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                submitLoading.classList.remove('hidden');
+
+                try {
+                    const formData = new FormData(form);
+
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json().catch(() => ({}));
+
+                        // Limpar formulário
+                        document.getElementById('comment-content').value = '';
+
+                        // Atualizar contador de comentários
+                        const commentCount = document.querySelector('h3');
+                        if (commentCount) {
+                            const match = commentCount.textContent.match(/\d+/);
+                            const currentCount = match ? parseInt(match[0]) : 0;
+                            commentCount.textContent = `Comentários (${currentCount + 1})`;
+                        }
+
+                        // Mostrar mensagem de sucesso
+                        showNotification('Comentário adicionado com sucesso!', 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || 'Erro ao enviar comentário');
+                    }
+                } catch (error) {
+                    showNotification('Erro ao enviar comentário. Tente novamente.', 'error');
+                } finally {
+                    // Restaurar botão
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    submitLoading.classList.add('hidden');
+                }
+            });
+
+            // Função para mostrar notificações
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+                    type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+                }`;
+                notification.textContent = message;
+
+                document.body.appendChild(notification);
+
                 setTimeout(() => {
-                    document.querySelector('.space-y-4')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            @endif
+                    notification.remove();
+                }, 3000);
+            }
+
+            // Função para configurar Echo
+            function setupEcho() {
+                if (window.Echo) {
+                    try {
+                        const channel = window.Echo.channel('post.{{ $post->id }}');
+
+                        channel
+                            .listen('.comment.created', (e) => {
+                                // Atualizar contador de comentários
+                                const commentCount = document.querySelector('h3');
+                                if (commentCount && e.post && e.post.comment_count !== undefined) {
+                                    commentCount.textContent = `Comentários (${e.post.comment_count})`;
+                                }
+
+                                // Adicionar novo comentário à lista
+                                const commentsContainer = document.getElementById('comments-container');
+                                if (commentsContainer && e.comment) {
+                                    const newComment = createCommentElement(e.comment);
+                                    if (newComment) {
+                                        // Verificar se é filtro "mais novos" e adicionar no início
+                                        const currentSort = new URLSearchParams(window.location.search).get('sort');
+                                        if (currentSort === 'new') {
+                                            commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+                                        } else {
+                                            commentsContainer.appendChild(newComment);
+                                        }
+                                    }
+                                }
+
+                                // Mostrar notificação
+                                showNotification('Novo comentário adicionado!', 'success');
+                            })
+                            .error((error) => {
+                                console.error('Erro no Echo:', error);
+                            });
+                    } catch (error) {
+                        console.error('Erro ao configurar canal:', error);
+                    }
+                }
+            }
 
             // Load user votes on page load
             document.addEventListener('DOMContentLoaded', async function () {
                 try {
-                    const response = await fetch('/vote/user');
-                    if (response.ok) {
-                        const votes = await response.json();
-                        votes.forEach((vote) => {
+                    // Carregar votos do post
+                    const postResponse = await fetch(`/vote/user?voteable_type=post&voteable_id={{ $post->id }}`);
+                    if (postResponse.ok) {
+                        const postVote = await postResponse.json();
+                        if (postVote.vote) {
                             const button = document.querySelector(
-                                `[data-target-id="${vote.target_id}"][data-vote-type="${vote.vote_type}"]`,
+                                `[data-target-id="{{ $post->id }}"][data-vote-type="${postVote.vote.vote_type}"]`,
                             );
                             if (button) {
                                 button.classList.remove('text-slate-400');
                                 button.classList.add(
-                                    vote.vote_type === 'up' ? 'bg-orange-500' : 'bg-blue-500',
+                                    postVote.vote.vote_type === 'up' ? 'bg-orange-500' : 'bg-blue-500',
                                     'text-white',
                                 );
                             }
-                        });
+                        }
                     }
+
+                    // Carregar votos dos comentários
+                    const commentButtons = document.querySelectorAll('[data-vote-type][data-target-id]');
+                    for (const button of commentButtons) {
+                        const targetId = button.getAttribute('data-target-id');
+                        const response = await fetch(`/vote/user?voteable_type=comment&voteable_id=${targetId}`);
+                        if (response.ok) {
+                            const vote = await response.json();
+                            if (vote.vote) {
+                                button.classList.remove('text-slate-400');
+                                button.classList.add(
+                                    vote.vote.vote_type === 'up' ? 'bg-orange-500' : 'bg-blue-500',
+                                    'text-white',
+                                );
+                            }
+                        }
+                    }
+
+                    // Configurar Echo
+                    setupEcho();
                 } catch (error) {
                     console.error('Erro ao carregar votos:', error);
                 }
             });
+
+            // Função para criar elemento de comentário
+            function createCommentElement(commentData) {
+                if (!commentData || !commentData.id) {
+                    console.error('Dados do comentário inválidos:', commentData);
+                    return null;
+                }
+
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm';
+                commentDiv.style.marginLeft = `${(commentData.depth || 0) * 2}rem`;
+                commentDiv.setAttribute('data-comment-id', commentData.id);
+
+                const timeAgo = commentData.created_at
+                    ? new Date(commentData.created_at).toLocaleString('pt-BR')
+                    : 'Agora';
+
+                const userName = commentData.user?.name || 'Usuário';
+                const userPhoto =
+                    commentData.user?.profile_photo_url ||
+                    'https://ui-avatars.com/api/?name=' + encodeURIComponent(userName) + '&background=random&color=fff';
+                const content = commentData.content || '';
+                const voteScore = commentData.vote_score || 0;
+
+                commentDiv.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <img
+                            src="${userPhoto}"
+                            alt="${userName}"
+                            class="h-10 w-10 rounded-full object-cover"
+                        />
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+                                <h4 class="font-medium text-white">${userName}</h4>
+                                <span class="text-sm text-slate-400">${timeAgo}</span>
+                            </div>
+                            <div class="mt-2 text-slate-300">
+                                ${content.replace(/\n/g, '<br>')}
+                            </div>
+                            <div class="mt-4 flex items-center space-x-4">
+                                <div class="flex items-center space-x-1">
+                                    <button class="rounded-lg px-2 py-1 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-orange-400" data-target-id="${commentData.id}" data-vote-type="up">
+                                        ▲
+                                    </button>
+                                    <span class="text-sm text-slate-300">${voteScore}</span>
+                                    <button class="rounded-lg px-2 py-1 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-blue-400" data-target-id="${commentData.id}" data-vote-type="down">
+                                        ▼
+                                    </button>
+                                </div>
+                                <button onclick="toggleReplyForm(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white">
+                                    Responder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                return commentDiv;
+            }
         </script>
     </body>
 </html>
