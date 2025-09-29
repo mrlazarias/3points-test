@@ -8,6 +8,7 @@ use App\Events\CommentCreated;
 use App\Events\CommentDeleted;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Subreddit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ final class CommentController extends Controller
         ]);
     }
 
-    public function store(Request $request, Post $post): RedirectResponse|JsonResponse
+    public function store(Request $request, Subreddit $subreddit, Post $post): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:10000'],
