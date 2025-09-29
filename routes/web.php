@@ -37,17 +37,22 @@ Route::get('/', function (): View|Factory {
 // Rota de teste
 Route::get('/test', fn () => 'Teste funcionando!');
 
+// Rota de teste para criação de posts
+Route::get('/test-create', function (): Factory|View {
+    $subreddit = Subreddit::query()->where('slug', 'laravel')->first();
+
+    return view('post.create', ['subreddit' => $subreddit]);
+});
+
 // Subreddit - Posts de uma comunidade específica
 Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('subreddit.show');
 
+// Criação de posts (protegida por autenticação)
+Route::get('/r/{subreddit:slug}/create', [PostController::class, 'create'])->name('post.create');
+Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->name('post.store');
+
 // Post - Visualização de um post específico
 Route::get('/r/{subreddit:slug}/{post:slug}', [PostController::class, 'show'])->name('post.show');
-
-// Criação de posts (protegida por autenticação)
-Route::middleware('auth')->group(function (): void {
-    Route::get('/r/{subreddit:slug}/create', [PostController::class, 'create'])->name('post.create');
-    Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->name('post.store');
-});
 
 // Rotas de Autenticação
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
