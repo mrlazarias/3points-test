@@ -10,6 +10,9 @@ declare(strict_types=1);
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
         <title>{{ $post->title }} - r/{{ $post->subreddit->slug }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -592,6 +595,17 @@ declare(strict_types=1);
                 currentUrl.searchParams.set('sort', sortBy);
                 window.location.href = currentUrl.toString();
             }
+
+            // Debug: verificar se a página carregou corretamente
+            console.log('Página carregada, comentários:', {{ $comments->count() }});
+
+            // Forçar atualização da página após comentário
+            @if (session('commented'))
+                // Scroll para os comentários após comentário
+                setTimeout(() => {
+                    document.querySelector('.space-y-4')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            @endif
 
             // Load user votes on page load
             document.addEventListener('DOMContentLoaded', async function () {

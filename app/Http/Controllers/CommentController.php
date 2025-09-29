@@ -29,9 +29,13 @@ final class CommentController extends Controller
             'is_deleted' => false,
         ]);
 
+        // Atualizar contador de comentários do post
+        $post->updateCommentCount();
+
         return redirect()
             ->route('post.show', ['subreddit' => $post->subreddit->slug, 'post' => $post->slug])
-            ->with('success', 'Comentário adicionado com sucesso!');
+            ->with('success', 'Comentário adicionado com sucesso!')
+            ->with('commented', true);
     }
 
     public function reply(Request $request, Comment $comment): RedirectResponse
@@ -50,9 +54,13 @@ final class CommentController extends Controller
             'is_deleted' => false,
         ]);
 
+        // Atualizar contador de comentários do post
+        $comment->post->updateCommentCount();
+
         return redirect()
             ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])
-            ->with('success', 'Resposta adicionada com sucesso!');
+            ->with('success', 'Resposta adicionada com sucesso!')
+            ->with('commented', true);
     }
 
     public function update(Request $request, Comment $comment): RedirectResponse
