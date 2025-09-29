@@ -1013,12 +1013,36 @@ declare(strict_types=1);
                                 if (commentsContainer && e.comment) {
                                     const newComment = createCommentElement(e.comment, e.post);
                                     if (newComment) {
-                                        // Verificar se é filtro "mais novos" e adicionar no início
-                                        const currentSort = new URLSearchParams(window.location.search).get('sort');
-                                        if (currentSort === 'new') {
-                                            commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+                                        // Se é uma resposta (tem parent_id), adicionar como filho do comentário pai
+                                        if (e.comment.parent_id) {
+                                            const parentComment = document.querySelector(
+                                                `[data-comment-id="${e.comment.parent_id}"]`,
+                                            );
+                                            if (parentComment) {
+                                                // Encontrar o container de respostas do comentário pai
+                                                let repliesContainer = parentComment.querySelector('.mt-4.space-y-4');
+                                                if (!repliesContainer) {
+                                                    // Criar container de respostas se não existir
+                                                    repliesContainer = document.createElement('div');
+                                                    repliesContainer.className = 'mt-4 space-y-4';
+                                                    parentComment.appendChild(repliesContainer);
+                                                }
+                                                repliesContainer.appendChild(newComment);
+                                            } else {
+                                                // Se não encontrar o pai, adicionar no container principal
+                                                commentsContainer.appendChild(newComment);
+                                            }
                                         } else {
-                                            commentsContainer.appendChild(newComment);
+                                            // Se é um comentário principal, adicionar no container principal
+                                            const currentSort = new URLSearchParams(window.location.search).get('sort');
+                                            if (currentSort === 'new') {
+                                                commentsContainer.insertBefore(
+                                                    newComment,
+                                                    commentsContainer.firstChild,
+                                                );
+                                            } else {
+                                                commentsContainer.appendChild(newComment);
+                                            }
                                         }
                                     }
                                 }
