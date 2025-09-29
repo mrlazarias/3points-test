@@ -623,20 +623,116 @@ declare(strict_types=1);
                                             </button>
                                         @endauth
                                     </div>
-                                    <button
-                                        style="
-                                            color: #9ca3af;
-                                            background: none;
-                                            border: none;
-                                            font-size: 0.875rem;
-                                            cursor: pointer;
-                                        "
-                                        onmouseover="this.style.color='#f9fafb'"
-                                        onmouseout="this.style.color='#9ca3af'"
-                                    >
-                                        Responder
-                                    </button>
+
+                                    @auth
+                                        <button
+                                            onclick="toggleReplyForm({{ $comment->id }})"
+                                            style="
+                                                color: #9ca3af;
+                                                background: none;
+                                                border: none;
+                                                font-size: 0.875rem;
+                                                cursor: pointer;
+                                            "
+                                            onmouseover="this.style.color='#f9fafb'"
+                                            onmouseout="this.style.color='#9ca3af'"
+                                        >
+                                            Responder
+                                        </button>
+                                    @else
+                                        <button
+                                            onclick="showLoginAlert()"
+                                            style="
+                                                color: #9ca3af;
+                                                background: none;
+                                                border: none;
+                                                font-size: 0.875rem;
+                                                cursor: pointer;
+                                            "
+                                            onmouseover="this.style.color='#f9fafb'"
+                                            onmouseout="this.style.color='#9ca3af'"
+                                        >
+                                            Responder
+                                        </button>
+                                    @endauth
                                 </div>
+                            </div>
+
+                            <!-- Formulário de Resposta (oculto por padrão) -->
+                            <div
+                                id="reply-form-{{ $comment->id }}"
+                                style="
+                                    display: none;
+                                    margin-top: 1rem;
+                                    padding-top: 1rem;
+                                    border-top: 1px solid #374151;
+                                "
+                            >
+                                <form action="{{ route('comments.reply', $comment->id) }}" method="POST">
+                                    @csrf
+                                    <textarea
+                                        name="content"
+                                        rows="3"
+                                        style="
+                                            width: 100%;
+                                            padding: 0.75rem;
+                                            background-color: #374151;
+                                            border: 1px solid #4b5563;
+                                            border-radius: 0.5rem;
+                                            color: #f9fafb;
+                                            font-size: 0.875rem;
+                                            resize: vertical;
+                                            min-height: 4rem;
+                                        "
+                                        placeholder="Responder para {{ $comment->user->name }}..."
+                                        required
+                                    >
+{{ old('content') }}</textarea
+                                    >
+                                    @error('content')
+                                        <p style="color: #ef4444; font-size: 0.875rem; margin: 0.5rem 0 0 0">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                    <div style="display: flex; justify-end; gap: 0.75rem; margin-top: 0.75rem">
+                                        <button
+                                            type="button"
+                                            onclick="toggleReplyForm({{ $comment->id }})"
+                                            style="
+                                                padding: 0.5rem 1rem;
+                                                background-color: #374151;
+                                                color: #9ca3af;
+                                                border: none;
+                                                border-radius: 0.5rem;
+                                                font-size: 0.875rem;
+                                                cursor: pointer;
+                                                transition: background-color 0.2s;
+                                            "
+                                            onmouseover="this.style.backgroundColor='#4b5563'"
+                                            onmouseout="this.style.backgroundColor='#374151'"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            style="
+                                                padding: 0.5rem 1rem;
+                                                background-color: #2563eb;
+                                                color: white;
+                                                border: none;
+                                                border-radius: 0.5rem;
+                                                font-size: 0.875rem;
+                                                cursor: pointer;
+                                                transition: background-color 0.2s;
+                                            "
+                                            onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                            onmouseout="this.style.backgroundColor='#2563eb'"
+                                        >
+                                            Responder
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         @empty
                             <div style="text-align: center; padding: 2rem">
@@ -647,6 +743,120 @@ declare(strict_types=1);
                             </div>
                         @endforelse
                     </div>
+
+                    <!-- Formulário de Comentário -->
+                    @auth
+                        <div
+                            style="
+                                background-color: #1f2937;
+                                border: 1px solid #374151;
+                                border-radius: 0.75rem;
+                                padding: 1.5rem;
+                                margin-top: 1.5rem;
+                            "
+                        >
+                            <h3 style="font-size: 1.125rem; font-weight: 500; margin: 0 0 1rem 0">
+                                Adicionar Comentário
+                            </h3>
+                            <form action="{{ route('comments.store', $post->id) }}" method="POST">
+                                @csrf
+                                <textarea
+                                    name="content"
+                                    rows="4"
+                                    style="
+                                        width: 100%;
+                                        padding: 0.75rem;
+                                        background-color: #374151;
+                                        border: 1px solid #4b5563;
+                                        border-radius: 0.5rem;
+                                        color: #f9fafb;
+                                        font-size: 0.875rem;
+                                        resize: vertical;
+                                        min-height: 6rem;
+                                    "
+                                    placeholder="Digite seu comentário..."
+                                    required
+                                >
+{{ old('content') }}</textarea
+                                >
+                                @error('content')
+                                    <p style="color: #ef4444; font-size: 0.875rem; margin: 0.5rem 0 0 0">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+
+                                <div style="display: flex; justify-end; margin-top: 1rem">
+                                    <button
+                                        type="submit"
+                                        style="
+                                            padding: 0.75rem 1.5rem;
+                                            background-color: #2563eb;
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            font-size: 0.875rem;
+                                            font-weight: 500;
+                                            cursor: pointer;
+                                            transition: background-color 0.2s;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                        onmouseout="this.style.backgroundColor='#2563eb'"
+                                    >
+                                        Comentar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @else
+                        <div
+                            style="
+                                background-color: #1f2937;
+                                border: 1px solid #374151;
+                                border-radius: 0.75rem;
+                                padding: 1.5rem;
+                                margin-top: 1.5rem;
+                                text-align: center;
+                            "
+                        >
+                            <p style="color: #9ca3af; margin: 0 0 1rem 0">Faça login para comentar</p>
+                            <div style="display: flex; gap: 0.75rem; justify-content: center">
+                                <a
+                                    href="{{ route('login') }}"
+                                    style="
+                                        padding: 0.75rem 1.5rem;
+                                        background-color: #2563eb;
+                                        color: white;
+                                        text-decoration: none;
+                                        border-radius: 0.5rem;
+                                        font-size: 0.875rem;
+                                        font-weight: 500;
+                                        transition: background-color 0.2s;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                    onmouseout="this.style.backgroundColor='#2563eb'"
+                                >
+                                    Entrar
+                                </a>
+                                <a
+                                    href="{{ route('register') }}"
+                                    style="
+                                        padding: 0.75rem 1.5rem;
+                                        background-color: #374151;
+                                        color: white;
+                                        text-decoration: none;
+                                        border-radius: 0.5rem;
+                                        font-size: 0.875rem;
+                                        font-weight: 500;
+                                        transition: background-color 0.2s;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#4b5563'"
+                                    onmouseout="this.style.backgroundColor='#374151'"
+                                >
+                                    Registrar
+                                </a>
+                            </div>
+                        </div>
+                    @endauth
                 </div>
 
                 <!-- Sidebar -->
@@ -819,6 +1029,14 @@ declare(strict_types=1);
             function showLoginAlert() {
                 alert('Você precisa fazer login para votar. Redirecionando...');
                 window.location.href = '{{ route('login') }}';
+            }
+
+            // Função para alternar formulário de resposta
+            function toggleReplyForm(commentId) {
+                const form = document.getElementById(`reply-form-${commentId}`);
+                if (form) {
+                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                }
             }
         </script>
     </body>

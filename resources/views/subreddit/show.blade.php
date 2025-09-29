@@ -234,8 +234,53 @@ declare(strict_types=1);
             <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
                 <!-- Main Content -->
                 <div>
-                    <div style="margin-bottom: 1.5rem">
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 1.5rem;
+                        "
+                    >
                         <h2 style="font-size: 1.25rem; font-weight: bold; margin: 0">Posts da comunidade</h2>
+
+                        @auth
+                            <a
+                                href="{{ route('post.create', $subreddit->slug) }}"
+                                style="
+                                    padding: 0.75rem 1.5rem;
+                                    background-color: #2563eb;
+                                    color: white;
+                                    text-decoration: none;
+                                    border-radius: 0.5rem;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    transition: background-color 0.2s;
+                                "
+                                onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                onmouseout="this.style.backgroundColor='#2563eb'"
+                            >
+                                + Criar Post
+                            </a>
+                        @else
+                            <a
+                                href="{{ route('login') }}"
+                                style="
+                                    padding: 0.75rem 1.5rem;
+                                    background-color: #374151;
+                                    color: #e5e7eb;
+                                    text-decoration: none;
+                                    border-radius: 0.5rem;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    transition: background-color 0.2s;
+                                "
+                                onmouseover="this.style.backgroundColor='#4b5563'"
+                                onmouseout="this.style.backgroundColor='#374151'"
+                            >
+                                + Criar Post
+                            </a>
+                        @endauth
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 1rem">

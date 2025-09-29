@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubredditController;
@@ -42,6 +43,12 @@ Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('s
 // Post - Visualização de um post específico
 Route::get('/r/{subreddit:slug}/{post:slug}', [PostController::class, 'show'])->name('post.show');
 
+// Criação de posts (protegida por autenticação)
+Route::middleware('auth')->group(function (): void {
+    Route::get('/r/{subreddit:slug}/create', [PostController::class, 'create'])->name('post.create');
+    Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->name('post.store');
+});
+
 // Rotas de Autenticação
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -63,4 +70,8 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/vote', [VoteController::class, 'vote'])->name('vote');
     Route::delete('/vote', [VoteController::class, 'removeVote'])->name('vote.remove');
     Route::get('/vote/user', [VoteController::class, 'getUserVote'])->name('vote.user');
+
+    // Rotas de Comentários
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
 });
