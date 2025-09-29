@@ -85,6 +85,42 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Justificativa**: Base sólida para funcionalidades interativas (votos, comentários) e experiência de usuário personalizada.
 
+### 7. Sistema de Criação de Posts
+
+**Decisão**: Implementei sistema completo de criação de posts com:
+
+- **Formulário dinâmico** com seleção de tipo (texto, link, imagem)
+- **Validação condicional** baseada no tipo de post selecionado
+- **Interface responsiva** com design dark theme consistente
+- **Suporte a Markdown** para posts de texto
+- **Validação de URL** para posts de link/imagem
+
+**Justificativa**: Permite flexibilidade na criação de conteúdo, similar ao Reddit original, com validação robusta.
+
+### 8. Sistema de Comentários e Respostas
+
+**Decisão**: Implementei sistema completo de comentários com:
+
+- **Comentários aninhados** com sistema de profundidade
+- **Formulários dinâmicos** que aparecem/desaparecem
+- **Validação de conteúdo** com limite de caracteres
+- **Interface intuitiva** para respostas diretas
+- **Sistema de votos** integrado aos comentários
+
+**Justificativa**: Essencial para engajamento da comunidade, permite discussões estruturadas e hierárquicas.
+
+### 9. Sistema de Votos Interativo
+
+**Decisão**: Implementei sistema polimórfico de votos com:
+
+- **Votos em posts e comentários** usando relacionamento polimórfico
+- **Interface AJAX** para votação sem reload da página
+- **Cache de scores** para performance otimizada
+- **Feedback visual** para indicar votos ativos
+- **Validação de autenticação** para funcionalidades interativas
+
+**Justificativa**: Sistema central do Reddit, permite ranking de conteúdo por relevância da comunidade.
+
 ## Processo de Desenvolvimento
 
 ### Etapas Concluídas ✅
@@ -96,13 +132,17 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 5. **Controle de qualidade** - Strict types, PHPDoc, code style
 6. **Frontend** - Páginas principais (Home, Subreddit, Post) com design dark theme
 7. **Sistema de autenticação** - Login, registro e logout funcionais
+8. **Sistema de votos** - Implementação completa de upvote/downvote com AJAX
+9. **Sistema de comentários** - Interface para comentários aninhados e respostas
+10. **Criação de posts** - Formulário dinâmico com validação condicional
+11. **Sistema interativo** - Todas as funcionalidades core do Reddit implementadas
 
 ### Próximas Etapas 🚧
 
 1. **Página de perfil** - Edição de dados do usuário
-2. **Sistema de votos** - Implementação de upvote/downvote
-3. **Comentários** - Interface para comentários aninhados
-4. **Testes** - Cobertura de testes unitários e funcionais
+2. **Testes** - Cobertura de testes unitários e funcionais
+3. **Otimizações** - Performance e cache adicional
+4. **Features avançadas** - Notificações, moderação, etc.
 
 ## Trade-offs e Decisões
 
@@ -140,5 +180,128 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ✅ **Qualidade**: Código com padrões rigorosos implementados
 ✅ **Frontend**: Páginas principais com design dark theme responsivo
 ✅ **Autenticação**: Sistema completo de login/registro/logout
+✅ **Criação de Posts**: Formulário dinâmico com validação condicional
+✅ **Sistema de Votos**: Upvote/downvote com AJAX e cache de scores
+✅ **Sistema de Comentários**: Comentários aninhados e respostas
+✅ **Interatividade**: Todas as funcionalidades core implementadas
 🚧 **Perfil**: Página de edição de dados do usuário
-🚧 **Interatividade**: Sistema de votos e comentários
+🚧 **Testes**: Cobertura de testes unitários e funcionais
+
+## Funcionalidades Implementadas
+
+### 🎯 **Core Features do Reddit**
+
+#### **1. Criação de Posts**
+
+- ✅ Formulário dinâmico com tipos: texto, link, imagem
+- ✅ Validação condicional baseada no tipo
+- ✅ Suporte completo a Markdown
+- ✅ Interface responsiva e intuitiva
+- ✅ Botão de criação em cada subreddit
+
+#### **2. Sistema de Comentários**
+
+- ✅ Comentários em posts com formulário integrado
+- ✅ Respostas aninhadas com sistema de profundidade
+- ✅ Formulários dinâmicos (aparecem/desaparecem)
+- ✅ Validação de conteúdo com limite de caracteres
+- ✅ Interface hierárquica para discussões
+
+#### **3. Sistema de Votos**
+
+- ✅ Upvote/downvote em posts e comentários
+- ✅ Interface AJAX sem reload da página
+- ✅ Cache de scores para performance
+- ✅ Feedback visual para votos ativos
+- ✅ Sistema polimórfico flexível
+
+#### **4. Navegação e UX**
+
+- ✅ Design dark theme consistente
+- ✅ Navegação intuitiva entre páginas
+- ✅ Responsividade em todos os dispositivos
+- ✅ Feedback visual para interações
+- ✅ URLs amigáveis com slugs
+
+### 🔧 **Problemas Resolvidos**
+
+#### **Conflito de Rotas (404 Error)**
+
+- **Problema**: Rota `/r/{subreddit:slug}/{post:slug}` capturava `/r/{subreddit:slug}/create`
+- **Solução**: Reordenação das rotas para priorizar criação de posts
+- **Resultado**: ✅ Funcionalidade funcionando perfeitamente
+
+### 📊 **Métricas de Qualidade**
+
+- **Conventional Commits**: ✅ Todos os commits seguem o padrão
+- **Strict Types**: ✅ `declare(strict_types=1)` em todos os arquivos
+- **PHPDoc**: ✅ Documentação completa com generics
+- **Code Style**: ✅ Padrões PSR-12 seguidos
+- **Type Safety**: ✅ Relacionamentos tipados com generics
+
+## 🚀 **Como Testar a Aplicação**
+
+### **Iniciando o Servidor**
+
+```bash
+cd /Users/muriloazarias/Documents/Devstuff/3points-test
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+### **Acessando a Aplicação**
+
+- **URL Principal**: http://localhost:8000
+- **Admin Panel**: http://localhost:8000/admin
+- **Login**: http://localhost:8000/login
+- **Registro**: http://localhost:8000/register
+
+### **Fluxo de Teste Completo**
+
+#### **1. Autenticação**
+
+1. Acesse http://localhost:8000/register
+2. Crie uma conta de usuário
+3. Faça login em http://localhost:8000/login
+
+#### **2. Navegação**
+
+1. Explore a página inicial com posts
+2. Clique em um subreddit (ex: r/laravel)
+3. Visualize posts e comentários
+
+#### **3. Criação de Posts**
+
+1. Em qualquer subreddit, clique em "+ Criar Post"
+2. Preencha o formulário:
+    - **Título**: "Meu Primeiro Post"
+    - **Tipo**: Selecione "Texto"
+    - **Conteúdo**: Use Markdown para formatação
+3. Clique em "Criar Post"
+
+#### **4. Sistema de Comentários**
+
+1. Em um post, role até o formulário de comentários
+2. Digite um comentário e clique "Comentar"
+3. Para responder um comentário, clique "Responder"
+4. Teste o sistema de comentários aninhados
+
+#### **5. Sistema de Votos**
+
+1. Use os botões de upvote (↑) e downvote (↓)
+2. Observe a atualização em tempo real dos scores
+3. Teste em posts e comentários
+
+### **Dados de Teste Disponíveis**
+
+- **5 Subreddits**: Laravel, PHP, JavaScript, Programação, Tecnologia
+- **Posts de Exemplo**: Com conteúdo em Markdown
+- **Usuário Admin**: admin@example.com / password
+
+### **Funcionalidades para Testar**
+
+✅ **Criação de Posts** - Formulário dinâmico
+✅ **Sistema de Votos** - AJAX interativo  
+✅ **Comentários** - Hierárquicos e aninhados
+✅ **Navegação** - Entre subreddits e posts
+✅ **Autenticação** - Login/registro/logout
+✅ **Responsividade** - Teste em diferentes telas
