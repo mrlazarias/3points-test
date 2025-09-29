@@ -15,6 +15,19 @@ use Illuminate\Support\Facades\Auth;
 
 final class CommentController extends Controller
 {
+    public function index(Request $request, Post $post): JsonResponse
+    {
+        $comments = $post->comments()
+            ->with(['user', 'replies.user'])
+            ->whereNull('parent_id')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json([
+            'comments' => $comments,
+        ]);
+    }
+
     public function store(Request $request, Post $post): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
