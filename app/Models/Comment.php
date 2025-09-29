@@ -17,6 +17,8 @@ final class Comment extends Model
         'user_id',
         'parent_id',
         'vote_score',
+        'likes_count',
+        'dislikes_count',
         'depth',
         'is_deleted',
     ];
@@ -38,7 +40,7 @@ final class Comment extends Model
     }
 
     /**
-     * @return BelongsTo<\App\Models\Comment, $this>
+     * @return BelongsTo<Comment, $this>
      */
     public function parent(): BelongsTo
     {
@@ -46,7 +48,7 @@ final class Comment extends Model
     }
 
     /**
-     * @return HasMany<\App\Models\Comment, $this>
+     * @return HasMany<Comment, $this>
      */
     public function replies(): HasMany
     {
@@ -66,7 +68,11 @@ final class Comment extends Model
         $upvotes = $this->votes()->where('vote_type', 'up')->count();
         $downvotes = $this->votes()->where('vote_type', 'down')->count();
 
-        $this->update(['vote_score' => $upvotes - $downvotes]);
+        $this->update([
+            'vote_score' => $upvotes - $downvotes,
+            'likes_count' => $upvotes,
+            'dislikes_count' => $downvotes,
+        ]);
     }
 
     public function softDelete(): void
@@ -74,11 +80,45 @@ final class Comment extends Model
         $this->update(['is_deleted' => true]);
     }
 
+    /**
+     * Check if the current user can delete this comment
+     */
+    public function canBeDeletedBy(?User $user): bool
+    {
+        if (!$user instanceof User) {
+            return false;
+        }
+
+        // Comment author can delete their own comment
+        if ($this->user_id === $user->id) {
+            return true;
+        }
+        // Post author can delete any comment on their post
+        return $this->post->user_id === $user->id;
+    }
+
+    /**
+     * Check if the current user can reply to this comment
+     */
+    public function canBeRepliedToBy(?User $user): bool
+    {
+        if (!$user instanceof User) {
+            return false;
+        }
+
+        // Check if post is locked
+        if ($this->post->is_locked) {
+            return false;
+        }
+        // Check if comment is deleted
+        return !$this->is_deleted;
+    }
+
     protected static function booted(): void
     {
         self::creating(function (Comment $comment): void {
             if ($comment->parent_id) {
-                $parent = self::find($comment->parent_id);
+                $parent = self::query()->find($comment->parent_id);
                 $comment->depth = $parent ? $parent->depth + 1 : 0;
             }
         });
@@ -91,6 +131,7 @@ final class Comment extends Model
             $comment->post->updateCommentCount();
         });
     }
+
     protected function casts(): array
     {
         return [

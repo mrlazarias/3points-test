@@ -38,53 +38,89 @@ declare(strict_types=1);
         <div class="flex items-center space-x-4">
             <!-- Voting -->
             <div class="flex items-center space-x-1">
+                <!-- Like Button -->
                 <button
                     onclick="vote({{ $comment->id }}, 'comment', 'up')"
-                    class="vote-btn rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-700 hover:text-orange-400"
+                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
                     data-vote-type="up"
                     data-target-id="{{ $comment->id }}"
                     data-target-type="comment"
                 >
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                    </svg>
+                    <div
+                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
+                    >
+                        <svg
+                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2.5"
+                                d="M5 15l7-7 7 7"
+                            ></path>
+                        </svg>
+                    </div>
+                    <span
+                        id="likes-count-{{ $comment->id }}"
+                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
+                    >
+                        {{ $comment->likes_count ?? 0 }}
+                    </span>
                 </button>
-                <span id="vote-score-{{ $comment->id }}" class="text-sm font-medium text-white">
-                    {{ $comment->vote_score }}
-                </span>
+
+                <!-- Dislike Button -->
                 <button
                     onclick="vote({{ $comment->id }}, 'comment', 'down')"
-                    class="vote-btn rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-700 hover:text-blue-400"
+                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
                     data-vote-type="down"
                     data-target-id="{{ $comment->id }}"
                     data-target-type="comment"
                 >
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                    <div
+                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
+                    >
+                        <svg
+                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2.5"
+                                d="M19 9l-7 7-7-7"
+                            ></path>
+                        </svg>
+                    </div>
+                    <span
+                        id="dislikes-count-{{ $comment->id }}"
+                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                    >
+                        {{ $comment->dislikes_count ?? 0 }}
+                    </span>
                 </button>
             </div>
 
             <!-- Action Buttons -->
             @auth
                 <div class="flex items-center space-x-2">
-                    <button
-                        onclick="toggleReplyForm({{ $comment->id }})"
-                        class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                    >
-                        Responder
-                    </button>
-
-                    @if (Auth::id() === $comment->user_id)
+                    @if ($comment->can_reply ?? true)
                         <button
-                            onclick="toggleEditForm({{ $comment->id }})"
-                            class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-blue-400"
+                            onclick="toggleReplyForm({{ $comment->id }})"
+                            class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
                         >
-                            Editar
+                            Responder
                         </button>
+                    @endif
+
+                    @if ($comment->can_delete ?? false)
                         <button
                             onclick="deleteComment({{ $comment->id }})"
-                            class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-red-400"
+                            class="rounded-lg px-3 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
                         >
                             Excluir
                         </button>
@@ -96,42 +132,38 @@ declare(strict_types=1);
 
     <!-- Reply Form (Hidden by default) -->
     @auth
-        <div
-            id="reply-form-{{ $comment->id }}"
-            class="mt-4 hidden rounded-xl border border-slate-600 bg-slate-700/50 p-4"
-        >
-            <form action="{{ route('comments.reply', $comment->id) }}" method="POST">
-                @csrf
-                <textarea
-                    name="content"
-                    rows="3"
-                    class="w-full rounded-lg border border-slate-600 bg-slate-600/50 px-3 py-2 text-sm text-white placeholder-slate-400 transition-all duration-200 focus:border-blue-500 focus:bg-slate-600 focus:ring-2 focus:ring-blue-500/20"
-                    placeholder="Responder para {{ $comment->user->name }}..."
-                    required
-                >
-{{ old('content') }}</textarea
-                >
-                @error('content')
-                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                @enderror
+        @if ($comment->can_reply ?? true)
+            <div
+                id="reply-form-{{ $comment->id }}"
+                class="mt-4 hidden rounded-xl border border-slate-600 bg-slate-700/50 p-4"
+            >
+                <form onsubmit="submitReply(event, {{ $comment->id }})" class="space-y-3">
+                    <textarea
+                        id="reply-content-{{ $comment->id }}"
+                        placeholder="Responder para {{ $comment->user->name }}..."
+                        class="w-full rounded-lg border border-slate-600 bg-slate-600/50 px-3 py-2 text-sm text-white placeholder-slate-400 transition-all duration-200 focus:border-blue-500 focus:bg-slate-600 focus:ring-2 focus:ring-blue-500/20"
+                        rows="3"
+                        required
+                    ></textarea>
 
-                <div class="mt-3 flex justify-end space-x-2">
-                    <button
-                        type="button"
-                        onclick="toggleReplyForm({{ $comment->id }})"
-                        class="rounded-lg bg-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-500"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                    >
-                        Responder
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div class="flex justify-end space-x-2">
+                        <button
+                            type="button"
+                            onclick="toggleReplyForm({{ $comment->id }})"
+                            class="rounded-lg bg-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-500"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                        >
+                            Responder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
     @endauth
 
     <!-- Edit Form (Hidden by default) -->
@@ -188,41 +220,16 @@ declare(strict_types=1);
 </div>
 
 <script>
-    // Toggle edit form
-    function toggleEditForm(commentId) {
-        const form = document.getElementById(`edit-form-${commentId}`);
+    // Toggle reply form
+    function toggleReplyForm(commentId) {
+        const form = document.getElementById(`reply-form-${commentId}`);
         if (form) {
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-
-    // Delete comment
-    async function deleteComment(commentId) {
-        if (confirm('Tem certeza que deseja excluir este comentário?')) {
-            try {
-                const response = await fetch(`/comments/${commentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    },
-                });
-
-                if (response.ok) {
-                    // Remove o comentário da interface
-                    const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-                    if (commentElement) {
-                        commentElement.remove();
-                    }
-
-                    // Recarrega a página para atualizar contadores
-                    window.location.reload();
-                } else {
-                    alert('Erro ao excluir comentário');
+            if (form.style.display === 'block') {
+                const textarea = document.getElementById(`reply-content-${commentId}`);
+                if (textarea) {
+                    textarea.focus();
                 }
-            } catch (error) {
-                console.error('Erro ao excluir comentário:', error);
-                alert('Erro ao excluir comentário');
             }
         }
     }

@@ -21,6 +21,8 @@ final class Post extends Model
         'subreddit_id',
         'user_id',
         'vote_score',
+        'likes_count',
+        'dislikes_count',
         'comment_count',
         'is_pinned',
         'is_locked',
@@ -68,7 +70,11 @@ final class Post extends Model
         $upvotes = $this->votes()->where('vote_type', 'up')->count();
         $downvotes = $this->votes()->where('vote_type', 'down')->count();
 
-        $this->update(['vote_score' => $upvotes - $downvotes]);
+        $this->update([
+            'vote_score' => $upvotes - $downvotes,
+            'likes_count' => $upvotes,
+            'dislikes_count' => $downvotes,
+        ]);
     }
 
     public function updateCommentCount(): void
@@ -85,6 +91,7 @@ final class Post extends Model
             }
         });
     }
+
     protected function casts(): array
     {
         return [

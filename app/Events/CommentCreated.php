@@ -15,17 +15,13 @@ use Illuminate\Queue\SerializesModels;
 final class CommentCreated implements ShouldBroadcastNow
 {
     use Dispatchable;
-
     use InteractsWithSockets;
-
     use SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public Comment $comment, public Post $post)
-    {
-    }
+    public function __construct(public Comment $comment, public Post $post) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -55,12 +51,16 @@ final class CommentCreated implements ShouldBroadcastNow
                 ],
                 'created_at' => $this->comment->created_at->toISOString(),
                 'vote_score' => $this->comment->vote_score,
+                'likes_count' => $this->comment->likes_count,
+                'dislikes_count' => $this->comment->dislikes_count,
                 'depth' => $this->comment->depth,
                 'parent_id' => $this->comment->parent_id,
+                'post_id' => $this->comment->post_id,
             ],
             'post' => [
                 'id' => $this->post->id,
                 'comment_count' => $this->post->comment_count,
+                'user_id' => $this->post->user_id,
             ],
         ];
     }

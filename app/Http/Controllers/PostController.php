@@ -44,6 +44,15 @@ final class PostController extends Controller
 
         $comments = $commentsQuery->get();
 
+        // Adicionar informações de permissão para cada comentário
+        $comments->each(function ($comment): void {
+            $comment->can_delete = $comment->canBeDeletedBy(Auth::user());
+            $comment->can_reply = $comment->canBeRepliedToBy(Auth::user());
+
+            // Aplicar recursivamente para respostas
+            $this->addPermissionsToReplies($comment->replies);
+        });
+
         return view('post.show', [
             'post' => $post,
             'comments' => $comments,
@@ -74,11 +83,28 @@ final class PostController extends Controller
             'subreddit_id' => $subreddit->id,
             'user_id' => Auth::id(),
             'vote_score' => 0,
+            'likes_count' => 0,
+            'dislikes_count' => 0,
             'comment_count' => 0,
         ]);
 
         return redirect()
             ->route('post.show', ['subreddit' => $subreddit->slug, 'post' => $post->slug])
             ->with('success', 'Post criado com sucesso!');
+    }
+
+    /**
+     * Adicionar permissões recursivamente para respostas de comentários
+     */
+    private function addPermissionsToReplies($replies): void
+    {
+        $replies->each(function ($reply): void {
+            $reply->can_delete = $reply->canBeDeletedBy(Auth::user());
+            $reply->can_reply = $reply->canBeRepliedToBy(Auth::user());
+
+            if ($reply->replies->isNotEmpty()) {
+                $this->addPermissionsToReplies($reply->replies);
+            }
+        });
     }
 }

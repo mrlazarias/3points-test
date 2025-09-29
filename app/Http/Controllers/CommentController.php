@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Events\CommentCreated;
+use App\Events\CommentDeleted;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,8 @@ final class CommentController extends Controller
             'user_id' => Auth::id(),
             'parent_id' => $validated['parent_id'] ?? null,
             'vote_score' => 0,
+            'likes_count' => 0,
+            'dislikes_count' => 0,
             'depth' => 0,
             'is_deleted' => false,
         ]);
@@ -55,24 +58,44 @@ final class CommentController extends Controller
             ->with('commented', true);
     }
 
-    public function reply(Request $request, Comment $comment): RedirectResponse
+    public function reply(Request $request, Comment $comment): RedirectResponse|JsonResponse
     {
+        // Verificar se o usuário pode responder ao comentário
+        abort_if(! $comment->canBeRepliedToBy(Auth::user()), 403);
+
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:10000'],
         ]);
 
-        Comment::query()->create([
+        $reply = Comment::query()->create([
             'content' => $validated['content'],
             'post_id' => $comment->post_id,
             'user_id' => Auth::id(),
             'parent_id' => $comment->id,
             'vote_score' => 0,
+            'likes_count' => 0,
+            'dislikes_count' => 0,
             'depth' => $comment->depth + 1,
             'is_deleted' => false,
         ]);
 
+        // Carregar relacionamentos para o broadcast
+        $reply->load('user');
+
         // Atualizar contador de comentários do post
         $comment->post->updateCommentCount();
+
+        // Disparar evento de broadcast
+        broadcast(new CommentCreated($reply, $comment->post));
+
+        // Se for requisição AJAX, retornar JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Resposta adicionada com sucesso!',
+                'comment_count' => $comment->post->fresh()->comment_count,
+            ]);
+        }
 
         return redirect()
             ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])
@@ -98,13 +121,28 @@ final class CommentController extends Controller
             ->with('success', 'Comentário atualizado com sucesso!');
     }
 
-    public function destroy(Comment $comment): RedirectResponse
+    public function destroy(Request $request, Comment $comment): RedirectResponse|JsonResponse
     {
-        // Verificar se o usuário é o dono do comentário
-        abort_if($comment->user_id !== Auth::id(), 403);
+        // Verificar se o usuário pode deletar o comentário
+        abort_if(! $comment->canBeDeletedBy(Auth::user()), 403);
 
         // Soft delete para manter a thread
         $comment->softDelete();
+
+        // Atualizar contador de comentários do post
+        $comment->post->updateCommentCount();
+
+        // Disparar evento de broadcast
+        broadcast(new CommentDeleted($comment, $comment->post));
+
+        // Se for requisição AJAX, retornar JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Comentário excluído com sucesso!',
+                'comment_count' => $comment->post->fresh()->comment_count,
+            ]);
+        }
 
         return redirect()
             ->route('post.show', ['subreddit' => $comment->post->subreddit->slug, 'post' => $comment->post->slug])

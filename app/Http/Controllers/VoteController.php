@@ -46,22 +46,26 @@ final class VoteController extends Controller
             // Se o voto é o mesmo, remover o voto
             if ($existingVote->vote_type === $request->vote_type) {
                 $existingVote->delete();
+                $voteable->updateVoteScore();
 
                 return response()->json([
                     'success' => true,
                     'action' => 'removed',
-                    'vote_score' => $voteable->fresh()->vote_score,
+                    'likes' => $voteable->fresh()->likes_count,
+                    'dislikes' => $voteable->fresh()->dislikes_count,
                 ]);
             }
 
             // Se o voto é diferente, atualizar
             $existingVote->update(['vote_type' => $request->vote_type]);
+            $voteable->updateVoteScore();
 
             return response()->json([
                 'success' => true,
                 'action' => 'updated',
                 'vote_type' => $request->vote_type,
-                'vote_score' => $voteable->fresh()->vote_score,
+                'likes' => $voteable->fresh()->likes_count,
+                'dislikes' => $voteable->fresh()->dislikes_count,
             ]);
         }
 
@@ -73,11 +77,14 @@ final class VoteController extends Controller
             'vote_type' => $request->vote_type,
         ]);
 
+        $voteable->updateVoteScore();
+
         return response()->json([
             'success' => true,
             'action' => 'created',
             'vote_type' => $request->vote_type,
-            'vote_score' => $voteable->fresh()->vote_score,
+            'likes' => $voteable->fresh()->likes_count,
+            'dislikes' => $voteable->fresh()->dislikes_count,
         ]);
     }
 
@@ -115,11 +122,13 @@ final class VoteController extends Controller
 
         $voteable = $vote->voteable;
         $vote->delete();
+        $voteable->updateVoteScore();
 
         return response()->json([
             'success' => true,
             'action' => 'removed',
-            'vote_score' => $voteable->fresh()->vote_score,
+            'likes' => $voteable->fresh()->likes_count,
+            'dislikes' => $voteable->fresh()->dislikes_count,
         ]);
     }
 

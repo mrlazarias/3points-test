@@ -23,6 +23,90 @@ declare(strict_types=1);
                 font-family: 'Inter', sans-serif;
             }
 
+            /* Vote Button Animations */
+            .vote-btn {
+                position: relative;
+                overflow: hidden;
+                transform: translateZ(0);
+                backface-visibility: hidden;
+            }
+
+            .vote-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+                transform: translateX(-100%);
+                transition: transform 0.6s ease;
+            }
+
+            .vote-btn:hover::before {
+                transform: translateX(100%);
+            }
+
+            .vote-btn:active {
+                transform: scale(0.95);
+            }
+
+            .vote-btn svg {
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .vote-btn:hover svg {
+                transform: scale(1.1);
+            }
+
+            .vote-btn:active svg {
+                transform: scale(0.9);
+            }
+
+            /* Pulse animation for active votes */
+            .vote-btn.active {
+                animation: pulse-glow 2s infinite;
+            }
+
+            @keyframes pulse-glow {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+                }
+            }
+
+            @keyframes pulse-glow-red {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+                }
+            }
+
+            /* Smooth number transitions */
+            .vote-count {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .vote-count.updated {
+                animation: number-bounce 0.6s ease;
+            }
+
+            @keyframes number-bounce {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+            }
+
             /* Estilos para o conteúdo do post */
             .prose {
                 color: #f9fafb !important; /* text-white */
@@ -343,54 +427,71 @@ declare(strict_types=1);
                                 <div class="flex items-center justify-between border-t border-slate-700 pt-6">
                                     <div class="flex items-center space-x-6">
                                         <!-- Voting -->
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center space-x-1">
+                                            <!-- Like Button -->
                                             <button
                                                 onclick="vote({{ $post->id }}, 'post', 'up')"
-                                                class="vote-btn rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-orange-400"
+                                                class="vote-btn group flex items-center space-x-2 rounded-xl border border-transparent px-4 py-2.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
                                                 data-vote-type="up"
                                                 data-target-id="{{ $post->id }}"
                                                 data-target-type="post"
                                             >
-                                                <svg
-                                                    class="h-5 w-5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
+                                                <div
+                                                    class="flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-lg group-hover:shadow-green-500/20"
                                                 >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M5 15l7-7 7 7"
-                                                    ></path>
-                                                </svg>
+                                                    <svg
+                                                        class="h-4 w-4 transition-transform duration-200 group-hover:scale-110"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2.5"
+                                                            d="M5 15l7-7 7 7"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                                <span
+                                                    id="likes-count-{{ $post->id }}"
+                                                    class="text-sm font-bold transition-colors duration-200 group-hover:text-green-400"
+                                                >
+                                                    {{ $post->likes_count ?? 0 }}
+                                                </span>
                                             </button>
-                                            <span
-                                                id="vote-score-{{ $post->id }}"
-                                                class="text-sm font-medium text-white"
-                                            >
-                                                {{ $post->vote_score }}
-                                            </span>
+
+                                            <!-- Dislike Button -->
                                             <button
                                                 onclick="vote({{ $post->id }}, 'post', 'down')"
-                                                class="vote-btn rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-blue-400"
+                                                class="vote-btn group flex items-center space-x-2 rounded-xl border border-transparent px-4 py-2.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
                                                 data-vote-type="down"
                                                 data-target-id="{{ $post->id }}"
                                                 data-target-type="post"
                                             >
-                                                <svg
-                                                    class="h-5 w-5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
+                                                <div
+                                                    class="flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-lg group-hover:shadow-red-500/20"
                                                 >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 9l-7 7-7-7"
-                                                    ></path>
-                                                </svg>
+                                                    <svg
+                                                        class="h-4 w-4 transition-transform duration-200 group-hover:scale-110"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2.5"
+                                                            d="M19 9l-7 7-7-7"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                                <span
+                                                    id="dislikes-count-{{ $post->id }}"
+                                                    class="text-sm font-bold transition-colors duration-200 group-hover:text-red-400"
+                                                >
+                                                    {{ $post->dislikes_count ?? 0 }}
+                                                </span>
                                             </button>
                                         </div>
 
@@ -543,6 +644,8 @@ declare(strict_types=1);
             // Voting functionality
             async function vote(targetId, targetType, voteType) {
                 try {
+                    console.log('Enviando voto:', { targetId, targetType, voteType });
+
                     const response = await fetch('/vote', {
                         method: 'POST',
                         headers: {
@@ -550,33 +653,109 @@ declare(strict_types=1);
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         },
                         body: JSON.stringify({
-                            target_id: targetId,
-                            target_type: targetType,
+                            voteable_id: targetId,
+                            voteable_type: targetType,
                             vote_type: voteType,
                         }),
                     });
 
+                    console.log('Resposta recebida:', response.status, response.statusText);
+
                     if (response.ok) {
                         const data = await response.json();
-                        document.getElementById(`vote-score-${targetId}`).textContent = data.vote_score;
+
+                        // Atualizar contadores de likes e dislikes
+                        const likesElement = document.getElementById(`likes-count-${targetId}`);
+                        const dislikesElement = document.getElementById(`dislikes-count-${targetId}`);
+
+                        if (likesElement) {
+                            likesElement.textContent = data.likes || 0;
+                            likesElement.classList.add('vote-count', 'updated');
+                            setTimeout(() => likesElement.classList.remove('updated'), 600);
+                        }
+                        if (dislikesElement) {
+                            dislikesElement.textContent = data.dislikes || 0;
+                            dislikesElement.classList.add('vote-count', 'updated');
+                            setTimeout(() => dislikesElement.classList.remove('updated'), 600);
+                        }
 
                         // Update button states
                         const buttons = document.querySelectorAll(`[data-target-id="${targetId}"]`);
                         buttons.forEach((btn) => {
-                            btn.classList.remove('bg-orange-500', 'bg-blue-500', 'text-white');
-                            btn.classList.add('text-slate-400');
+                            // Reset all buttons to default state
+                            btn.classList.remove(
+                                'bg-green-500/20',
+                                'bg-red-500/20',
+                                'text-green-400',
+                                'text-red-400',
+                                'border-green-500/30',
+                                'border-red-500/30',
+                                'active',
+                            );
+                            btn.classList.add('text-slate-400', 'border-transparent');
+
+                            // Reset icon containers
+                            const iconContainer = btn.querySelector('div');
+                            if (iconContainer) {
+                                iconContainer.classList.remove(
+                                    'bg-green-500/20',
+                                    'bg-red-500/20',
+                                    'shadow-lg',
+                                    'shadow-md',
+                                    'shadow-green-500/20',
+                                    'shadow-red-500/20',
+                                );
+                            }
+
+                            // Reset count spans
+                            const countSpan = btn.querySelector('span');
+                            if (countSpan) {
+                                countSpan.classList.remove('text-green-400', 'text-red-400');
+                                countSpan.classList.add('text-slate-400');
+                            }
                         });
 
-                        if (data.user_vote) {
+                        if (data.vote_type) {
                             const activeBtn = document.querySelector(
-                                `[data-target-id="${targetId}"][data-vote-type="${data.user_vote}"]`,
+                                `[data-target-id="${targetId}"][data-vote-type="${data.vote_type}"]`,
                             );
                             if (activeBtn) {
-                                activeBtn.classList.remove('text-slate-400');
+                                // Apply active state
+                                activeBtn.classList.remove('text-slate-400', 'border-transparent');
                                 activeBtn.classList.add(
-                                    data.user_vote === 'up' ? 'bg-orange-500' : 'bg-blue-500',
-                                    'text-white',
+                                    data.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                                    data.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
+                                    data.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
                                 );
+
+                                // Apply active state to icon container
+                                const iconContainer = activeBtn.querySelector('div');
+                                if (iconContainer) {
+                                    iconContainer.classList.add(
+                                        data.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                                        data.vote_type === 'up'
+                                            ? 'shadow-lg shadow-green-500/20'
+                                            : 'shadow-lg shadow-red-500/20',
+                                    );
+                                }
+
+                                // Apply active state to count span
+                                const countSpan = activeBtn.querySelector('span');
+                                if (countSpan) {
+                                    countSpan.classList.add(
+                                        data.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
+                                    );
+                                }
+
+                                // Add active class for pulse animation
+                                activeBtn.classList.add('active');
+
+                                // Apply specific pulse animation based on vote type
+                                if (data.vote_type === 'up') {
+                                    activeBtn.style.animation = 'pulse-glow 2s infinite';
+                                } else {
+                                    activeBtn.style.animation = 'pulse-glow-red 2s infinite';
+                                }
                             }
                         }
                     }
@@ -675,6 +854,132 @@ declare(strict_types=1);
                 }
             }
 
+            // Função para excluir comentário
+            async function deleteComment(commentId) {
+                if (!confirm('Tem certeza que deseja excluir este comentário?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/comments/${commentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json().catch(() => ({}));
+
+                        // Atualizar contadores
+                        if (responseData.comment_count !== undefined) {
+                            updateCommentCounts(responseData.comment_count);
+                        }
+
+                        // Remover comentário da lista
+                        const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                        if (commentElement) {
+                            commentElement.remove();
+                        }
+
+                        showNotification('Comentário excluído com sucesso!', 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || 'Erro ao excluir comentário');
+                    }
+                } catch (error) {
+                    showNotification('Erro ao excluir comentário. Tente novamente.', 'error');
+                }
+            }
+
+            // Função para responder comentário
+            function toggleReplyForm(commentId) {
+                const existingForm = document.getElementById(`reply-form-${commentId}`);
+                if (existingForm) {
+                    existingForm.remove();
+                    return;
+                }
+
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (!commentElement) return;
+
+                const replyForm = document.createElement('div');
+                replyForm.id = `reply-form-${commentId}`;
+                replyForm.className = 'mt-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50';
+                replyForm.innerHTML = `
+                    <form onsubmit="submitReply(event, ${commentId})" class="space-y-3">
+                        <textarea
+                            id="reply-content-${commentId}"
+                            placeholder="Escreva sua resposta..."
+                            class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                            rows="3"
+                            required
+                        ></textarea>
+                        <div class="flex justify-end space-x-2">
+                            <button
+                                type="button"
+                                onclick="toggleReplyForm(${commentId})"
+                                class="rounded-lg px-4 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
+                            >
+                                Responder
+                            </button>
+                        </div>
+                    </form>
+                `;
+
+                commentElement.appendChild(replyForm);
+                document.getElementById(`reply-content-${commentId}`).focus();
+            }
+
+            // Função para enviar resposta
+            async function submitReply(event, commentId) {
+                event.preventDefault();
+
+                const content = document.getElementById(`reply-content-${commentId}`).value.trim();
+                if (!content) return;
+
+                try {
+                    const response = await fetch(`/comments/${commentId}/reply`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content }),
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json().catch(() => ({}));
+
+                        // Atualizar contadores
+                        if (responseData.comment_count !== undefined) {
+                            updateCommentCounts(responseData.comment_count);
+                        }
+
+                        // Remover formulário de resposta
+                        const replyForm = document.getElementById(`reply-form-${commentId}`);
+                        if (replyForm) {
+                            replyForm.remove();
+                        }
+
+                        showNotification('Resposta enviada com sucesso!', 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || 'Erro ao enviar resposta');
+                    }
+                } catch (error) {
+                    showNotification('Erro ao enviar resposta. Tente novamente.', 'error');
+                }
+            }
+
             // Função para mostrar notificações
             function showNotification(message, type) {
                 const notification = document.createElement('div');
@@ -706,7 +1011,7 @@ declare(strict_types=1);
                                 // Adicionar novo comentário à lista
                                 const commentsContainer = document.getElementById('comments-container');
                                 if (commentsContainer && e.comment) {
-                                    const newComment = createCommentElement(e.comment);
+                                    const newComment = createCommentElement(e.comment, e.post);
                                     if (newComment) {
                                         // Verificar se é filtro "mais novos" e adicionar no início
                                         const currentSort = new URLSearchParams(window.location.search).get('sort');
@@ -749,6 +1054,9 @@ declare(strict_types=1);
                 }
             }
 
+            // Definir ID do usuário atual para cálculos de permissão
+            window.currentUserId = {{ Auth::id() ?? 'null' }};
+
             // Load user votes on page load
             document.addEventListener('DOMContentLoaded', async function () {
                 try {
@@ -761,10 +1069,11 @@ declare(strict_types=1);
                                 `[data-target-id="{{ $post->id }}"][data-vote-type="${postVote.vote.vote_type}"]`,
                             );
                             if (button) {
-                                button.classList.remove('text-slate-400');
+                                button.classList.remove('text-slate-400', 'border-transparent');
                                 button.classList.add(
-                                    postVote.vote.vote_type === 'up' ? 'bg-orange-500' : 'bg-blue-500',
-                                    'text-white',
+                                    postVote.vote.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                                    postVote.vote.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
+                                    postVote.vote.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
                                 );
                             }
                         }
@@ -778,10 +1087,11 @@ declare(strict_types=1);
                         if (response.ok) {
                             const vote = await response.json();
                             if (vote.vote) {
-                                button.classList.remove('text-slate-400');
+                                button.classList.remove('text-slate-400', 'border-transparent');
                                 button.classList.add(
-                                    vote.vote.vote_type === 'up' ? 'bg-orange-500' : 'bg-blue-500',
-                                    'text-white',
+                                    vote.vote.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
+                                    vote.vote.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
+                                    vote.vote.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
                                 );
                             }
                         }
@@ -794,8 +1104,23 @@ declare(strict_types=1);
                 }
             });
 
+            // Função para calcular permissões do comentário
+            function calculateCommentPermissions(commentData, postData) {
+                const currentUserId = window.currentUserId || null;
+                const commentUserId = commentData.user?.id;
+                const postUserId = postData?.user_id;
+
+                // Usuário pode deletar se for o autor do comentário ou do post
+                const canDelete = currentUserId && (currentUserId === commentUserId || currentUserId === postUserId);
+
+                // Usuário pode responder se estiver logado
+                const canReply = !!currentUserId;
+
+                return { canDelete, canReply };
+            }
+
             // Função para criar elemento de comentário
-            function createCommentElement(commentData) {
+            function createCommentElement(commentData, postData = null) {
                 if (!commentData || !commentData.id) {
                     console.error('Dados do comentário inválidos:', commentData);
                     return null;
@@ -815,7 +1140,11 @@ declare(strict_types=1);
                     commentData.user?.profile_photo_url ||
                     'https://ui-avatars.com/api/?name=' + encodeURIComponent(userName) + '&background=random&color=fff';
                 const content = commentData.content || '';
-                const voteScore = commentData.vote_score || 0;
+                const likesCount = commentData.likes_count || 0;
+                const dislikesCount = commentData.dislikes_count || 0;
+
+                // Calcular permissões
+                const permissions = calculateCommentPermissions(commentData, postData);
 
                 commentDiv.innerHTML = `
                     <div class="flex items-start space-x-4">
@@ -834,17 +1163,44 @@ declare(strict_types=1);
                             </div>
                             <div class="mt-4 flex items-center space-x-4">
                                 <div class="flex items-center space-x-1">
-                                    <button class="rounded-lg px-2 py-1 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-orange-400" data-target-id="${commentData.id}" data-vote-type="up">
-                                        ▲
+                                    <!-- Like Button -->
+                                    <button class="vote-btn group flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-slate-400 transition-all duration-200 hover:bg-green-500/15 hover:text-green-400 hover:border-green-500/30 border border-transparent focus:ring-2 focus:ring-green-500/30 focus:outline-none" data-target-id="${commentData.id}" data-vote-type="up">
+                                        <div class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20">
+                                            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path>
+                                            </svg>
+                                        </div>
+                                        <span id="likes-count-${commentData.id}" class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400">${likesCount}</span>
                                     </button>
-                                    <span class="text-sm text-slate-300">${voteScore}</span>
-                                    <button class="rounded-lg px-2 py-1 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-blue-400" data-target-id="${commentData.id}" data-vote-type="down">
-                                        ▼
+
+                                    <!-- Dislike Button -->
+                                    <button class="vote-btn group flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-slate-400 transition-all duration-200 hover:bg-red-500/15 hover:text-red-400 hover:border-red-500/30 border border-transparent focus:ring-2 focus:ring-red-500/30 focus:outline-none" data-target-id="${commentData.id}" data-vote-type="down">
+                                        <div class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20">
+                                            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                        <span id="dislikes-count-${commentData.id}" class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400">${dislikesCount}</span>
                                     </button>
                                 </div>
-                                <button onclick="toggleReplyForm(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white">
-                                    Responder
-                                </button>
+                                ${
+                                    permissions.canReply
+                                        ? `
+                                    <button onclick="toggleReplyForm(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white">
+                                        Responder
+                                    </button>
+                                `
+                                        : ''
+                                }
+                                ${
+                                    permissions.canDelete
+                                        ? `
+                                    <button onclick="deleteComment(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300">
+                                        Excluir
+                                    </button>
+                                `
+                                        : ''
+                                }
                             </div>
                         </div>
                     </div>
