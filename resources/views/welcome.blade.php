@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 ?>
-declare(strict_types=1); ?>
 @extends('layouts.app')
-
 @section('title', 'Home - Reddit Clone')
-
 @section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -18,7 +15,6 @@ declare(strict_types=1); ?>
                         <h1 class="text-2xl font-bold text-gray-900">Página inicial</h1>
                         <p class="mt-1 text-gray-600">Os melhores posts de todas as comunidades</p>
                     </div>
-
                     <div class="divide-y">
                         @forelse ($posts as $post)
                             <x-post-card :post="$post" />
@@ -29,7 +25,6 @@ declare(strict_types=1); ?>
                             </div>
                         @endforelse
                     </div>
-
                     @if ($posts->hasPages())
                         <div class="border-t p-6">
                             {{ $posts->links() }}
@@ -37,7 +32,6 @@ declare(strict_types=1); ?>
                     @endif
                 </div>
             </div>
-
             <!-- Sidebar -->
             <div class="lg:col-span-1">
                 <x-sidebar :subreddits="$subreddits" />
@@ -45,4 +39,5 @@ declare(strict_types=1); ?>
         </div>
     </div>
 @endsection
+
 <?php 

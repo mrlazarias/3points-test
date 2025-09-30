@@ -3,12 +3,10 @@
 declare(strict_types=1);
 
 ?>
-declare(strict_types=1); ?>
 <header
     class="dark:border-dark-border dark:bg-dark-surface sticky top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8 transition-colors"
 >
     <div></div>
-
     <div class="flex items-center gap-4">
         {{-- Theme Toggle --}}
         <button
@@ -54,7 +52,6 @@ declare(strict_types=1); ?>
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
         </button>
-
         {{-- User Avatar/Auth --}}
         @auth
             @if (Auth::user()->getFirstMedia('profile-pictures'))
@@ -84,14 +81,12 @@ declare(strict_types=1); ?>
         @endauth
     </div>
 </header>
-
 <script>
     function toggleTheme() {
         const html = document.documentElement;
         const sunIcon = document.getElementById('theme-icon-sun');
         const moonIcon = document.getElementById('theme-icon-moon');
         const logo = document.getElementById('sidebar-logo');
-
         if (html.classList.contains('dark')) {
             // Mudar para tema claro
             html.classList.remove('dark');
@@ -112,24 +107,20 @@ declare(strict_types=1); ?>
             localStorage.setItem('theme', 'dark');
         }
     }
-
     // Executar imediatamente ao carregar o script
     (function () {
         const theme = localStorage.getItem('theme') || 'dark';
         const html = document.documentElement;
-
         if (theme === 'light') {
             html.classList.remove('dark');
         } else {
             html.classList.add('dark');
         }
-
         // Atualizar ícones e logo quando o DOM estiver pronto
         window.addEventListener('DOMContentLoaded', function () {
             const sunIcon = document.getElementById('theme-icon-sun');
             const moonIcon = document.getElementById('theme-icon-moon');
             const logo = document.getElementById('sidebar-logo');
-
             if (theme === 'light') {
                 sunIcon?.classList.remove('hidden');
                 moonIcon?.classList.add('hidden');
@@ -146,4 +137,5 @@ declare(strict_types=1); ?>
         });
     })();
 </script>
+
 <?php 

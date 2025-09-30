@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-declare(strict_types=1); ?>
 <!DOCTYPE html>
 <html lang="pt-BR" class="h-full">
     <head>
@@ -42,7 +41,6 @@ declare(strict_types=1); ?>
                             </div>
                         </a>
                     </div>
-
                     <div class="flex items-center space-x-4">
                         <button
                             class="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
@@ -56,7 +54,6 @@ declare(strict_types=1); ?>
                                 ></path>
                             </svg>
                         </button>
-
                         @auth
                             <div class="flex items-center space-x-3">
                                 <a
@@ -95,7 +92,6 @@ declare(strict_types=1); ?>
                 </div>
             </div>
         </header>
-
         <!-- Main Content -->
         <main class="min-h-screen py-8">
             <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -113,7 +109,6 @@ declare(strict_types=1); ?>
                             <p class="text-lg text-slate-400">em r/{{ $subreddit->name }}</p>
                         </div>
                     </div>
-
                     <!-- Breadcrumb -->
                     <nav class="flex items-center space-x-2 text-sm text-slate-400">
                         <a href="/" class="transition-colors hover:text-white">Início</a>
@@ -142,12 +137,10 @@ declare(strict_types=1); ?>
                         <span class="text-white">Criar Post</span>
                     </nav>
                 </div>
-
                 <!-- Form Card -->
                 <div class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-8 shadow-2xl backdrop-blur-sm">
                     <form action="{{ route('post.store', $subreddit->slug) }}" method="POST" class="space-y-8">
                         @csrf
-
                         <!-- Title Section -->
                         <div class="space-y-3">
                             <label for="title" class="block text-sm font-medium text-slate-200">
@@ -183,7 +176,6 @@ declare(strict_types=1); ?>
                                 </p>
                             @enderror
                         </div>
-
                         <!-- Post Type Selection -->
                         <div class="space-y-4">
                             <label class="block text-sm font-medium text-slate-200">Tipo de Post</label>
@@ -206,7 +198,6 @@ declare(strict_types=1); ?>
                                         </div>
                                     </div>
                                 </label>
-
                                 <label class="group relative cursor-pointer">
                                     <input
                                         type="radio"
@@ -225,7 +216,6 @@ declare(strict_types=1); ?>
                                         </div>
                                     </div>
                                 </label>
-
                                 <label class="group relative cursor-pointer">
                                     <input
                                         type="radio"
@@ -249,13 +239,11 @@ declare(strict_types=1); ?>
                                 <p class="text-sm text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <!-- Content Field (for text posts) -->
                         <div id="content-field" class="hidden space-y-4">
                             <label for="content" class="block text-sm font-medium text-slate-200">
                                 Conteúdo (Markdown)
                             </label>
-
                             <!-- Tabs -->
                             <div class="flex border-b border-slate-600">
                                 <button
@@ -275,7 +263,6 @@ declare(strict_types=1); ?>
                                     👁️ Preview
                                 </button>
                             </div>
-
                             <!-- Editor -->
                             <div id="markdown-editor" class="space-y-4">
                                 <textarea
@@ -284,7 +271,6 @@ declare(strict_types=1); ?>
                                     rows="12"
                                     class="@error('content') @enderror w-full rounded-xl border border-red-500 border-slate-600 bg-slate-700/50 px-4 py-4 font-mono text-sm text-white placeholder-slate-400 backdrop-blur-sm transition-all duration-200 focus:border-blue-500 focus:bg-slate-700 focus:ring-2 focus:ring-blue-500/20"
                                     placeholder="Digite o conteúdo do seu post em Markdown...
-
 Exemplos de formatação:
 # Título Principal
 ## Subtítulo
@@ -292,10 +278,8 @@ Exemplos de formatação:
 *Texto em itálico*
 - Lista com marcadores
 1. Lista numerada
-
 [Link](https://exemplo.com)
 ![Imagem](https://exemplo.com/imagem.jpg)
-
 ```javascript
 // Código com syntax highlighting
 function exemplo() {
@@ -305,14 +289,12 @@ function exemplo() {
                                 >
 {{ old('content') }}</textarea
                                 >
-
                                 <!-- Preview -->
                                 <div
                                     id="markdown-preview"
                                     class="hidden min-h-[12rem] w-full rounded-xl border border-slate-600 bg-slate-700/50 p-4 backdrop-blur-sm"
                                 ></div>
                             </div>
-
                             <!-- Markdown Guide -->
                             <div class="rounded-xl border border-slate-600 bg-slate-700/30 p-4">
                                 <details class="group">
@@ -355,12 +337,10 @@ function exemplo() {
                                     </div>
                                 </details>
                             </div>
-
                             @error('content')
                                 <p class="text-sm text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <!-- URL Field (for link/image posts) -->
                         <div id="url-field" class="hidden space-y-3">
                             <label for="url" class="block text-sm font-medium text-slate-200">URL</label>
@@ -376,7 +356,6 @@ function exemplo() {
                                 <p class="text-sm text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <!-- Action Buttons -->
                         <div
                             class="flex flex-col items-center justify-between space-y-4 border-t border-slate-700 pt-8 sm:flex-row sm:space-y-0"
@@ -392,7 +371,6 @@ function exemplo() {
                                 </svg>
                                 <span>Dica: Use Markdown para formatar seu texto</span>
                             </div>
-
                             <div class="flex space-x-4">
                                 <a
                                     href="{{ route('subreddit.show', $subreddit->slug) }}"
@@ -428,7 +406,6 @@ function exemplo() {
                 </div>
             </div>
         </main>
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const typeInputs = document.querySelectorAll('input[name="type"]');
@@ -436,10 +413,8 @@ function exemplo() {
                 const urlField = document.getElementById('url-field');
                 const contentInput = document.getElementById('content');
                 const urlInput = document.getElementById('url');
-
                 function toggleFields() {
                     const selectedType = document.querySelector('input[name="type"]:checked')?.value;
-
                     if (selectedType === 'text') {
                         contentField.classList.remove('hidden');
                         urlField.classList.add('hidden');
@@ -452,14 +427,12 @@ function exemplo() {
                         urlInput.required = true;
                     }
                 }
-
                 // Função para alternar entre edição e preview
                 function switchTab(tab) {
                     const editTab = document.getElementById('edit-tab');
                     const previewTab = document.getElementById('preview-tab');
                     const contentInput = document.getElementById('content');
                     const previewDiv = document.getElementById('markdown-preview');
-
                     if (tab === 'edit') {
                         editTab.className =
                             'border-b-2 border-blue-500 bg-slate-700/50 px-6 py-3 text-sm font-medium text-white';
@@ -477,17 +450,14 @@ function exemplo() {
                         updatePreview();
                     }
                 }
-
                 // Função para atualizar o preview do Markdown
                 function updatePreview() {
                     const content = document.getElementById('content').value;
                     const preview = document.getElementById('markdown-preview');
-
                     if (!content.trim()) {
                         preview.innerHTML = '<p class="text-slate-500 italic">Digite algo para ver o preview...</p>';
                         return;
                     }
-
                     // Simulação básica de Markdown
                     let html = content
                         .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4 text-white">$1</h1>')
@@ -511,35 +481,28 @@ function exemplo() {
                         )
                         .replace(/\n\n/gim, '</p><p class="mb-3 text-slate-300">')
                         .replace(/\n/gim, '<br>');
-
                     // Envolver em parágrafo se não começar com tag
                     if (!html.startsWith('<')) {
                         html = '<p class="mb-3 text-slate-300">' + html + '</p>';
                     }
-
                     preview.innerHTML = html;
                 }
-
                 // Event listeners
                 typeInputs.forEach((input) => {
                     input.addEventListener('change', toggleFields);
                 });
-
                 // Atualizar preview em tempo real
                 contentInput.addEventListener('input', function () {
                     if (!document.getElementById('markdown-preview').classList.contains('hidden')) {
                         updatePreview();
                     }
                 });
-
                 // Contador de caracteres para o título
                 const titleInput = document.getElementById('title');
                 const titleCount = document.getElementById('title-count');
-
                 function updateTitleCount() {
                     const count = titleInput.value.length;
                     titleCount.textContent = count;
-
                     if (count > 200) {
                         titleCount.className = 'text-yellow-400';
                     } else if (count > 240) {
@@ -548,17 +511,15 @@ function exemplo() {
                         titleCount.className = 'text-slate-400';
                     }
                 }
-
                 titleInput.addEventListener('input', updateTitleCount);
                 updateTitleCount(); // Inicializar contador
-
                 // Tornar funções globais
                 window.switchTab = switchTab;
-
                 // Inicializar campos baseado no valor antigo
                 toggleFields();
             });
         </script>
     </body>
 </html>
+
 <?php 

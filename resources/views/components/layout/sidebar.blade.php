@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-declare(strict_types=1); ?>
 <aside
     id="sidebar"
     class="dark:border-dark-border dark:bg-dark-surface fixed top-0 left-0 z-50 flex h-screen w-60 flex-col border-r border-gray-200 bg-white p-6 transition-all duration-300"
@@ -29,14 +28,12 @@ declare(strict_types=1); ?>
             <polyline points="15 18 9 12 15 6" />
         </svg>
     </button>
-
     {{-- Sidebar Content --}}
     <div id="sidebar-content" class="flex h-full flex-col">
         {{-- Logo --}}
         <a href="/" class="flex items-center gap-3 px-2">
             <img id="sidebar-logo" src="{{ asset('logo.svg') }}" alt="3Pontos" class="h-10 w-auto flex-shrink-0" />
         </a>
-
         {{-- Navigation --}}
         <nav class="mt-8">
             <a
@@ -61,7 +58,6 @@ declare(strict_types=1); ?>
                 <span class="sidebar-text">Home</span>
             </a>
         </nav>
-
         {{-- Communities Section --}}
         <div class="mt-8 flex flex-1 flex-col overflow-hidden">
             <div class="mb-4 px-2">
@@ -73,7 +69,6 @@ declare(strict_types=1); ?>
                     @endauth
                 </span>
             </div>
-
             <div class="sidebar-text flex-1 space-y-1 overflow-y-auto">
                 @auth
                     @php
@@ -82,13 +77,11 @@ declare(strict_types=1); ?>
                             ->subreddits()
                             ->withCount('posts')
                             ->get();
-
                         // Buscar comunidades que o usuário segue
                         $followedCommunities = Auth::user()
                             ->followedCommunities()
                             ->withCount('posts')
                             ->get();
-
                         // Merge e remover duplicatas
                         $userCommunities = $createdCommunities
                             ->merge($followedCommunities)
@@ -108,14 +101,12 @@ declare(strict_types=1); ?>
                             >
                                 😎
                             </div>
-
                             {{-- Community Name --}}
                             <span
                                 class="flex-1 truncate text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                             >
                                 {{ $community->name }}
                             </span>
-
                             {{-- Posts Count Badge --}}
                             <span
                                 class="bg-dark-border flex-shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-gray-500 transition-all group-hover:bg-[#1e1e22] group-hover:text-gray-400"
@@ -139,14 +130,12 @@ declare(strict_types=1); ?>
                             >
                                 😎
                             </div>
-
                             {{-- Community Name --}}
                             <span
                                 class="flex-1 truncate text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                             >
                                 {{ $community->name }}
                             </span>
-
                             {{-- Posts Count Badge --}}
                             <span
                                 class="bg-dark-border flex-shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-gray-500 transition-all group-hover:bg-[#1e1e22] group-hover:text-gray-400"
@@ -160,7 +149,6 @@ declare(strict_types=1); ?>
         </div>
     </div>
 </aside>
-
 {{-- Script para toggle da sidebar --}}
 <script>
     function toggleSidebar() {
@@ -168,10 +156,8 @@ declare(strict_types=1); ?>
         const toggleIcon = document.getElementById('toggle-icon');
         const content = document.getElementById('sidebar-content');
         const mainContent = document.querySelector('main.ml-60');
-
         sidebar.classList.toggle('w-60');
         sidebar.classList.toggle('w-20');
-
         if (sidebar.classList.contains('w-20')) {
             // Collapsed
             content.classList.add('opacity-0');
@@ -180,7 +166,6 @@ declare(strict_types=1); ?>
                 texts.forEach((text) => text.classList.add('hidden'));
                 content.classList.remove('opacity-0');
             }, 150);
-
             toggleIcon.innerHTML = '<polyline points="9 18 15 12 9 6" />';
             if (mainContent) {
                 mainContent.classList.remove('ml-60');
@@ -190,18 +175,15 @@ declare(strict_types=1); ?>
             // Expanded
             const texts = document.querySelectorAll('.sidebar-text');
             texts.forEach((text) => text.classList.remove('hidden'));
-
             toggleIcon.innerHTML = '<polyline points="15 18 9 12 15 6" />';
             if (mainContent) {
                 mainContent.classList.remove('ml-20');
                 mainContent.classList.add('ml-60');
             }
         }
-
         // Salvar estado no localStorage
         localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('w-20'));
     }
-
     // Restaurar estado ao carregar
     document.addEventListener('DOMContentLoaded', function () {
         const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
@@ -210,4 +192,5 @@ declare(strict_types=1); ?>
         }
     });
 </script>
+
 <?php 

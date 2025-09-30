@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 ?>
-
 @extends('layouts.app')
-
 @section('title', 'Perfil - ' . $user->getDisplayName())
-
 @section('content')
     <div class="mx-auto max-w-6xl px-4 py-8">
         <!-- Success Message -->
@@ -49,7 +46,6 @@ declare(strict_types=1);
                         </svg>
                     </div>
                 @endif
-
                 <!-- Profile Picture - Positioned to overlap cover photo -->
                 <div class="absolute -bottom-12 left-6">
                     <div class="relative">
@@ -68,7 +64,6 @@ declare(strict_types=1);
                         @endif
                     </div>
                 </div>
-
                 <!-- Edit Button (only for own profile) -->
                 @if ($isOwnProfile)
                     <div class="absolute right-4 bottom-4">
@@ -89,7 +84,6 @@ declare(strict_types=1);
                     </div>
                 @endif
             </div>
-
             <!-- Profile Info -->
             <div class="mt-16 px-6">
                 <div class="flex items-start justify-between">
@@ -98,7 +92,7 @@ declare(strict_types=1);
                             {{ $user->getDisplayName() }}
                         </h1>
                         @if ($user->username)
-                            <p class="font-medium text-orange-500">@{{ $user->username }}</p>
+                            <p class="font-medium text-orange-500">u/{{ $user->username }}</p>
                         @endif
 
                         @if ($user->bio)
@@ -177,7 +171,6 @@ declare(strict_types=1);
                 </div>
             </div>
         </div>
-
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <!-- Sidebar -->
             <div class="lg:col-span-1">
@@ -197,7 +190,6 @@ declare(strict_types=1);
                         </div>
                     </div>
                 </div>
-
                 <!-- Created Communities -->
                 @if ($subreddits->count() > 0)
                     <div
@@ -230,7 +222,6 @@ declare(strict_types=1);
                     </div>
                 @endif
             </div>
-
             <!-- Main Content -->
             <div class="lg:col-span-2">
                 <!-- Posts Section -->
@@ -239,7 +230,6 @@ declare(strict_types=1);
                         Posts ({{ $posts->total() }})
                     </h2>
                 </div>
-
                 <div class="space-y-4">
                     @forelse ($posts as $post)
                         <article
@@ -268,7 +258,6 @@ declare(strict_types=1);
                                     </div>
                                 </div>
                             </div>
-
                             <!-- Post Content -->
                             <h3 class="mb-3 text-lg font-bold text-gray-900 dark:text-white">
                                 <a
@@ -281,7 +270,6 @@ declare(strict_types=1);
                             <p class="mb-4 line-clamp-3 text-gray-600 dark:text-gray-400">
                                 {{ Str::limit(strip_tags($post->content), 200) }}
                             </p>
-
                             <!-- Post Actions -->
                             <div class="flex items-center gap-6">
                                 <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -346,7 +334,6 @@ declare(strict_types=1);
                         </div>
                     @endforelse
                 </div>
-
                 <!-- Pagination -->
                 @if ($posts->hasPages())
                     <div class="mt-8">
@@ -357,3 +344,4 @@ declare(strict_types=1);
         </div>
     </div>
 @endsection
+<?php 

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-declare(strict_types=1); ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -46,7 +45,6 @@ declare(strict_types=1); ?>
                         <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
                     </a>
                 </div>
-
                 <div style="display: flex; align-items: center; gap: 1rem">
                     <a
                         href="{{ route('profile.show') }}"
@@ -59,7 +57,6 @@ declare(strict_types=1); ?>
                 </div>
             </div>
         </header>
-
         <div
             style="
                 min-height: calc(100vh - 80px);
@@ -78,7 +75,6 @@ declare(strict_types=1); ?>
                         <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">Alterar Senha</h1>
                         <p style="color: #9ca3af; margin: 0">Digite sua senha atual e a nova senha</p>
                     </div>
-
                     @if ($errors->any())
                         <div
                             style="
@@ -116,7 +112,6 @@ declare(strict_types=1); ?>
                     <form method="POST" action="{{ route('profile.update-password') }}">
                         @csrf
                         @method('PUT')
-
                         <!-- Current Password -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -151,7 +146,6 @@ declare(strict_types=1); ?>
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- New Password -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -185,7 +179,6 @@ declare(strict_types=1); ?>
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Confirm New Password -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -219,7 +212,6 @@ declare(strict_types=1); ?>
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Submit Button -->
                         <button
                             type="submit"
@@ -241,7 +233,6 @@ declare(strict_types=1); ?>
                             Alterar Senha
                         </button>
                     </form>
-
                     <!-- Back to Profile Link -->
                     <div
                         style="
@@ -268,4 +259,5 @@ declare(strict_types=1); ?>
         </div>
     </body>
 </html>
+
 <?php 
