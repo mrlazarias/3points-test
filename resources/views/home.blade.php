@@ -376,7 +376,13 @@ declare(strict_types=1);
                     <!-- Communities -->
                     <div style="background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem">
                         <div style="padding: 1rem; border-bottom: 1px solid #374151">
-                            <h3 style="font-weight: 500; color: #e5e7eb">Minhas comunidades</h3>
+                            <h3 style="font-weight: 500; color: #e5e7eb">
+                                @auth
+                                    Minhas comunidades
+                                @else
+                                    Comunidades populares
+                                @endauth
+                            </h3>
                         </div>
                         <div style="padding: 0.5rem">
                             @foreach ($subreddits as $subreddit)
@@ -403,9 +409,114 @@ declare(strict_types=1);
                                         <span style="font-size: 1.125rem">{{ $icon }}</span>
                                         <span style="color: #e5e7eb">{{ $subreddit->name }}</span>
                                     </div>
-                                    <span style="color: #9ca3af; font-size: 0.875rem">
-                                        +{{ $subreddit->posts_count }}
-                                    </span>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-items: flex-end;
+                                            gap: 0.25rem;
+                                        "
+                                    >
+                                        <span style="color: #9ca3af; font-size: 0.875rem">
+                                            +{{ $subreddit->posts_count }} posts
+                                        </span>
+                                        <span style="color: #6b7280; font-size: 0.75rem">
+                                            {{ $subreddit->followers_count }} seguidores
+                                        </span>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Communities -->
+                <div style="margin-top: 1.5rem">
+                    <div style="background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem">
+                        <div style="padding: 1rem; border-bottom: 1px solid #374151">
+                            <div style="display: flex; justify-content: space-between; align-items: center">
+                                <div>
+                                    <h3 style="font-weight: 500; color: #e5e7eb">🌟 Comunidades Sugeridas</h3>
+                                    <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem">
+                                        Descubra novas comunidades interessantes
+                                    </p>
+                                </div>
+                                <button
+                                    onclick="refreshSuggestions()"
+                                    style="
+                                        padding: 0.5rem;
+                                        background-color: #374151;
+                                        color: #e5e7eb;
+                                        border: 1px solid #4b5563;
+                                        border-radius: 0.375rem;
+                                        font-size: 0.75rem;
+                                        font-weight: 500;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 0.25rem;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#4b5563'"
+                                    onmouseout="this.style.backgroundColor='#374151'"
+                                >
+                                    <svg
+                                        style="width: 1rem; height: 1rem"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                        ></path>
+                                    </svg>
+                                    Atualizar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="suggested-communities-list" style="padding: 0.5rem">
+                            @foreach ($suggestedSubreddits as $suggestedSubreddit)
+                                @php
+                                    $icons = ['🎨', '🔥', '🌱', '💻', '⚡', '🚀', '💡', '🎯', '🌟', '🎪'];
+                                    $icon = $icons[array_rand($icons)];
+                                @endphp
+
+                                <a
+                                    href="{{ route('subreddit.show', $suggestedSubreddit->slug) }}"
+                                    style="
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                        padding: 0.75rem;
+                                        border-radius: 0.5rem;
+                                        text-decoration: none;
+                                        color: inherit;
+                                    "
+                                    onmouseover="this.style.backgroundColor='#374151'"
+                                    onmouseout="this.style.backgroundColor='transparent'"
+                                >
+                                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                                        <span style="font-size: 1.125rem">{{ $icon }}</span>
+                                        <span style="color: #e5e7eb">{{ $suggestedSubreddit->name }}</span>
+                                    </div>
+                                    <div
+                                        style="
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-items: flex-end;
+                                            gap: 0.25rem;
+                                        "
+                                    >
+                                        <span style="color: #9ca3af; font-size: 0.875rem">
+                                            +{{ $suggestedSubreddit->posts_count }} posts
+                                        </span>
+                                        <span style="color: #6b7280; font-size: 0.75rem">
+                                            {{ $suggestedSubreddit->followers_count }} seguidores
+                                        </span>
+                                    </div>
                                 </a>
                             @endforeach
                         </div>
@@ -421,267 +532,341 @@ declare(strict_types=1);
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 1rem">
-                        @forelse ($posts as $post)
-                            <article
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    overflow: hidden;
-                                "
-                            >
-                                <div style="padding: 1.5rem">
-                                    <!-- Post Header -->
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
-                                        @php
-                                            $icons = ['👨‍💻', '🔧', '🎯', '💡', '🚀'];
-                                            $icon = $icons[array_rand($icons)];
-                                        @endphp
-
+                        @if ($posts->count() > 0)
+                            @foreach ($posts as $post)
+                                <article
+                                    style="
+                                        background-color: #1f2937;
+                                        border: 1px solid #374151;
+                                        border-radius: 0.75rem;
+                                        overflow: hidden;
+                                    "
+                                >
+                                    <div style="padding: 1.5rem">
+                                        <!-- Post Header -->
                                         <div
                                             style="
-                                                width: 2.5rem;
-                                                height: 2.5rem;
-                                                background-color: #374151;
-                                                border-radius: 50%;
                                                 display: flex;
                                                 align-items: center;
-                                                justify-content: center;
+                                                gap: 0.75rem;
+                                                margin-bottom: 1rem;
                                             "
                                         >
-                                            <span style="font-size: 1.125rem">{{ $icon }}</span>
-                                        </div>
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 0.5rem">
-                                                <span style="font-weight: 500; color: #d1d5db">
-                                                    r/{{ $post->subreddit->slug }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            @php
+                                                $icons = ['👨‍💻', '🔧', '🎯', '💡', '🚀'];
+                                                $icon = $icons[array_rand($icons)];
+                                            @endphp
 
-                                    <!-- Post Content -->
-                                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
-                                        <a
-                                            href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
-                                            style="color: inherit; text-decoration: none"
-                                            onmouseover="this.style.color='#60a5fa'"
-                                            onmouseout="this.style.color='inherit'"
-                                        >
-                                            {{ $post->title }}
-                                        </a>
-                                    </h3>
-                                    <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem">
-                                        {{ Str::limit(strip_tags($post->content), 200) }}
-                                    </p>
-
-                                    <!-- Post Actions -->
-                                    <div style="display: flex; align-items: center; gap: 1.5rem">
-                                        <!-- Comments Button -->
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            <button
-                                                onclick="openCommentsModal({{ $post->id }}, '{{ $post->title }}', '{{ $post->subreddit->slug }}', '{{ $post->slug }}')"
+                                            <div
                                                 style="
+                                                    width: 2.5rem;
+                                                    height: 2.5rem;
+                                                    background-color: #374151;
+                                                    border-radius: 50%;
                                                     display: flex;
                                                     align-items: center;
-                                                    gap: 0.25rem;
-                                                    color: #9ca3af;
-                                                    background: none;
-                                                    border: none;
-                                                    cursor: pointer;
-                                                    padding: 0.5rem;
+                                                    justify-content: center;
+                                                "
+                                            >
+                                                <span style="font-size: 1.125rem">{{ $icon }}</span>
+                                            </div>
+                                            <div style="flex: 1">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem">
+                                                    <span style="font-weight: 500; color: #d1d5db">
+                                                        r/{{ $post->subreddit->slug }}
+                                                    </span>
+                                                    @auth
+                                                        <button
+                                                            id="follow-btn-{{ $post->subreddit->id }}"
+                                                            data-subreddit-slug="{{ $post->subreddit->slug }}"
+                                                            onclick="toggleFollow({{ $post->subreddit->id }}, '{{ $post->subreddit->slug }}')"
+                                                            style="
+                                                                padding: 0.25rem 0.75rem;
+                                                                background-color: #374151;
+                                                                color: #e5e7eb;
+                                                                border: 1px solid #4b5563;
+                                                                border-radius: 0.375rem;
+                                                                font-size: 0.75rem;
+                                                                font-weight: 500;
+                                                                cursor: pointer;
+                                                                transition: all 0.2s;
+                                                            "
+                                                            onmouseover="this.style.backgroundColor='#4b5563'"
+                                                            onmouseout="this.style.backgroundColor='#374151'"
+                                                        >
+                                                            <span id="follow-text-{{ $post->subreddit->id }}">
+                                                                Seguir
+                                                            </span>
+                                                        </button>
+                                                    @endauth
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Post Content -->
+                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                                            <a
+                                                href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                                                style="color: inherit; text-decoration: none"
+                                                onmouseover="this.style.color='#60a5fa'"
+                                                onmouseout="this.style.color='inherit'"
+                                            >
+                                                {{ $post->title }}
+                                            </a>
+                                        </h3>
+                                        <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem">
+                                            {{ Str::limit(strip_tags($post->content), 200) }}
+                                        </p>
+
+                                        <!-- Post Actions -->
+                                        <div style="display: flex; align-items: center; gap: 1.5rem">
+                                            <!-- Comments Button -->
+                                            <div style="display: flex; align-items: center; gap: 0.5rem">
+                                                <button
+                                                    onclick="openCommentsModal({{ $post->id }}, '{{ $post->title }}', '{{ $post->subreddit->slug }}', '{{ $post->slug }}')"
+                                                    style="
+                                                        display: flex;
+                                                        align-items: center;
+                                                        gap: 0.25rem;
+                                                        color: #9ca3af;
+                                                        background: none;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        padding: 0.5rem;
+                                                        border-radius: 0.5rem;
+                                                        transition: all 0.2s;
+                                                    "
+                                                    onmouseover="this.style.backgroundColor='#374151'; this.style.color='#d1d5db'"
+                                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                                >
+                                                    <svg
+                                                        style="width: 1.25rem; height: 1.25rem"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                                        ></path>
+                                                    </svg>
+                                                    <span style="font-size: 0.875rem">{{ $post->comment_count }}</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Vote Section -->
+                                            <div style="display: flex; align-items: center; gap: 0.5rem">
+                                                @auth
+                                                    <!-- Like Button -->
+                                                    <button
+                                                        onclick="votePost({{ $post->id }}, 'up')"
+                                                        id="upvote-{{ $post->id }}"
+                                                        class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
+                                                        data-vote-type="up"
+                                                        data-target-id="{{ $post->id }}"
+                                                        data-target-type="post"
+                                                    >
+                                                        <div
+                                                            class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
+                                                        >
+                                                            <svg
+                                                                class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2.5"
+                                                                    d="M5 15l7-7 7 7"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span
+                                                            id="likes-count-{{ $post->id }}"
+                                                            class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
+                                                        >
+                                                            {{ $post->likes_count ?? 0 }}
+                                                        </span>
+                                                    </button>
+
+                                                    <!-- Dislike Button -->
+                                                    <button
+                                                        onclick="votePost({{ $post->id }}, 'down')"
+                                                        id="downvote-{{ $post->id }}"
+                                                        class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
+                                                        data-vote-type="down"
+                                                        data-target-id="{{ $post->id }}"
+                                                        data-target-type="post"
+                                                    >
+                                                        <div
+                                                            class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
+                                                        >
+                                                            <svg
+                                                                class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2.5"
+                                                                    d="M19 9l-7 7-7-7"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span
+                                                            id="dislikes-count-{{ $post->id }}"
+                                                            class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                                                        >
+                                                            {{ $post->dislikes_count ?? 0 }}
+                                                        </span>
+                                                    </button>
+                                                @else
+                                                    <!-- Like Button (Not Logged In) -->
+                                                    <button
+                                                        onclick="showLoginAlert()"
+                                                        class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
+                                                    >
+                                                        <div
+                                                            class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
+                                                        >
+                                                            <svg
+                                                                class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2.5"
+                                                                    d="M5 15l7-7 7 7"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span
+                                                            class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
+                                                        >
+                                                            {{ $post->likes_count ?? 0 }}
+                                                        </span>
+                                                    </button>
+
+                                                    <!-- Dislike Button (Not Logged In) -->
+                                                    <button
+                                                        onclick="showLoginAlert()"
+                                                        class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
+                                                    >
+                                                        <div
+                                                            class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
+                                                        >
+                                                            <svg
+                                                                class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2.5"
+                                                                    d="M19 9l-7 7-7-7"
+                                                                ></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span
+                                                            class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                                                        >
+                                                            {{ $post->dislikes_count ?? 0 }}
+                                                        </span>
+                                                    </button>
+                                                @endauth
+                                            </div>
+
+                                            <a
+                                                href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                                                style="
+                                                    padding: 0.5rem 1rem;
+                                                    background-color: #374151;
+                                                    color: #e5e7eb;
                                                     border-radius: 0.5rem;
+                                                    border: none;
+                                                    font-size: 0.875rem;
+                                                    cursor: pointer;
+                                                    text-decoration: none;
+                                                    display: inline-block;
                                                     transition: all 0.2s;
                                                 "
-                                                onmouseover="this.style.backgroundColor='#374151'; this.style.color='#d1d5db'"
-                                                onmouseout="this.style.backgroundColor='transparent'; this.style.color='#9ca3af'"
+                                                onmouseover="this.style.backgroundColor='#4b5563'"
+                                                onmouseout="this.style.backgroundColor='#374151'"
                                             >
-                                                <svg
-                                                    style="width: 1.25rem; height: 1.25rem"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                                    ></path>
-                                                </svg>
-                                                <span style="font-size: 0.875rem">{{ $post->comment_count }}</span>
-                                            </button>
+                                                Ver Post
+                                            </a>
                                         </div>
-
-                                        <!-- Vote Section -->
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            @auth
-                                                <!-- Like Button -->
-                                                <button
-                                                    onclick="votePost({{ $post->id }}, 'up')"
-                                                    id="upvote-{{ $post->id }}"
-                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
-                                                    data-vote-type="up"
-                                                    data-target-id="{{ $post->id }}"
-                                                    data-target-type="post"
-                                                >
-                                                    <div
-                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
-                                                    >
-                                                        <svg
-                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="2.5"
-                                                                d="M5 15l7-7 7 7"
-                                                            ></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span
-                                                        id="likes-count-{{ $post->id }}"
-                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
-                                                    >
-                                                        {{ $post->likes_count ?? 0 }}
-                                                    </span>
-                                                </button>
-
-                                                <!-- Dislike Button -->
-                                                <button
-                                                    onclick="votePost({{ $post->id }}, 'down')"
-                                                    id="downvote-{{ $post->id }}"
-                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
-                                                    data-vote-type="down"
-                                                    data-target-id="{{ $post->id }}"
-                                                    data-target-type="post"
-                                                >
-                                                    <div
-                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
-                                                    >
-                                                        <svg
-                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="2.5"
-                                                                d="M19 9l-7 7-7-7"
-                                                            ></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span
-                                                        id="dislikes-count-{{ $post->id }}"
-                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
-                                                    >
-                                                        {{ $post->dislikes_count ?? 0 }}
-                                                    </span>
-                                                </button>
-                                            @else
-                                                <!-- Like Button (Not Logged In) -->
-                                                <button
-                                                    onclick="showLoginAlert()"
-                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
-                                                >
-                                                    <div
-                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
-                                                    >
-                                                        <svg
-                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="2.5"
-                                                                d="M5 15l7-7 7 7"
-                                                            ></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span
-                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
-                                                    >
-                                                        {{ $post->likes_count ?? 0 }}
-                                                    </span>
-                                                </button>
-
-                                                <!-- Dislike Button (Not Logged In) -->
-                                                <button
-                                                    onclick="showLoginAlert()"
-                                                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
-                                                >
-                                                    <div
-                                                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
-                                                    >
-                                                        <svg
-                                                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="2.5"
-                                                                d="M19 9l-7 7-7-7"
-                                                            ></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span
-                                                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
-                                                    >
-                                                        {{ $post->dislikes_count ?? 0 }}
-                                                    </span>
-                                                </button>
-                                            @endauth
-                                        </div>
-
-                                        <a
-                                            href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
-                                            style="
-                                                padding: 0.5rem 1rem;
-                                                background-color: #374151;
-                                                color: #e5e7eb;
-                                                border-radius: 0.5rem;
-                                                border: none;
-                                                font-size: 0.875rem;
-                                                cursor: pointer;
-                                                text-decoration: none;
-                                                display: inline-block;
-                                                transition: all 0.2s;
-                                            "
-                                            onmouseover="this.style.backgroundColor='#4b5563'"
-                                            onmouseout="this.style.backgroundColor='#374151'"
-                                        >
-                                            Ver Post
-                                        </a>
                                     </div>
+                                </article>
+                            @endforeach
+                        @else
+                            @auth
+                                <div
+                                    style="
+                                        background-color: #1f2937;
+                                        border: 1px solid #374151;
+                                        border-radius: 0.75rem;
+                                        padding: 2rem;
+                                        text-align: center;
+                                    "
+                                >
+                                    <div style="font-size: 3rem; margin-bottom: 1rem">🔍</div>
+                                    <h3 style="color: #e5e7eb; margin-bottom: 0.5rem; font-size: 1.125rem">
+                                        Nenhuma comunidade seguida
+                                    </h3>
+                                    <p style="color: #9ca3af; margin-bottom: 1rem">
+                                        Você ainda não está seguindo nenhuma comunidade.
+                                    </p>
+                                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem">
+                                        Explore as comunidades disponíveis e comece a seguir as que mais te interessam!
+                                    </p>
+                                    <a
+                                        href="/"
+                                        style="
+                                            display: inline-block;
+                                            padding: 0.75rem 1.5rem;
+                                            background-color: #2563eb;
+                                            color: white;
+                                            text-decoration: none;
+                                            border-radius: 0.5rem;
+                                            font-size: 0.875rem;
+                                            font-weight: 500;
+                                            transition: background-color 0.2s;
+                                        "
+                                        onmouseover="this.style.backgroundColor='#1d4ed8'"
+                                        onmouseout="this.style.backgroundColor='#2563eb'"
+                                    >
+                                        Explorar Comunidades
+                                    </a>
                                 </div>
-                            </article>
-                        @empty
-                            <div
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    padding: 2rem;
-                                    text-align: center;
-                                "
-                            >
-                                <p style="color: #9ca3af">Nenhum post encontrado.</p>
-                                <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem">
-                                    Seja o primeiro a compartilhar algo!
-                                </p>
-                            </div>
-                        @endforelse
+                            @else
+                                <div
+                                    style="
+                                        background-color: #1f2937;
+                                        border: 1px solid #374151;
+                                        border-radius: 0.75rem;
+                                        padding: 2rem;
+                                        text-align: center;
+                                    "
+                                >
+                                    <p style="color: #9ca3af">Nenhum post encontrado.</p>
+                                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem">
+                                        Seja o primeiro a compartilhar algo!
+                                    </p>
+                                </div>
+                            @endauth
+                        @endif
                     </div>
 
                     <!-- Pagination -->
@@ -810,15 +995,6 @@ declare(strict_types=1);
             }
 
             // Carregar votos do usuário ao carregar a página
-            document.addEventListener('DOMContentLoaded', function() {
-                // Inicializar CSRF token
-                csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-                @auth
-                    // Carregar votos existentes do usuário
-                    loadUserVotes();
-                @endauth
-            });
 
             // Função para carregar votos do usuário
             async function loadUserVotes() {
@@ -1080,6 +1256,206 @@ declare(strict_types=1);
                         closeCommentsModal();
                     }
                 });
+            }
+
+            // Função para alternar follow/unfollow de comunidade
+            async function toggleFollow(subredditId, subredditSlug) {
+                const button = document.getElementById(`follow-btn-${subredditId}`);
+                const text = document.getElementById(`follow-text-${subredditId}`);
+
+                if (!button || !text) return;
+
+                // Desabilitar botão durante a requisição
+                button.disabled = true;
+                button.style.opacity = '0.6';
+
+                try {
+                    // Verificar se já está seguindo
+                    const checkResponse = await fetch(`/communities/${subredditSlug}/follow-status`, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const checkData = await checkResponse.json();
+
+                    if (!checkData.success) {
+                        throw new Error(checkData.message || 'Erro ao verificar status');
+                    }
+
+                    const isFollowing = checkData.is_following;
+                    const url = `/communities/${subredditSlug}/follow`;
+                    const method = isFollowing ? 'DELETE' : 'POST';
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Atualizar texto do botão
+                        text.textContent = data.is_following ? 'Seguindo' : 'Seguir';
+
+                        // Atualizar estilo do botão
+                        if (data.is_following) {
+                            button.style.backgroundColor = '#10b981';
+                            button.style.borderColor = '#059669';
+                            button.style.color = '#ffffff';
+                        } else {
+                            button.style.backgroundColor = '#374151';
+                            button.style.borderColor = '#4b5563';
+                            button.style.color = '#e5e7eb';
+                        }
+
+                        // Mostrar mensagem de sucesso
+                        console.log(data.message);
+                    } else {
+                        throw new Error(data.message || 'Erro na operação');
+                    }
+                } catch (error) {
+                    console.error('Erro ao alternar follow:', error);
+                    alert('Erro: ' + error.message);
+                } finally {
+                    // Reabilitar botão
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                }
+            }
+
+            // Carregar status de follow das comunidades na página
+            async function loadFollowStatus() {
+                @auth
+                    // Obter todos os botões de follow
+                    const followButtons = document.querySelectorAll('[id^="follow-btn-"]');
+
+                    for (const button of followButtons) {
+                        const text = document.getElementById(`follow-text-${button.id.replace('follow-btn-', '')}`);
+                        const subredditSlug = button.getAttribute('data-subreddit-slug');
+
+                        if (!text || !subredditSlug) continue;
+
+                        try {
+                            const response = await fetch(`/communities/${subredditSlug}/follow-status`, {
+                                method: 'GET',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Content-Type': 'application/json',
+                                },
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                // Atualizar texto do botão
+                                text.textContent = data.is_following ? 'Seguindo' : 'Seguir';
+
+                                // Atualizar estilo do botão
+                                if (data.is_following) {
+                                    button.style.backgroundColor = '#10b981';
+                                    button.style.borderColor = '#059669';
+                                    button.style.color = '#ffffff';
+                                } else {
+                                    button.style.backgroundColor = '#374151';
+                                    button.style.borderColor = '#4b5563';
+                                    button.style.color = '#e5e7eb';
+                                }
+                            }
+                        } catch (error) {
+                            console.error(`Erro ao carregar status de follow para comunidade ${subredditSlug}:`, error);
+                        }
+                    }
+                @endauth
+            }
+
+            // Carregar status de follow quando a página carregar
+            document.addEventListener('DOMContentLoaded', function() {
+                // Inicializar CSRF token
+                csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                @auth
+                    // Carregar votos existentes do usuário
+                    loadUserVotes();
+
+                    // Carregar status de follow
+                    loadFollowStatus();
+                @endauth
+            });
+
+            // Função para atualizar sugestões de comunidades
+            async function refreshSuggestions() {
+                try {
+                    const response = await fetch('/suggested-communities', {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateSuggestionsDisplay(data.suggestedSubreddits);
+                    } else {
+                        console.error('Erro ao carregar sugestões:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Erro ao atualizar sugestões:', error);
+                }
+            }
+
+            // Função para atualizar a exibição das sugestões
+            function updateSuggestionsDisplay(suggestedSubreddits) {
+                const suggestionsContainer = document.querySelector('.suggested-communities-list');
+                if (!suggestedSubreddits || !suggestionsContainer) return;
+
+                const icons = ['🎨', '🔥', '🌱', '💻', '⚡', '🚀', '💡', '🎯', '🌟', '🎪'];
+
+                suggestionsContainer.innerHTML = suggestedSubreddits.map(subreddit => {
+                    const icon = icons[Math.floor(Math.random() * icons.length)];
+                    return `
+                        <a
+                            href="/communities/${subreddit.slug}"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 0.75rem;
+                                border-radius: 0.5rem;
+                                text-decoration: none;
+                                color: inherit;
+                            "
+                            onmouseover="this.style.backgroundColor='#374151'"
+                            onmouseout="this.style.backgroundColor='transparent'"
+                        >
+                            <div style="display: flex; align-items: center; gap: 0.75rem">
+                                <span style="font-size: 1.125rem">${icon}</span>
+                                <span style="color: #e5e7eb">${subreddit.name}</span>
+                            </div>
+                            <div
+                                style="
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: flex-end;
+                                    gap: 0.25rem;
+                                "
+                            >
+                                <span style="color: #9ca3af; font-size: 0.875rem">
+                                    +${subreddit.posts_count} posts
+                                </span>
+                                <span style="color: #6b7280; font-size: 0.75rem">
+                                    ${subreddit.followers_count} seguidores
+                                </span>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
             }
         </script>
 
