@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -138,6 +139,45 @@ declare(strict_types=1);
                                 onfocus="this.style.borderColor='#60a5fa'"
                                 onblur="this.style.borderColor='#4b5563'"
                             />
+                        </div>
+
+                        <!-- Username -->
+                        <div style="margin-bottom: 1.5rem">
+                            <label
+                                for="username"
+                                style="
+                                    display: block;
+                                    color: #e5e7eb;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    margin-bottom: 0.5rem;
+                                "
+                            >
+                                Nome de usuário
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value="{{ old('username') }}"
+                                required
+                                style="
+                                    width: 100%;
+                                    padding: 0.75rem;
+                                    background-color: #374151;
+                                    border: 1px solid #4b5563;
+                                    border-radius: 0.5rem;
+                                    color: #f9fafb;
+                                    font-size: 0.875rem;
+                                    transition: border-color 0.2s;
+                                "
+                                onfocus="this.style.borderColor='#60a5fa'"
+                                onblur="this.style.borderColor='#4b5563'"
+                                placeholder="Escolha um nome único"
+                            />
+                            <p style="color: #9ca3af; font-size: 0.75rem; margin: 0.25rem 0 0 0">
+                                Este será seu nome público na comunidade (u/nomeusuario)
+                            </p>
                         </div>
 
                         <!-- Email -->
@@ -291,5 +331,3 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
-
-<?php 
