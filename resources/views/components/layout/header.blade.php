@@ -32,7 +32,7 @@ declare(strict_types=1);
                     </svg>
                     <span
                         id="notification-badge"
-                        class="absolute -top-1 -right-1 flex hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+                        class="absolute -top-1 -right-1 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
                     >
                         0
                     </span>
@@ -257,7 +257,7 @@ declare(strict_types=1);
                 </div>
             `;
 
-            // Adicionar clique para navegar para a publicação
+            // Adicionar clique para navegar para o perfil ou post
             notificationElement.addEventListener('click', function() {
                 // Marcar notificação como lida (remover visualmente)
                 notificationElement.style.opacity = '0.5';
@@ -267,8 +267,21 @@ declare(strict_types=1);
                 notificationCount = Math.max(0, notificationCount - 1);
                 updateNotificationBadge();
 
+                // Navegar para URL específica da notificação
                 if (notification.url) {
                     window.location.href = notification.url;
+                } else if (notification.type === 'follow' && notification.from_user.username) {
+                    // Fallback para notificações de follow sem URL
+                    window.location.href = `/u/${notification.from_user.username}`;
+                } else if (notification.type === 'new_post' && notification.post) {
+                    // Fallback para notificações de novo post
+                    window.location.href = `/r/${notification.post.subreddit_slug}/${notification.post.slug}`;
+                } else if (notification.type === 'comment' && notification.post) {
+                    // Fallback para notificações de comentário
+                    window.location.href = `/r/${notification.post.subreddit.slug}/${notification.post.slug}`;
+                } else if (notification.type === 'post_liked' && notification.post) {
+                    // Fallback para notificações de like
+                    window.location.href = `/r/${notification.post.subreddit}/${notification.post.slug}`;
                 }
             });
 
@@ -291,8 +304,10 @@ declare(strict_types=1);
             if (notificationCount > 0) {
                 notificationBadge.textContent = notificationCount;
                 notificationBadge.classList.remove('hidden');
+                notificationBadge.classList.add('flex');
             } else {
                 notificationBadge.classList.add('hidden');
+                notificationBadge.classList.remove('flex');
             }
         }
 

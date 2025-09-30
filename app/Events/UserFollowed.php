@@ -48,12 +48,14 @@ final class UserFollowed implements ShouldBroadcastNow
             'notification' => [
                 'id' => uniqid(),
                 'title' => 'Novo seguidor!',
-                'message' => $this->follower->getDisplayName() . ' começou a te seguir',
+                'message' => $this->follower->getDisplayName().' começou a te seguir',
                 'from_user' => [
                     'id' => $this->follower->id,
                     'name' => $this->follower->getDisplayName(),
                     'profile_photo_url' => $this->follower->getProfilePictureUrl(),
+                    'username' => $this->follower->username,
                 ],
+                'url' => route('profile.user', $this->follower->username),
                 'created_at' => now()->toISOString(),
             ],
         ];

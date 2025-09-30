@@ -60,6 +60,7 @@ final class NewPostCreated implements ShouldBroadcastNow
                     'id' => $this->author->id,
                     'name' => $this->author->getDisplayName(),
                     'profile_photo_url' => $this->author->getProfilePictureUrl(),
+                    'username' => $this->author->username,
                 ],
                 'post' => [
                     'id' => $this->post->id,
@@ -68,6 +69,7 @@ final class NewPostCreated implements ShouldBroadcastNow
                     'subreddit' => $this->post->subreddit->name,
                     'subreddit_slug' => $this->post->subreddit->slug,
                 ],
+                'url' => route('post.show', [$this->post->subreddit->slug, $this->post->slug]),
                 'created_at' => now()->toISOString(),
             ],
         ];

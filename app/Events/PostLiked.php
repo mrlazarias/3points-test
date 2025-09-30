@@ -63,6 +63,7 @@ final class PostLiked implements ShouldBroadcastNow
                     'id' => $this->user->id,
                     'name' => $this->user->getDisplayName(),
                     'profile_photo_url' => $this->user->getProfilePictureUrl(),
+                    'username' => $this->user->username,
                 ],
                 'post' => [
                     'id' => $this->post->id,
