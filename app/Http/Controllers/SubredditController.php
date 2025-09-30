@@ -24,7 +24,23 @@ final class SubredditController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        return view('subreddit.show', ['subreddit' => $subreddit, 'posts' => $posts]);
+        // Carregar informações de follow se usuário estiver logado
+        $isFollowing = false;
+        $followersCount = 0;
+
+        if (Auth::check()) {
+            $isFollowing = $subreddit->isFollowedBy(Auth::user());
+            $followersCount = $subreddit->followersCount();
+        } else {
+            $followersCount = $subreddit->followersCount();
+        }
+
+        return view('subreddit.show', [
+            'subreddit' => $subreddit,
+            'posts' => $posts,
+            'isFollowing' => $isFollowing,
+            'followersCount' => $followersCount,
+        ]);
     }
 
     /**
