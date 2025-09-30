@@ -10,9 +10,11 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 - **Backend**: Laravel 12 com SQLite (conforme recomendação do README)
 - **Admin Panel**: FilamentPHP 4 para gerenciamento dinâmico de subreddits e posts
-- **Frontend**: Blade Templates + TailwindCSS v4
+- **Frontend**: Blade Templates + TailwindCSS v4 (100% sem CSS customizado)
 - **Database**: SQLite para desenvolvimento (fácil configuração)
 - **Testing**: Pest para testes unitários e funcionais
+- **Real-time**: Laravel Reverb + Echo para comentários em tempo real
+- **Broadcasting**: Sistema de eventos para atualizações live
 
 ## Principais Decisões Técnicas
 
@@ -52,6 +54,8 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 - **Frontend**: Laravel Echo + Pusher.js para recepção de eventos
 - **Ordenação Inteligente**: Comentários aparecem no início para filtro "mais novos", no final para outros filtros
 - **Avatares Dinâmicos**: UI Avatars para usuários sem foto de perfil
+- **Headers AJAX**: `X-Requested-With: XMLHttpRequest` para garantir resposta JSON
+- **Debugging**: Sistema de logs extensivo para diagnóstico de problemas
 
 **Justificativa**:
 
@@ -59,6 +63,7 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 - Evita necessidade de refresh da página
 - Sistema escalável e performático
 - Fallback gracioso em caso de falha na conexão
+- Debugging facilitado para manutenção
 
 ### 4. FilamentPHP - Painel Administrativo
 
@@ -135,8 +140,48 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 - **Cache de scores** para performance otimizada
 - **Feedback visual** para indicar votos ativos
 - **Validação de autenticação** para funcionalidades interativas
+- **Contadores separados**: `likes_count` e `dislikes_count` para melhor UX
+- **Sistema de cores**: Verde para likes, vermelho para dislikes
+- **Estados ativos**: Classes Tailwind dinâmicas para feedback visual
 
 **Justificativa**: Sistema central do Reddit, permite ranking de conteúdo por relevância da comunidade.
+
+### 10. Sistema de Follow/Unfollow de Comunidades
+
+**Decisão**: Implementei sistema completo de seguir comunidades com:
+
+- **Tabela pivot**: `community_follows` para relacionamento many-to-many
+- **Interface dinâmica**: Botões que alternam entre "Seguir" e "Seguindo"
+- **AJAX interativo**: Follow/unfollow sem reload da página
+- **Filtros personalizados**: Homepage mostra apenas posts de comunidades seguidas
+- **Sugestões aleatórias**: Sistema de comunidades sugeridas com botão atualizar
+
+**Justificativa**: Permite personalização da experiência do usuário e descoberta de conteúdo.
+
+### 11. Refatoração Completa para Tailwind v4 + Blade
+
+**Decisão**: Migrei toda a aplicação para usar exclusivamente Tailwind v4:
+
+- **Zero CSS customizado**: Removido todo CSS inline e tags `<style>`
+- **Componentes Blade**: Sidebar, header e layout organizados em componentes
+- **Dark Mode nativo**: Configuração `@variant dark` no Tailwind v4
+- **Cores customizadas**: Definidas no `@theme` do app.css
+- **Fonts modernas**: Satoshi + Cabinet Grotesk (Cal Sans) integradas
+- **Responsividade**: Design adaptativo para todos os dispositivos
+
+**Justificativa**: Manutenibilidade, consistência visual e performance otimizada.
+
+### 12. Sistema de Tema Claro/Escuro
+
+**Decisão**: Implementei toggle de tema completo com:
+
+- **JavaScript nativo**: Toggle entre classes `dark` no `<html>`
+- **Persistência**: LocalStorage para manter preferência do usuário
+- **Logos dinâmicos**: `logo.svg` (escuro) e `logo_black.svg` (claro)
+- **Ícones adaptativos**: Sol/lua que mudam conforme o tema
+- **Classes Tailwind**: `dark:` variants em todos os elementos
+
+**Justificativa**: Acessibilidade e preferência do usuário, seguindo padrões modernos de UX.
 
 ## Processo de Desenvolvimento
 
@@ -153,6 +198,11 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 9. **Sistema de comentários** - Interface para comentários aninhados e respostas
 10. **Criação de posts** - Formulário dinâmico com validação condicional
 11. **Sistema interativo** - Todas as funcionalidades core do Reddit implementadas
+12. **Broadcasting real-time** - Comentários em tempo real com Laravel Reverb
+13. **Sistema de follow** - Follow/unfollow de comunidades com AJAX
+14. **Refatoração Tailwind v4** - Migração completa para Blade + Tailwind v4
+15. **Sistema de temas** - Toggle claro/escuro com persistência
+16. **Organização de código** - Componentes Blade reutilizáveis e estrutura limpa
 
 ### Próximas Etapas 🚧
 
@@ -160,6 +210,8 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 2. **Testes** - Cobertura de testes unitários e funcionais
 3. **Otimizações** - Performance e cache adicional
 4. **Features avançadas** - Notificações, moderação, etc.
+5. **Páginas restantes** - Refatorar login/register/create para Tailwind v4
+6. **Mobile app** - API REST para aplicativo móvel
 
 ## Trade-offs e Decisões
 
@@ -183,12 +235,33 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 **Escolha**: Todas as classes são `final`
 **Justificativa**: Evita herança desnecessária, força composição, melhora performance. Trade-off: menos flexibilidade para extensão.
 
+### Tailwind v4 vs CSS Customizado
+
+**Escolha**: 100% Tailwind v4, zero CSS customizado
+**Justificativa**: Manutenibilidade, consistência, performance e facilidade de manutenção. Trade-off: menos controle granular sobre estilos específicos.
+
+### Broadcasting vs Polling
+
+**Escolha**: Laravel Reverb + Echo para real-time
+**Justificativa**: Melhor UX, menos carga no servidor, escalabilidade. Trade-off: complexidade adicional de configuração e debugging.
+
+### Componentes Blade vs Views Monolíticas
+
+**Escolha**: Componentes reutilizáveis (sidebar, header, layout)
+**Justificativa**: DRY principle, manutenibilidade, consistência. Trade-off: overhead inicial de organização.
+
 ## Observações Técnicas
 
 - **Conventional Commits**: Todos os commits seguem o padrão solicitado
 - **Lint Staged**: Configurado para manter qualidade do código
 - **Autoload otimizado**: Classes são autocarregadas de forma eficiente
 - **Relacionamentos tipados**: PHPDoc com generics para melhor IDE support
+- **Zero CSS customizado**: Aplicação 100% Tailwind v4
+- **Componentes organizados**: Estrutura limpa em `components/layout/`
+- **Dark mode nativo**: Configuração `@variant dark` no Tailwind v4
+- **Fonts modernas**: Satoshi + Cabinet Grotesk integradas
+- **Real-time funcional**: Laravel Reverb + Echo configurados
+- **AJAX headers**: `X-Requested-With` para garantir respostas JSON
 
 ## Status Atual
 
@@ -201,8 +274,14 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ✅ **Sistema de Votos**: Upvote/downvote com AJAX e cache de scores
 ✅ **Sistema de Comentários**: Comentários aninhados e respostas
 ✅ **Interatividade**: Todas as funcionalidades core implementadas
+✅ **Broadcasting**: Comentários em tempo real com Laravel Reverb
+✅ **Follow System**: Sistema completo de seguir comunidades
+✅ **Tailwind v4**: Refatoração completa para Blade + Tailwind v4
+✅ **Dark Mode**: Toggle claro/escuro funcional
+✅ **Componentes**: Estrutura organizada e reutilizável
 🚧 **Perfil**: Página de edição de dados do usuário
 🚧 **Testes**: Cobertura de testes unitários e funcionais
+🚧 **Páginas restantes**: Login/register/create com Tailwind v4
 
 ## Funcionalidades Implementadas
 
@@ -247,6 +326,32 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 - **Problema**: Rota `/r/{subreddit:slug}/{post:slug}` capturava `/r/{subreddit:slug}/create`
 - **Solução**: Reordenação das rotas para priorizar criação de posts
 - **Resultado**: ✅ Funcionalidade funcionando perfeitamente
+
+#### **Broadcasting Real-time Não Funcionava**
+
+- **Problema**: Comentários só apareciam após refresh da página
+- **Causa**: Headers AJAX incorretos, falta de `X-Requested-With`
+- **Solução**: Adicionado header correto e logs extensivos para debugging
+- **Resultado**: ✅ Comentários aparecem em tempo real
+
+#### **ParseError com Tags PHP Soltas**
+
+- **Problema**: `<?php` tags no final de arquivos Blade causavam erros
+- **Solução**: Script automatizado para remover todas as tags desnecessárias
+- **Resultado**: ✅ Aplicação sem erros de sintaxe
+
+#### **Sistema de Votos com Cores Inconsistentes**
+
+- **Problema**: Votos apareciam em laranja em vez de verde/vermelho
+- **Solução**: Refatoração completa para classes Tailwind dinâmicas
+- **Resultado**: ✅ Sistema visual consistente e intuitivo
+
+#### **Dark Mode Não Funcionava**
+
+- **Problema**: Apenas logo mudava, background permanecia preto
+- **Causa**: Configuração incorreta do dark mode no Tailwind v4
+- **Solução**: Adicionado `@variant dark` no app.css
+- **Resultado**: ✅ Toggle claro/escuro funcional
 
 ### 📊 **Métricas de Qualidade**
 
@@ -422,5 +527,48 @@ Todas as funcionalidades principais foram implementadas com sucesso:
 - Interface moderna, responsiva e acessível
 - Painel administrativo completo
 - Design system consistente e profissional
+- Broadcasting real-time funcional
+- Sistema de follow/unfollow de comunidades
+- Toggle claro/escuro nativo
+- 100% Tailwind v4 + Blade
+
+## 🏗️ **Arquitetura Atual**
+
+### **Estrutura de Componentes**
+
+```
+resources/views/
+├── layouts/
+│   └── app.blade.php (layout base)
+├── components/
+│   └── layout/
+│       ├── sidebar.blade.php
+│       └── header.blade.php
+├── home.blade.php
+├── post/
+│   ├── show.blade.php
+│   └── create.blade.php
+└── subreddit/
+    ├── show.blade.php
+    └── create.blade.php
+```
+
+### **Tecnologias Integradas**
+
+- **Laravel 12**: Framework backend
+- **FilamentPHP 4**: Painel administrativo
+- **Tailwind v4**: Sistema de design
+- **Laravel Reverb**: WebSocket server
+- **Laravel Echo**: Cliente WebSocket
+- **SQLite**: Banco de dados
+- **Blade**: Template engine
+
+### **Padrões de Código**
+
+- **Strict Types**: `declare(strict_types=1)`
+- **Final Classes**: Todas as classes são `final`
+- **PHPDoc**: Documentação completa com generics
+- **Conventional Commits**: Padrão de commits
+- **Zero CSS customizado**: 100% Tailwind v4
 
 O projeto está pronto para uso e demonstração! 🚀
