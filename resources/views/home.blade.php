@@ -18,13 +18,15 @@ declare(strict_types=1);
                     Olá, visitante! 👋
                 @endauth
             </h1>
-            <p class="text-gray-500">Confira as estatísticas das comunidades que você segue</p>
+            <p class="text-gray-600 dark:text-gray-500">Confira as estatísticas das comunidades que você segue</p>
         </div>
 
         {{-- Stats Grid --}}
         <div class="mb-12 grid grid-cols-3 gap-6">
             {{-- Users Stats --}}
-            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+            <div
+                class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6 text-center"
+            >
                 <div
                     class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
                 >
@@ -36,7 +38,7 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
-                        class="text-white"
+                        class="text-gray-900 dark:text-white"
                     >
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -44,12 +46,14 @@ declare(strict_types=1);
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
                 </div>
-                <div class="mb-2 text-3xl font-bold text-white">10,000</div>
-                <div class="text-sm text-gray-500">Quantidade de usuários</div>
+                <div class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">10,000</div>
+                <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de usuários</div>
             </div>
 
             {{-- Posts Stats --}}
-            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+            <div
+                class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6 text-center"
+            >
                 <div
                     class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
                 >
@@ -61,7 +65,7 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
-                        class="text-white"
+                        class="text-gray-900 dark:text-white"
                     >
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                         <polyline points="14 2 14 8 20 8" />
@@ -70,12 +74,14 @@ declare(strict_types=1);
                         <polyline points="10 9 9 9 8 9" />
                     </svg>
                 </div>
-                <div class="mb-2 text-3xl font-bold text-white">{{ $posts->total() }}</div>
-                <div class="text-sm text-gray-500">Quantidade de posts</div>
+                <div class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $posts->total() }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de posts</div>
             </div>
 
             {{-- Comments Stats --}}
-            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+            <div
+                class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6 text-center"
+            >
                 <div
                     class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
                 >
@@ -87,19 +93,19 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
-                        class="text-white"
+                        class="text-gray-900 dark:text-white"
                     >
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                 </div>
-                <div class="mb-2 text-3xl font-bold text-white">10,000</div>
-                <div class="text-sm text-gray-500">Quantidade de replies</div>
+                <div class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">10,000</div>
+                <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de replies</div>
             </div>
         </div>
 
         {{-- Posts Section Header --}}
         <div class="mb-6 flex items-center justify-between">
-            <h2 class="font-display text-2xl font-bold text-white">
+            <h2 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
                 @auth
                     @if ($posts->isEmpty())
                         Veja os últimos posts
@@ -114,7 +120,7 @@ declare(strict_types=1);
             @auth
                 <a
                     href="{{ route('subreddit.create') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/40"
+                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-3 text-sm font-semibold text-gray-900 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/40 dark:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -136,11 +142,15 @@ declare(strict_types=1);
         {{-- Posts List --}}
         @forelse ($posts as $post)
             <article
-                class="bg-dark-surface border-dark-border hover:border-dark-hover mb-4 rounded-2xl border p-6 transition-all"
+                class="dark:border-dark-border dark:bg-dark-surface hover:border-dark-hover mb-4 rounded-2xl border border-gray-200 bg-white p-6 transition-all"
             >
                 {{-- Post Header --}}
                 <div class="mb-4 flex items-center gap-3">
-                    <div class="bg-dark-border flex h-10 w-10 items-center justify-center rounded-full text-xl">😎</div>
+                    <div
+                        class="dark:bg-dark-border flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-xl"
+                    >
+                        😎
+                    </div>
                     <div>
                         <a
                             href="{{ route('subreddit.show', $post->subreddit->slug) }}"
@@ -155,13 +165,13 @@ declare(strict_types=1);
                 {{-- Post Title --}}
                 <a
                     href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
-                    class="mb-3 block text-lg font-bold text-white transition-colors hover:text-orange-500"
+                    class="mb-3 block text-lg font-bold text-gray-900 transition-colors hover:text-orange-500 dark:text-white"
                 >
                     {{ $post->title }}
                 </a>
 
                 {{-- Post Content --}}
-                <p class="mb-4 text-sm leading-relaxed text-gray-400">
+                <p class="mb-4 text-sm leading-relaxed text-gray-700 dark:text-gray-400">
                     {{ Str::limit(strip_tags($post->content), 200) }}
                 </p>
 
@@ -170,7 +180,7 @@ declare(strict_types=1);
                     {{-- Comments --}}
                     <button
                         onclick="window.location.href='{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}'"
-                        class="bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                        class="dark:bg-dark-border dark:hover:bg-dark-hover flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +201,7 @@ declare(strict_types=1);
                         <button
                             id="upvote-{{ $post->id }}"
                             onclick="votePost({{ $post->id }}, 'up')"
-                            class="post-vote bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                            class="post-vote dark:bg-dark-border dark:hover:bg-dark-hover flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -213,7 +223,7 @@ declare(strict_types=1);
                         <button
                             id="downvote-{{ $post->id }}"
                             onclick="votePost({{ $post->id }}, 'down')"
-                            class="post-vote bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                            class="post-vote dark:bg-dark-border dark:hover:bg-dark-hover flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -233,7 +243,7 @@ declare(strict_types=1);
                     @else
                         <button
                             onclick="alert('Faça login para votar')"
-                            class="bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                            class="dark:bg-dark-border dark:hover:bg-dark-hover flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -254,22 +264,24 @@ declare(strict_types=1);
                     {{-- Ver Post --}}
                     <a
                         href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
-                        class="bg-dark-border hover:bg-dark-hover rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                        class="dark:bg-dark-border dark:hover:bg-dark-hover rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
                     >
                         Ver Post
                     </a>
                 </div>
             </article>
         @empty
-            <div class="bg-dark-surface border-dark-border rounded-2xl border p-12 text-center">
-                <p class="mb-2 text-base text-gray-400">
+            <div
+                class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-12 text-center"
+            >
+                <p class="mb-2 text-base text-gray-700 dark:text-gray-400">
                     @auth
                         Você ainda não segue nenhuma comunidade.
                     @else
                         Nenhum post disponível no momento.
                     @endauth
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-600 dark:text-gray-500">
                     @auth
                         <a href="{{ route('subreddit.create') }}" class="text-orange-500 hover:text-orange-400">
                             Crie uma comunidade
@@ -326,15 +338,15 @@ declare(strict_types=1);
                     downCount.textContent = data.dislikes_count || 0;
 
                     // Reset active states
-                    upButton.classList.remove('!bg-emerald-500/10', '!text-emerald-500');
-                    downButton.classList.remove('!bg-red-500/10', '!text-red-500');
+            upButton.classList.remove('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
+            downButton.classList.remove('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
 
                     // Apply active state
-                    if (data.action === 'added') {
+                    if (data.action === 'added' || data.action === 'updated') {
                         if (voteType === 'up') {
-                            upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                            upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                         } else {
-                            downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                            downButton.classList.add('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
                         }
                     }
                 }
@@ -365,9 +377,9 @@ declare(strict_types=1);
                                 const downButton = document.getElementById(`downvote-${vote.voteable_id}`);
 
                                 if (vote.vote_type === 'up' && upButton) {
-                                    upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                                    upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                                 } else if (vote.vote_type === 'down' && downButton) {
-                                    downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                                    downButton.classList.add('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
                                 }
                             }
                         });

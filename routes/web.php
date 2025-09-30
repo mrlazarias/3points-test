@@ -116,6 +116,9 @@ Route::get('/test-create', function (): Factory|View {
     return view('post.create', ['subreddit' => $subreddit]);
 });
 
+// Rota pública para visualizar perfil de usuário
+Route::get('/u/{username}', [ProfileController::class, 'showUser'])->name('profile.user');
+
 // Subreddit - Posts de uma comunidade específica
 Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('subreddit.show');
 
@@ -148,6 +151,8 @@ Route::middleware('auth')->group(function (): void {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
     Route::delete('/profile/photo', [ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
+    Route::post('/profile/cover-photo', [ProfileController::class, 'uploadCoverPhoto'])->name('profile.upload-cover-photo');
+    Route::delete('/profile/cover-photo', [ProfileController::class, 'removeCoverPhoto'])->name('profile.remove-cover-photo');
 
     // Rotas de Votação
     Route::post('/vote', [VoteController::class, 'vote'])->name('vote');

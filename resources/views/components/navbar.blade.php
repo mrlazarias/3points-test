@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-
 <header class="sticky top-0 z-50 border-b bg-white shadow-sm">
     <div class="container mx-auto px-4">
         <div class="flex h-16 items-center justify-between">
@@ -81,5 +80,4 @@ declare(strict_types=1);
         </div>
     </div>
 </header>
-
-<?php
+<?php 

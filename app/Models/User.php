@@ -31,8 +31,14 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'bio',
+        'location',
+        'website',
+        'birth_date',
+        'is_public',
     ];
 
     /**
@@ -91,6 +97,46 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     }
 
     /**
+     * Get the user's profile picture URL.
+     */
+    public function getProfilePictureUrl(): ?string
+    {
+        $avatar = $this->getFirstMedia('profile-pictures');
+
+        return $avatar?->getUrl();
+    }
+
+    /**
+     * Get the user's cover photo URL.
+     */
+    public function getCoverPhotoUrl(): ?string
+    {
+        $cover = $this->getFirstMedia('cover-photos');
+
+        return $cover?->getUrl();
+    }
+
+    /**
+     * Get the user's display name (username or name).
+     */
+    public function getDisplayName(): string
+    {
+        return $this->username ?: $this->name;
+    }
+
+    /**
+     * Get the user's age from birth date.
+     */
+    public function getAge(): ?int
+    {
+        if (! $this->birth_date) {
+            return null;
+        }
+
+        return $this->birth_date->age;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -100,6 +146,8 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birth_date' => 'date',
+            'is_public' => 'boolean',
         ];
     }
 }

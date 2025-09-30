@@ -51,8 +51,8 @@ final class VoteController extends Controller
                 return response()->json([
                     'success' => true,
                     'action' => 'removed',
-                    'likes' => $voteable->fresh()->likes_count,
-                    'dislikes' => $voteable->fresh()->dislikes_count,
+                    'likes_count' => $voteable->fresh()->likes_count,
+                    'dislikes_count' => $voteable->fresh()->dislikes_count,
                 ]);
             }
 
@@ -64,8 +64,8 @@ final class VoteController extends Controller
                 'success' => true,
                 'action' => 'updated',
                 'vote_type' => $request->vote_type,
-                'likes' => $voteable->fresh()->likes_count,
-                'dislikes' => $voteable->fresh()->dislikes_count,
+                'likes_count' => $voteable->fresh()->likes_count,
+                'dislikes_count' => $voteable->fresh()->dislikes_count,
             ]);
         }
 
@@ -81,10 +81,10 @@ final class VoteController extends Controller
 
         return response()->json([
             'success' => true,
-            'action' => 'created',
+            'action' => 'added',
             'vote_type' => $request->vote_type,
-            'likes' => $voteable->fresh()->likes_count,
-            'dislikes' => $voteable->fresh()->dislikes_count,
+            'likes_count' => $voteable->fresh()->likes_count,
+            'dislikes_count' => $voteable->fresh()->dislikes_count,
         ]);
     }
 
@@ -127,8 +127,8 @@ final class VoteController extends Controller
         return response()->json([
             'success' => true,
             'action' => 'removed',
-            'likes' => $voteable->fresh()->likes_count,
-            'dislikes' => $voteable->fresh()->dislikes_count,
+            'likes_count' => $voteable->fresh()->likes_count,
+            'dislikes_count' => $voteable->fresh()->dislikes_count,
         ]);
     }
 
@@ -143,7 +143,7 @@ final class VoteController extends Controller
         $votes = Vote::query()
             ->where('user_id', $user->id)
             ->get()
-            ->map(fn($vote): array => [
+            ->map(fn ($vote): array => [
                 'voteable_id' => $vote->voteable_id,
                 'voteable_type' => mb_strtolower(class_basename($vote->voteable_type)),
                 'vote_type' => $vote->vote_type,

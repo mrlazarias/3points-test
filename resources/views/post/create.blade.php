@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR" class="h-full">
     <head>
@@ -561,3 +560,4 @@ function exemplo() {
         </script>
     </body>
 </html>
+<?php 
