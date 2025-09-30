@@ -3,236 +3,146 @@
 declare(strict_types=1);
 
 ?>
-
 @props([
     'comment',
-    'depth',
+    'post',
 ])
 
 <div
-    class="rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm"
-    style="margin-left: {{ $depth * 2 }}rem"
+    class="border-dark-border {{ ($comment->depth ?? 0) > 0 ? 'ml-' . ($comment->depth ?? 0) * 4 : '' }} border-l-2 pl-4"
     data-comment-id="{{ $comment->id }}"
 >
-    <!-- Comment Header -->
-    <div class="mb-4 flex items-center space-x-3">
-        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-            {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+    {{-- Comment Header --}}
+    <div class="mb-3 flex items-start gap-3">
+        <div class="bg-dark-border flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm">
+            @if ($comment->user->getFirstMedia('profile-pictures'))
+                <img
+                    src="{{ $comment->user->getFirstMedia('profile-pictures')->getUrl() }}"
+                    alt="{{ $comment->user->name }}"
+                    class="h-full w-full rounded-full object-cover"
+                />
+            @else
+                😎
+            @endif
         </div>
+
         <div class="flex-1">
-            <div class="flex items-center space-x-2">
-                <span class="text-sm font-medium text-white">u/{{ $comment->user->name }}</span>
-                <span class="text-slate-400">•</span>
-                <span class="text-sm text-slate-400">{{ $comment->created_at->diffForHumans() }}</span>
+            {{-- User and Time --}}
+            <div class="mb-2 flex items-center gap-2">
+                <span class="text-sm font-semibold text-white">{{ $comment->user->name }}</span>
+                <span class="text-xs text-gray-600">{{ $comment->created_at->diffForHumans() }}</span>
             </div>
-        </div>
-    </div>
 
-    <!-- Comment Content -->
-    <div class="prose prose-invert prose-sm mb-4 max-w-none">
-        {!! Str::markdown($comment->content) !!}
-    </div>
+            {{-- Comment Content --}}
+            <div class="prose prose-invert prose-sm mb-3 max-w-none">
+                <p class="text-sm text-gray-300">{{ $comment->content }}</p>
+            </div>
 
-    <!-- Comment Actions -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-            <!-- Voting -->
-            <div class="flex items-center space-x-1">
-                <!-- Like Button -->
-                <button
-                    onclick="vote({{ $comment->id }}, 'comment', 'up')"
-                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
-                    data-vote-type="up"
-                    data-target-id="{{ $comment->id }}"
-                    data-target-type="comment"
-                >
-                    <div
-                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20"
+            {{-- Comment Actions --}}
+            <div class="flex items-center gap-2">
+                @auth
+                    {{-- Upvote --}}
+                    <button
+                        id="comment-upvote-{{ $comment->id }}"
+                        onclick="voteComment({{ $comment->id }}, 'up')"
+                        class="hover:bg-dark-hover bg-dark-border flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-500 transition-all hover:text-white"
                     >
                         <svg
-                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            stroke-width="2"
                         >
                             <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2.5"
-                                d="M5 15l7-7 7 7"
-                            ></path>
+                                d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                            />
                         </svg>
-                    </div>
-                    <span
-                        id="likes-count-{{ $comment->id }}"
-                        class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400"
-                    >
-                        {{ $comment->likes_count ?? 0 }}
-                    </span>
-                </button>
+                        <span id="comment-upvote-count-{{ $comment->id }}">{{ $comment->likes_count ?? 0 }}</span>
+                    </button>
 
-                <!-- Dislike Button -->
-                <button
-                    onclick="vote({{ $comment->id }}, 'comment', 'down')"
-                    class="vote-btn group flex items-center space-x-1.5 rounded-lg border border-transparent px-3 py-1.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
-                    data-vote-type="down"
-                    data-target-id="{{ $comment->id }}"
-                    data-target-type="comment"
-                >
-                    <div
-                        class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20"
+                    {{-- Downvote --}}
+                    <button
+                        id="comment-downvote-{{ $comment->id }}"
+                        onclick="voteComment({{ $comment->id }}, 'down')"
+                        class="hover:bg-dark-hover bg-dark-border flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-500 transition-all hover:text-white"
                     >
                         <svg
-                            class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            stroke-width="2"
                         >
                             <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2.5"
-                                d="M19 9l-7 7-7-7"
-                            ></path>
+                                d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
+                            />
                         </svg>
-                    </div>
-                    <span
-                        id="dislikes-count-{{ $comment->id }}"
-                        class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400"
+                        <span id="comment-downvote-count-{{ $comment->id }}">
+                            {{ $comment->dislikes_count ?? 0 }}
+                        </span>
+                    </button>
+                @endauth
+
+                {{-- Reply Button --}}
+                @if ($comment->canBeRepliedToBy(Auth::user()))
+                    <button
+                        onclick="toggleReplyForm({{ $comment->id }})"
+                        class="text-xs text-gray-500 transition-colors hover:text-orange-500"
                     >
-                        {{ $comment->dislikes_count ?? 0 }}
-                    </span>
-                </button>
+                        Responder
+                    </button>
+                @endif
+
+                {{-- Delete Button --}}
+                @if ($comment->canBeDeletedBy(Auth::user()))
+                    <button
+                        onclick="deleteComment({{ $comment->id }})"
+                        class="text-xs text-red-500 transition-colors hover:text-red-400"
+                    >
+                        Excluir
+                    </button>
+                @endif
             </div>
 
-            <!-- Action Buttons -->
-            @auth
-                <div class="flex items-center space-x-2">
-                    @if ($comment->can_reply ?? true)
-                        <button
-                            onclick="toggleReplyForm({{ $comment->id }})"
-                            class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                        >
-                            Responder
-                        </button>
-                    @endif
-
-                    @if ($comment->can_delete ?? false)
-                        <button
-                            onclick="deleteComment({{ $comment->id }})"
-                            class="rounded-lg px-3 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
-                        >
-                            Excluir
-                        </button>
-                    @endif
-                </div>
-            @endauth
-        </div>
-    </div>
-
-    <!-- Reply Form (Hidden by default) -->
-    @auth
-        @if ($comment->can_reply ?? true)
-            <div
-                id="reply-form-{{ $comment->id }}"
-                class="mt-4 hidden rounded-xl border border-slate-600 bg-slate-700/50 p-4"
-            >
-                <form onsubmit="submitReply(event, {{ $comment->id }})" class="space-y-3">
-                    <textarea
-                        id="reply-content-{{ $comment->id }}"
-                        placeholder="Responder para {{ $comment->user->name }}..."
-                        class="w-full rounded-lg border border-slate-600 bg-slate-600/50 px-3 py-2 text-sm text-white placeholder-slate-400 transition-all duration-200 focus:border-blue-500 focus:bg-slate-600 focus:ring-2 focus:ring-blue-500/20"
-                        rows="3"
-                        required
-                    ></textarea>
-
-                    <div class="flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            onclick="toggleReplyForm({{ $comment->id }})"
-                            class="rounded-lg bg-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-500"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                        >
-                            Responder
-                        </button>
-                    </div>
-                </form>
-            </div>
-        @endif
-    @endauth
-
-    <!-- Edit Form (Hidden by default) -->
-    @auth
-        @if (Auth::id() === $comment->user_id)
-            <div
-                id="edit-form-{{ $comment->id }}"
-                class="mt-4 hidden rounded-xl border border-slate-600 bg-slate-700/50 p-4"
-            >
-                <form action="{{ route('comments.update', $comment->id) }}" method="POST">
+            {{-- Reply Form --}}
+            @if ($comment->canBeRepliedToBy(Auth::user()))
+                <form
+                    id="reply-form-{{ $comment->id }}"
+                    action="{{ route('comments.reply', $comment) }}"
+                    method="POST"
+                    class="mt-4 hidden"
+                >
                     @csrf
-                    @method('PUT')
                     <textarea
                         name="content"
                         rows="3"
-                        class="w-full rounded-lg border border-slate-600 bg-slate-600/50 px-3 py-2 text-sm text-white placeholder-slate-400 transition-all duration-200 focus:border-blue-500 focus:bg-slate-600 focus:ring-2 focus:ring-blue-500/20"
-                        placeholder="Editar comentário..."
+                        placeholder="Sua resposta..."
+                        class="border-dark-border bg-dark-bg mb-2 w-full rounded-lg border px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none"
                         required
+                    ></textarea>
+                    <button
+                        type="submit"
+                        class="rounded-lg bg-orange-500 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-orange-600"
                     >
-{{ $comment->content }}</textarea
-                    >
-                    @error('content')
-                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-
-                    <div class="mt-3 flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            onclick="toggleEditForm({{ $comment->id }})"
-                            class="rounded-lg bg-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-500"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                        >
-                            Salvar
-                        </button>
-                    </div>
+                        Responder
+                    </button>
                 </form>
-            </div>
-        @endif
-    @endauth
+            @endif
 
-    <!-- Nested Comments -->
-    @if ($comment->replies->count() > 0)
-        <div class="mt-4 space-y-4">
-            @foreach ($comment->replies as $reply)
-                @include('components.comment', ['comment' => $reply, 'depth' => $depth + 1])
-            @endforeach
+            {{-- Nested Replies --}}
+            @if ($comment->replies && $comment->replies->count() > 0)
+                <div class="replies-container mt-4 space-y-4">
+                    @foreach ($comment->replies as $reply)
+                        <x-comment :comment="$reply" :post="$post" />
+                    @endforeach
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
-
-<script>
-    // Toggle reply form
-    function toggleReplyForm(commentId) {
-        const form = document.getElementById(`reply-form-${commentId}`);
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            if (form.style.display === 'block') {
-                const textarea = document.getElementById(`reply-content-${commentId}`);
-                if (textarea) {
-                    textarea.focus();
-                }
-            }
-        }
-    }
-</script>
-
-<?php
+<?php 

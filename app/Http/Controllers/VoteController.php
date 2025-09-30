@@ -133,36 +133,25 @@ final class VoteController extends Controller
     }
 
     /**
-     * Obtém o voto do usuário para um item específico
+     * Obtém todos os votos do usuário autenticado
      */
     public function getUserVote(Request $request): JsonResponse
     {
-        $request->validate([
-            'voteable_type' => ['required', 'string', 'in:post,comment'],
-            'voteable_id' => ['required', 'integer'],
-        ]);
-
         /** @var User $user */
         $user = Auth::user();
 
-        // Buscar o modelo votável para obter o nome da classe
-        $voteableClass = match ($request->voteable_type) {
-            'post' => Post::class,
-            'comment' => Comment::class,
-            default => throw new InvalidArgumentException('Tipo de votação inválido'),
-        };
-
-        $vote = Vote::query()->where('user_id', $user->id)
-            ->where('voteable_type', $voteableClass)
-            ->where('voteable_id', $request->voteable_id)
-            ->first();
+        $votes = Vote::query()
+            ->where('user_id', $user->id)
+            ->get()
+            ->map(fn($vote): array => [
+                'voteable_id' => $vote->voteable_id,
+                'voteable_type' => mb_strtolower(class_basename($vote->voteable_type)),
+                'vote_type' => $vote->vote_type,
+            ]);
 
         return response()->json([
             'success' => true,
-            'vote' => $vote ? [
-                'id' => $vote->id,
-                'vote_type' => $vote->vote_type,
-            ] : null,
+            'votes' => $votes,
         ]);
     }
 }
