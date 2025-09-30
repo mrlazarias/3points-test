@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 
 @section('title', $post->title . ' - r/' . $post->subreddit->slug)
@@ -45,7 +46,16 @@ declare(strict_types=1);
                         r/{{ $post->subreddit->slug }}
                     </a>
                     <div class="text-xs text-gray-600">
-                        por {{ $post->user->name }} · {{ $post->created_at->diffForHumans() }}
+                        por
+
+                        @if ($post->user->username)
+                            <a href="{{ route('profile.user', $post->user->username) }}" class="hover:underline">
+                                u/{{ $post->user->username }}
+                            </a>
+                        @else
+                            {{ $post->user->name }}
+                        @endif
+                        · {{ $post->created_at->diffForHumans() }}
                     </div>
                 </div>
             </div>
@@ -524,4 +534,5 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
-<?php 
+
+<?php

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @props([
     'post',
 ])
@@ -40,7 +41,17 @@ declare(strict_types=1);
                     r/{{ $post->subreddit->slug }}
                 </a>
                 <span>•</span>
-                <span>Por {{ $post->user->name }}</span>
+                <span>
+                    Por
+
+                    @if ($post->user->username)
+                        <a href="{{ route('profile.user', $post->user->username) }}" class="hover:underline">
+                            u/{{ $post->user->username }}
+                        </a>
+                    @else
+                        {{ $post->user->name }}
+                    @endif
+                </span>
                 <span>•</span>
                 <span>{{ $post->created_at->diffForHumans() }}</span>
                 @if ($post->is_pinned)
@@ -117,5 +128,3 @@ declare(strict_types=1);
         </div>
     </div>
 </article>
-
-<?php 

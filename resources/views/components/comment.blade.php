@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @props([
     'comment',
     'post',
@@ -29,7 +30,16 @@ declare(strict_types=1);
         <div class="flex-1">
             {{-- User and Time --}}
             <div class="mb-2 flex items-center gap-2">
-                <span class="text-sm font-semibold text-white">{{ $comment->user->name }}</span>
+                @if ($comment->user->username)
+                    <a
+                        href="{{ route('profile.user', $comment->user->username) }}"
+                        class="text-sm font-semibold text-white hover:underline"
+                    >
+                        u/{{ $comment->user->username }}
+                    </a>
+                @else
+                    <span class="text-sm font-semibold text-white">{{ $comment->user->name }}</span>
+                @endif
                 <span class="text-xs text-gray-600">{{ $comment->created_at->diffForHumans() }}</span>
             </div>
 
@@ -145,4 +155,3 @@ declare(strict_types=1);
         </div>
     </div>
 </div>
-<?php 
