@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 @section('title', 'Criar Comunidade - 3Pontos Community')
 @section('content')
@@ -145,5 +146,3 @@ declare(strict_types=1);
         });
     </script>
 @endpush
-
-<?php 

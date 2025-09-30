@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-50">
     <head>
@@ -22,4 +23,3 @@ declare(strict_types=1);
         {{ $slot }}
     </body>
 </html>
-<?php 

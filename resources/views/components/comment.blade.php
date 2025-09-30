@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @props([
     'comment',
     'post',
@@ -148,4 +149,3 @@ declare(strict_types=1);
         </div>
     </div>
 </div>
-<?php 

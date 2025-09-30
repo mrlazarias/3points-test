@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 @section('title', '3Pontos Community - Home')
 @section('content')
@@ -366,4 +367,3 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
-<?php 

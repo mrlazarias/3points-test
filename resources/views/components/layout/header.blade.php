@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <header
     class="dark:border-dark-border dark:bg-dark-surface fixed top-0 right-0 left-60 z-50 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8 transition-colors"
 >
@@ -320,5 +321,3 @@ declare(strict_types=1);
     });
     @endauth
 </script>
-
-<?php 

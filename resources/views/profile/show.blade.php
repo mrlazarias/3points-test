@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 @section('title', 'Perfil - ' . $user->getDisplayName())
 @section('content')
@@ -390,4 +391,3 @@ declare(strict_types=1);
         </div>
     </div>
 </div>
-<?php 

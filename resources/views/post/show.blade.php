@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 @section('title', $post->title . ' - r/' . $post->subreddit->slug)
 @section('content')
@@ -485,4 +486,3 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
-<?php 
