@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 
 @section('title', 'Perfil - ' . $user->getDisplayName())
@@ -49,7 +50,7 @@ declare(strict_types=1);
                     </div>
                 @endif
 
-                <!-- Profile Picture Overlay -->
+                <!-- Profile Picture - Positioned to overlap cover photo -->
                 <div class="absolute -bottom-12 left-6">
                     <div class="relative">
                         @if ($user->getProfilePictureUrl())
@@ -356,4 +357,3 @@ declare(strict_types=1);
         </div>
     </div>
 @endsection
-<?php 
