@@ -7,184 +7,27 @@ declare(strict_types=1);
 
 @section('title', '3Pontos Community - Home')
 
-@section('styles')
-    <style>
-        .stats-card {
-            background: #0e0e0e;
-            border: 1px solid #1a1a1a;
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .stats-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-        }
-
-        .stats-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .stats-label {
-            font-size: 14px;
-            color: #888;
-        }
-
-        .post-card {
-            background: #0e0e0e;
-            border: 1px solid #1a1a1a;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 16px;
-            transition: all 0.2s;
-        }
-
-        .post-card:hover {
-            border-color: #2a2a2a;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .post-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .post-community {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f97316;
-            text-decoration: none;
-        }
-
-        .post-time {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .post-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #fff;
-            text-decoration: none;
-            display: block;
-        }
-
-        .post-title:hover {
-            color: #f97316;
-        }
-
-        .post-content {
-            font-size: 14px;
-            color: #999;
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
-
-        .post-footer {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .post-action {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #1a1a1a;
-            border: none;
-            border-radius: 8px;
-            color: #888;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .post-action:hover {
-            background: #252525;
-            color: #fff;
-        }
-
-        .post-action svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .post-action.active-like {
-            background: #10b98120;
-            color: #10b981;
-        }
-
-        .post-action.active-dislike {
-            background: #ef444420;
-            color: #ef4444;
-        }
-
-        .btn-create {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-create:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
-        }
-    </style>
-@endsection
-
 @section('content')
-    <div class="content-wrapper">
-        <!-- Welcome Section -->
-        <div style="margin-bottom: 32px">
-            <h1 class="cal-sans" style="font-size: 32px; font-weight: 700; margin-bottom: 8px">
+    <div class="mx-auto max-w-screen-xl p-8">
+        {{-- Welcome Section --}}
+        <div class="mb-8">
+            <h1 class="font-display mb-2 text-3xl font-bold">
                 @auth
                     Olá, {{ Auth::user()->name }}! 👋
                 @else
                     Olá, visitante! 👋
                 @endauth
             </h1>
-            <p style="color: #888; font-size: 16px">Confira as estatísticas das comunidades que você segue</p>
+            <p class="text-gray-500">Confira as estatísticas das comunidades que você segue</p>
         </div>
 
-        <!-- Stats Grid -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px">
-            <div class="stats-card">
-                <div class="stats-icon">
+        {{-- Stats Grid --}}
+        <div class="mb-12 grid grid-cols-3 gap-6">
+            {{-- Users Stats --}}
+            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+                <div
+                    class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -193,6 +36,7 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
+                        class="text-white"
                     >
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -200,12 +44,15 @@ declare(strict_types=1);
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                     </svg>
                 </div>
-                <div class="stats-number">10,000</div>
-                <div class="stats-label">Quantidade de usuários</div>
+                <div class="mb-2 text-3xl font-bold text-white">10,000</div>
+                <div class="text-sm text-gray-500">Quantidade de usuários</div>
             </div>
 
-            <div class="stats-card">
-                <div class="stats-icon">
+            {{-- Posts Stats --}}
+            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+                <div
+                    class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -214,6 +61,7 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
+                        class="text-white"
                     >
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                         <polyline points="14 2 14 8 20 8" />
@@ -222,12 +70,15 @@ declare(strict_types=1);
                         <polyline points="10 9 9 9 8 9" />
                     </svg>
                 </div>
-                <div class="stats-number">{{ $posts->total() }}</div>
-                <div class="stats-label">Quantidade de posts</div>
+                <div class="mb-2 text-3xl font-bold text-white">{{ $posts->total() }}</div>
+                <div class="text-sm text-gray-500">Quantidade de posts</div>
             </div>
 
-            <div class="stats-card">
-                <div class="stats-icon">
+            {{-- Comments Stats --}}
+            <div class="bg-dark-surface border-dark-border rounded-2xl border p-6 text-center">
+                <div
+                    class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -236,18 +87,19 @@ declare(strict_types=1);
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
+                        class="text-white"
                     >
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                 </div>
-                <div class="stats-number">10,000</div>
-                <div class="stats-label">Quantidade de replies</div>
+                <div class="mb-2 text-3xl font-bold text-white">10,000</div>
+                <div class="text-sm text-gray-500">Quantidade de replies</div>
             </div>
         </div>
 
-        <!-- Posts Section Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px">
-            <h2 class="cal-sans" style="font-size: 24px; font-weight: 700; color: #fff">
+        {{-- Posts Section Header --}}
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="font-display text-2xl font-bold text-white">
                 @auth
                     @if ($posts->isEmpty())
                         Veja os últimos posts
@@ -260,7 +112,10 @@ declare(strict_types=1);
             </h2>
 
             @auth
-                <a href="{{ route('subreddit.create') }}" class="btn-create">
+                <a
+                    href="{{ route('subreddit.create') }}"
+                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/40"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -278,34 +133,49 @@ declare(strict_types=1);
             @endauth
         </div>
 
-        <!-- Posts List -->
+        {{-- Posts List --}}
         @forelse ($posts as $post)
-            <article class="post-card" data-post-id="{{ $post->id }}">
-                <div class="post-header">
-                    <div class="post-avatar">😎</div>
+            <article
+                class="bg-dark-surface border-dark-border hover:border-dark-hover mb-4 rounded-2xl border p-6 transition-all"
+            >
+                {{-- Post Header --}}
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="bg-dark-border flex h-10 w-10 items-center justify-center rounded-full text-xl">😎</div>
                     <div>
-                        <a href="{{ route('subreddit.show', $post->subreddit->slug) }}" class="post-community">
+                        <a
+                            href="{{ route('subreddit.show', $post->subreddit->slug) }}"
+                            class="text-sm font-semibold text-orange-500 transition-colors hover:text-orange-400"
+                        >
                             r/{{ $post->subreddit->slug }}
                         </a>
-                        <div class="post-time">{{ $post->created_at->diffForHumans() }}</div>
+                        <div class="text-xs text-gray-600">{{ $post->created_at->diffForHumans() }}</div>
                     </div>
                 </div>
 
-                <a href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}" class="post-title">
+                {{-- Post Title --}}
+                <a
+                    href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                    class="mb-3 block text-lg font-bold text-white transition-colors hover:text-orange-500"
+                >
                     {{ $post->title }}
                 </a>
 
-                <div class="post-content">
+                {{-- Post Content --}}
+                <p class="mb-4 text-sm leading-relaxed text-gray-400">
                     {{ Str::limit(strip_tags($post->content), 200) }}
-                </div>
+                </p>
 
-                <div class="post-footer">
+                {{-- Post Actions --}}
+                <div class="flex items-center gap-3">
+                    {{-- Comments --}}
                     <button
-                        class="post-action"
-                        onclick="openCommentsModal({{ $post->id }}, '{{ $post->subreddit->slug }}', '{{ $post->slug }}')"
+                        onclick="window.location.href='{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}'"
+                        class="bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -316,14 +186,17 @@ declare(strict_types=1);
                         <span id="comment-count-{{ $post->id }}">{{ $post->comment_count }}</span>
                     </button>
 
+                    {{-- Upvote --}}
                     @auth
                         <button
-                            class="post-action"
                             id="upvote-{{ $post->id }}"
                             onclick="votePost({{ $post->id }}, 'up')"
+                            class="post-vote bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -336,13 +209,16 @@ declare(strict_types=1);
                             <span id="upvote-count-{{ $post->id }}">{{ $post->likes_count }}</span>
                         </button>
 
+                        {{-- Downvote --}}
                         <button
-                            class="post-action"
                             id="downvote-{{ $post->id }}"
                             onclick="votePost({{ $post->id }}, 'down')"
+                            class="post-vote bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -355,9 +231,14 @@ declare(strict_types=1);
                             <span id="downvote-count-{{ $post->id }}">{{ $post->dislikes_count }}</span>
                         </button>
                     @else
-                        <button class="post-action" onclick="alert('Faça login para votar')">
+                        <button
+                            onclick="alert('Faça login para votar')"
+                            class="bg-dark-border hover:bg-dark-hover flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -370,131 +251,132 @@ declare(strict_types=1);
                         </button>
                     @endauth
 
-                    <a href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}" class="post-action">
+                    {{-- Ver Post --}}
+                    <a
+                        href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                        class="bg-dark-border hover:bg-dark-hover rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                    >
                         Ver Post
                     </a>
                 </div>
             </article>
         @empty
-            <div class="post-card" style="text-align: center">
-                <p style="color: #666; font-size: 16px; margin-bottom: 8px">
+            <div class="bg-dark-surface border-dark-border rounded-2xl border p-12 text-center">
+                <p class="mb-2 text-base text-gray-400">
                     @auth
                         Você ainda não segue nenhuma comunidade.
                     @else
                         Nenhum post disponível no momento.
                     @endauth
                 </p>
-                <p style="color: #888; font-size: 14px">
+                <p class="text-sm text-gray-500">
                     @auth
-                        <a href="{{ route('subreddit.create') }}" style="color: #f97316">Crie uma comunidade</a>
+                        <a href="{{ route('subreddit.create') }}" class="text-orange-500 hover:text-orange-400">
+                            Crie uma comunidade
+                        </a>
                         ou explore as sugestões na sidebar.
                     @else
-                        <a href="{{ route('login') }}" style="color: #f97316">Faça login</a>
+                        <a href="{{ route('login') }}" class="text-orange-500 hover:text-orange-400">Faça login</a>
                         para ver posts das suas comunidades.
                     @endauth
                 </p>
             </div>
         @endforelse
 
-        <!-- Pagination -->
+        {{-- Pagination --}}
         @if ($posts->hasPages())
-            <div style="margin-top: 32px">
+            <div class="mt-8">
                 {{ $posts->links() }}
             </div>
         @endif
     </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            // Vote Post
-            async function votePost(postId, voteType) {
-                const upButton = document.getElementById(`upvote-${postId}`);
-                const downButton = document.getElementById(`downvote-${postId}`);
-                const upCount = document.getElementById(`upvote-count-${postId}`);
-                const downCount = document.getElementById(`downvote-count-${postId}`);
+        // Vote Post Function
+        async function votePost(postId, voteType) {
+            const upButton = document.getElementById(`upvote-${postId}`);
+            const downButton = document.getElementById(`downvote-${postId}`);
+            const upCount = document.getElementById(`upvote-count-${postId}`);
+            const downCount = document.getElementById(`downvote-count-${postId}`);
 
+            try {
+                const response = await fetch('{{ route('vote') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voteable_type: 'post',
+                        voteable_id: postId,
+                        vote_type: voteType,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update counts
+                    upCount.textContent = data.likes_count || 0;
+                    downCount.textContent = data.dislikes_count || 0;
+
+                    // Reset active states
+                    upButton.classList.remove('!bg-emerald-500/10', '!text-emerald-500');
+                    downButton.classList.remove('!bg-red-500/10', '!text-red-500');
+
+                    // Apply active state
+                    if (data.action === 'added') {
+                        if (voteType === 'up') {
+                            upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                        } else {
+                            downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao votar:', error);
+                alert('Erro de conexão. Tente novamente.');
+            }
+        }
+
+        // Load user votes on page load
+        @auth
+            document.addEventListener('DOMContentLoaded', async function () {
                 try {
-                    const response = await fetch('{{ route('vote') }}', {
-                        method: 'POST',
+                    const response = await fetch('{{ route('vote.user') }}', {
+                        method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken,
-                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            voteable_type: 'post',
-                            voteable_id: postId,
-                            vote_type: voteType,
-                        }),
                     });
 
                     const data = await response.json();
 
-                    if (data.success) {
-                        // Update counts
-                        upCount.textContent = data.likes_count || 0;
-                        downCount.textContent = data.dislikes_count || 0;
+                    if (data.success && data.votes) {
+                        data.votes.forEach((vote) => {
+                            if (vote.voteable_type === 'post') {
+                                const upButton = document.getElementById(`upvote-${vote.voteable_id}`);
+                                const downButton = document.getElementById(`downvote-${vote.voteable_id}`);
 
-                        // Reset styles
-                        upButton.classList.remove('active-like');
-                        downButton.classList.remove('active-dislike');
-
-                        // Apply active style
-                        if (data.action === 'added') {
-                            if (voteType === 'up') {
-                                upButton.classList.add('active-like');
-                            } else {
-                                downButton.classList.add('active-dislike');
+                                if (vote.vote_type === 'up' && upButton) {
+                                    upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                                } else if (vote.vote_type === 'down' && downButton) {
+                                    downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                                }
                             }
-                        }
+                        });
                     }
                 } catch (error) {
-                    console.error('Erro ao votar:', error);
-                    alert('Erro de conexão. Tente novamente.');
+                    console.error('Erro ao carregar votos:', error);
                 }
-            }
-
-            // Open Comments Modal (placeholder)
-            function openCommentsModal(postId, subredditSlug, postSlug) {
-                window.location.href = `/r/${subredditSlug}/${postSlug}`;
-            }
-
-            // Load user votes on page load
-            @auth
-                document.addEventListener('DOMContentLoaded', async function() {
-                    try {
-                        const response = await fetch('{{ route('vote.user') }}', {
-                            method: 'GET',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json',
-                            },
-                        });
-
-                        const data = await response.json();
-
-                        if (data.success && data.votes) {
-                            data.votes.forEach(vote => {
-                                if (vote.voteable_type === 'post') {
-                                    const upButton = document.getElementById(`upvote-${vote.voteable_id}`);
-                                    const downButton = document.getElementById(`downvote-${vote.voteable_id}`);
-
-                                    if (vote.vote_type === 'up' && upButton) {
-                                        upButton.classList.add('active-like');
-                                    } else if (vote.vote_type === 'down' && downButton) {
-                                        downButton.classList.add('active-dislike');
-                                    }
-                                }
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Erro ao carregar votos:', error);
-                    }
-                });
-            @endauth
+            });
+        @endauth
     </script>
-@endsection
+@endpush
 <?php 

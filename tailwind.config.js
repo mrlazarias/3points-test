@@ -4,7 +4,16 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                sans: ['Satoshi', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                display: ['Cabinet Grotesk', 'Satoshi', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+                dark: {
+                    bg: '#0a0a0a',
+                    surface: '#0e0e0e',
+                    border: '#1a1a1a',
+                    hover: '#252525',
+                },
             },
         },
     },

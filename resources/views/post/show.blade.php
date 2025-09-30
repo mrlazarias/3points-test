@@ -3,1235 +3,548 @@
 declare(strict_types=1);
 
 ?>
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="csrf-token" content="{{ csrf_token() }}" />
-        <title>{{ $post->title }} - r/{{ $post->subreddit->slug }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
-        <style>
-            body {
-                font-family: 'Inter', sans-serif;
-            }
+@section('title', $post->title . ' - r/' . $post->subreddit->slug)
 
-            /* Vote Button Animations */
-            .vote-btn {
-                position: relative;
-                overflow: hidden;
-                transform: translateZ(0);
-                backface-visibility: hidden;
-            }
+@section('content')
+    <div class="mx-auto max-w-screen-lg px-8 py-8">
+        {{-- Back to Community --}}
+        <a
+            href="{{ route('subreddit.show', $post->subreddit->slug) }}"
+            class="mb-6 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-white"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Voltar para r/{{ $post->subreddit->slug }}
+        </a>
 
-            .vote-btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-                transform: translateX(-100%);
-                transition: transform 0.6s ease;
-            }
-
-            .vote-btn:hover::before {
-                transform: translateX(100%);
-            }
-
-            .vote-btn:active {
-                transform: scale(0.95);
-            }
-
-            .vote-btn svg {
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            .vote-btn:hover svg {
-                transform: scale(1.1);
-            }
-
-            .vote-btn:active svg {
-                transform: scale(0.9);
-            }
-
-            /* Pulse animation for active votes */
-            .vote-btn.active {
-                animation: pulse-glow 2s infinite;
-            }
-
-            @keyframes pulse-glow {
-                0%,
-                100% {
-                    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
-                }
-                50% {
-                    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
-                }
-            }
-
-            @keyframes pulse-glow-red {
-                0%,
-                100% {
-                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-                }
-                50% {
-                    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-                }
-            }
-
-            /* Smooth number transitions */
-            .vote-count {
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            .vote-count.updated {
-                animation: number-bounce 0.6s ease;
-            }
-
-            @keyframes number-bounce {
-                0%,
-                100% {
-                    transform: scale(1);
-                }
-                50% {
-                    transform: scale(1.2);
-                }
-            }
-
-            /* Estilos para o conteúdo do post */
-            .prose {
-                color: #f9fafb !important; /* text-white */
-            }
-
-            .prose h1,
-            .prose h2,
-            .prose h3,
-            .prose h4,
-            .prose h5,
-            .prose h6 {
-                color: #f9fafb !important; /* text-white */
-            }
-
-            .prose p {
-                color: #f9fafb !important; /* text-white */
-            }
-
-            .prose ul,
-            .prose ol {
-                color: #f9fafb !important; /* text-white */
-            }
-
-            .prose li {
-                color: #f9fafb !important; /* text-white */
-            }
-
-            .prose strong {
-                color: #f9fafb !important; /* text-white */
-                font-weight: 600;
-            }
-
-            .prose em {
-                color: #d1d5db !important; /* text-gray-300 */
-                font-style: italic;
-            }
-
-            .prose code {
-                background-color: #374151 !important; /* bg-gray-700 */
-                color: #93c5fd !important; /* text-blue-300 */
-                padding: 0.2em 0.4em;
-                border-radius: 0.3rem;
-                font-size: 0.875em;
-            }
-
-            .prose pre {
-                background-color: #1f2937 !important; /* bg-gray-800 */
-                color: #e5e7eb !important; /* text-gray-200 */
-                padding: 1rem;
-                border-radius: 0.5rem;
-                overflow-x: auto;
-            }
-
-            .prose a {
-                color: #60a5fa !important; /* text-blue-400 */
-                text-decoration: underline;
-            }
-
-            .prose a:hover {
-                color: #93c5fd !important; /* text-blue-300 */
-            }
-        </style>
-    </head>
-    <body class="h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 antialiased">
-        <!-- Header -->
-        <header class="border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <a href="/" class="group flex items-center space-x-3">
-                            <div
-                                class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-red-500 shadow-lg transition-all duration-300 group-hover:shadow-orange-500/25"
-                            >
-                                <span class="text-sm font-bold text-white">3P</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-lg font-semibold text-white">3Pontos</span>
-                                <span class="text-xs text-slate-400">Community</span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="flex items-center space-x-4">
-                        <a
-                            href="{{ route('subreddit.show', $post->subreddit->slug) }}"
-                            class="flex items-center space-x-2 text-sm text-slate-400 transition-colors hover:text-white"
-                        >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15 19l-7-7 7-7"
-                                ></path>
-                            </svg>
-                            <span>Voltar para r/{{ $post->subreddit->slug }}</span>
-                        </a>
-
-                        @auth
-                            <div class="flex items-center space-x-3">
-                                <a
-                                    href="{{ route('profile.show') }}"
-                                    class="flex items-center space-x-2 text-sm text-slate-300 transition-colors hover:text-white"
-                                >
-                                    @if (Auth::user()->getFirstMedia('profile-pictures'))
-                                        <img
-                                            src="{{ Auth::user()->getFirstMedia('profile-pictures')->getUrl('') }}"
-                                            alt="Foto de perfil"
-                                            class="h-6 w-6 rounded-full border border-slate-600 object-cover"
-                                        />
-                                    @else
-                                        <div
-                                            class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
-                                        >
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                    <span>{{ Auth::user()->name }}</span>
-                                </a>
-                                <form method="POST" action="{{ route('logout') }}" class="inline">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
-                                    >
-                                        Sair
-                                    </button>
-                                </form>
-                            </div>
-                        @else
-                            <div class="flex items-center space-x-3">
-                                <a
-                                    href="{{ route('login') }}"
-                                    class="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-600 hover:text-white"
-                                >
-                                    Entrar
-                                </a>
-                                <a
-                                    href="{{ route('register') }}"
-                                    class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                                >
-                                    Registrar
-                                </a>
-                            </div>
-                        @endauth
+        {{-- Post Card --}}
+        <article class="border-dark-border bg-dark-surface mb-8 rounded-2xl border p-8">
+            {{-- Post Header --}}
+            <div class="mb-6 flex items-center gap-3">
+                <div class="bg-dark-border flex h-12 w-12 items-center justify-center rounded-full text-2xl">😎</div>
+                <div>
+                    <a
+                        href="{{ route('subreddit.show', $post->subreddit->slug) }}"
+                        class="text-sm font-semibold text-orange-500 transition-colors hover:text-orange-400"
+                    >
+                        r/{{ $post->subreddit->slug }}
+                    </a>
+                    <div class="text-xs text-gray-600">
+                        por {{ $post->user->name }} · {{ $post->created_at->diffForHumans() }}
                     </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="min-h-screen py-8">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
-                    <!-- Sidebar - Community Info -->
-                    <div class="lg:col-span-1">
-                        <!-- Community Card -->
-                        <div
-                            class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm"
-                        >
-                            <div class="mb-6 flex items-center space-x-4">
-                                <div
-                                    class="flex h-12 w-12 items-center justify-center rounded-xl shadow-lg"
-                                    style="background-color: {{ $post->subreddit->color }}"
-                                >
-                                    <span class="text-lg font-bold text-white">r/</span>
-                                </div>
-                                <div>
-                                    <h2 class="text-xl font-bold text-white">r/{{ $post->subreddit->name }}</h2>
-                                    <p class="text-sm text-slate-400">{{ $post->subreddit->description }}</p>
-                                </div>
-                            </div>
+            {{-- Post Title --}}
+            <h1 class="font-display mb-6 text-3xl font-bold text-white">{{ $post->title }}</h1>
 
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-400">Membros</span>
-                                    <span class="text-sm font-medium text-white">
-                                        {{ $post->subreddit->posts_count }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-400">Posts</span>
-                                    <span class="text-sm font-medium text-white">
-                                        {{ $post->subreddit->posts_count }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-400">Criado em</span>
-                                    <span class="text-sm font-medium text-white">
-                                        {{ $post->subreddit->created_at->format('M Y') }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            @auth
-                                <div class="mt-6">
-                                    <a
-                                        href="{{ route('post.create', $post->subreddit->slug) }}"
-                                        class="block w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-500/25"
-                                    >
-                                        + Criar Post
-                                    </a>
-                                </div>
-                            @else
-                                <div class="mt-6">
-                                    <a
-                                        href="{{ route('login') }}"
-                                        class="block w-full rounded-xl bg-slate-700 px-4 py-3 text-center text-sm font-medium text-slate-300 transition-colors hover:bg-slate-600 hover:text-white"
-                                    >
-                                        + Criar Post
-                                    </a>
-                                </div>
-                            @endauth
-                        </div>
-
-                        <!-- Community Rules -->
-                        <div
-                            class="mt-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm"
-                        >
-                            <h3 class="mb-4 text-lg font-semibold text-white">Regras da Comunidade</h3>
-                            <ul class="space-y-2 text-sm text-slate-400">
-                                <li class="flex items-start space-x-2">
-                                    <span class="mt-1 text-blue-400">•</span>
-                                    <span>Seja respeitoso com outros membros</span>
-                                </li>
-                                <li class="flex items-start space-x-2">
-                                    <span class="mt-1 text-blue-400">•</span>
-                                    <span>Use títulos descritivos</span>
-                                </li>
-                                <li class="flex items-start space-x-2">
-                                    <span class="mt-1 text-blue-400">•</span>
-                                    <span>Não faça spam</span>
-                                </li>
-                                <li class="flex items-start space-x-2">
-                                    <span class="mt-1 text-blue-400">•</span>
-                                    <span>Mantenha o conteúdo relevante</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Main Content - Post -->
-                    <div class="lg:col-span-3">
-                        <!-- Post Card -->
-                        <article
-                            class="mb-8 rounded-2xl border border-slate-700/50 bg-slate-800/50 shadow-2xl backdrop-blur-sm"
-                        >
-                            <div class="p-8">
-                                <!-- Post Header -->
-                                <div class="mb-6 flex items-center space-x-4">
-                                    <div
-                                        class="flex h-12 w-12 items-center justify-center rounded-xl shadow-lg"
-                                        style="background-color: {{ $post->subreddit->color }}"
-                                    >
-                                        <span class="text-lg font-bold text-white">r/</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-2">
-                                            <a
-                                                href="{{ route('subreddit.show', $post->subreddit->slug) }}"
-                                                class="text-lg font-semibold text-blue-400 transition-colors hover:text-blue-300"
-                                            >
-                                                r/{{ $post->subreddit->slug }}
-                                            </a>
-                                            <span class="text-slate-400">•</span>
-                                            <span class="text-sm text-slate-400">
-                                                Postado por u/{{ $post->user->name }}
-                                                {{ $post->created_at->diffForHumans() }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Post Title -->
-                                <h1 class="mb-6 text-3xl leading-tight font-bold text-white">{{ $post->title }}</h1>
-
-                                <!-- Post Content -->
-                                <div class="prose prose-invert prose-lg mb-8 max-w-none">
-                                    @if ($post->type === 'text')
-                                        {!! Str::markdown($post->content) !!}
-                                    @elseif ($post->type === 'link')
-                                        <div class="rounded-xl border border-slate-600 bg-slate-700/50 p-6">
-                                            <a
-                                                href="{{ $post->url }}"
-                                                target="_blank"
-                                                class="block text-blue-400 transition-colors hover:text-blue-300"
-                                            >
-                                                <div class="flex items-center space-x-3">
-                                                    <svg
-                                                        class="h-6 w-6"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                                        ></path>
-                                                    </svg>
-                                                    <span class="text-lg font-medium">{{ $post->url }}</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @elseif ($post->type === 'image')
-                                        <div class="overflow-hidden rounded-xl">
-                                            <img
-                                                src="{{ $post->url }}"
-                                                alt="{{ $post->title }}"
-                                                class="h-auto max-h-96 w-full object-cover"
-                                            />
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <!-- Post Actions -->
-                                <div class="flex items-center justify-between border-t border-slate-700 pt-6">
-                                    <div class="flex items-center space-x-6">
-                                        <!-- Voting -->
-                                        <div class="flex items-center space-x-1">
-                                            <!-- Like Button -->
-                                            <button
-                                                onclick="vote({{ $post->id }}, 'post', 'up')"
-                                                class="vote-btn group flex items-center space-x-2 rounded-xl border border-transparent px-4 py-2.5 text-slate-400 transition-all duration-200 hover:border-green-500/30 hover:bg-green-500/15 hover:text-green-400 focus:ring-2 focus:ring-green-500/30 focus:outline-none"
-                                                data-vote-type="up"
-                                                data-target-id="{{ $post->id }}"
-                                                data-target-type="post"
-                                            >
-                                                <div
-                                                    class="flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-lg group-hover:shadow-green-500/20"
-                                                >
-                                                    <svg
-                                                        class="h-4 w-4 transition-transform duration-200 group-hover:scale-110"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2.5"
-                                                            d="M5 15l7-7 7 7"
-                                                        ></path>
-                                                    </svg>
-                                                </div>
-                                                <span
-                                                    id="likes-count-{{ $post->id }}"
-                                                    class="text-sm font-bold transition-colors duration-200 group-hover:text-green-400"
-                                                >
-                                                    {{ $post->likes_count ?? 0 }}
-                                                </span>
-                                            </button>
-
-                                            <!-- Dislike Button -->
-                                            <button
-                                                onclick="vote({{ $post->id }}, 'post', 'down')"
-                                                class="vote-btn group flex items-center space-x-2 rounded-xl border border-transparent px-4 py-2.5 text-slate-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-400 focus:ring-2 focus:ring-red-500/30 focus:outline-none"
-                                                data-vote-type="down"
-                                                data-target-id="{{ $post->id }}"
-                                                data-target-type="post"
-                                            >
-                                                <div
-                                                    class="flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-lg group-hover:shadow-red-500/20"
-                                                >
-                                                    <svg
-                                                        class="h-4 w-4 transition-transform duration-200 group-hover:scale-110"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2.5"
-                                                            d="M19 9l-7 7-7-7"
-                                                        ></path>
-                                                    </svg>
-                                                </div>
-                                                <span
-                                                    id="dislikes-count-{{ $post->id }}"
-                                                    class="text-sm font-bold transition-colors duration-200 group-hover:text-red-400"
-                                                >
-                                                    {{ $post->dislikes_count ?? 0 }}
-                                                </span>
-                                            </button>
-                                        </div>
-
-                                        <!-- Comments Count -->
-                                        <div class="flex items-center space-x-2 text-slate-400">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                                ></path>
-                                            </svg>
-                                            <span class="text-sm">{{ $post->comment_count }} comentários</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center space-x-2">
-                                        <button
-                                            class="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                                        >
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                                                ></path>
-                                            </svg>
-                                        </button>
-                                        <button
-                                            class="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                                        >
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                                                ></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Comments Section -->
-                        <div class="space-y-6">
-                            <h2 id="main-comment-count" class="text-2xl font-bold text-white">
-                                Comentários ({{ $post->comment_count }})
-                            </h2>
-
-                            <!-- Comment Form -->
-                            @auth
-                                <div
-                                    class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm"
-                                >
-                                    <h3 class="mb-4 text-lg font-semibold text-white">Adicionar Comentário</h3>
-                                    <form
-                                        id="comment-form"
-                                        action="{{ route('comments.store', [$post->subreddit->slug, $post->slug]) }}"
-                                        method="POST"
-                                    >
-                                        @csrf
-                                        <textarea
-                                            id="comment-content"
-                                            name="content"
-                                            rows="4"
-                                            class="w-full rounded-xl border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-slate-400 backdrop-blur-sm transition-all duration-200 focus:border-blue-500 focus:bg-slate-700 focus:ring-2 focus:ring-blue-500/20"
-                                            placeholder="Digite seu comentário..."
-                                            required
-                                        ></textarea>
-                                        @error('content')
-                                            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                                        @enderror
-
-                                        <div class="mt-4 flex justify-end">
-                                            <button
-                                                type="submit"
-                                                id="comment-submit"
-                                                class="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-medium text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-500/25"
-                                            >
-                                                <span id="comment-submit-text">Comentar</span>
-                                                <span id="comment-submit-loading" class="hidden">Enviando...</span>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            @else
-                                <div
-                                    class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 text-center shadow-xl backdrop-blur-sm"
-                                >
-                                    <p class="mb-4 text-slate-400">Faça login para comentar</p>
-                                    <a
-                                        href="{{ route('login') }}"
-                                        class="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
-                                    >
-                                        Entrar
-                                    </a>
-                                </div>
-                            @endauth
-
-                            <!-- Comments Sorting -->
-                            <div class="mb-6 flex items-center justify-between">
-                                <h3 id="sort-comment-count" class="text-lg font-semibold text-white">
-                                    Comentários ({{ $comments->count() }})
-                                </h3>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-sm text-slate-400">Ordenar por:</span>
-                                    <select
-                                        id="comment-sort"
-                                        class="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                                        onchange="sortComments(this.value)"
-                                    >
-                                        <option value="top" {{ $sortBy === 'top' ? 'selected' : '' }}>
-                                            Mais votados
-                                        </option>
-                                        <option value="new" {{ $sortBy === 'new' ? 'selected' : '' }}>
-                                            Mais novos
-                                        </option>
-                                        <option value="old" {{ $sortBy === 'old' ? 'selected' : '' }}>
-                                            Mais antigos
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Comments List -->
-                            <div id="comments-container" class="space-y-4">
-                                @forelse ($comments as $comment)
-                                    @include('components.comment', ['comment' => $comment, 'depth' => 0])
-                                @empty
-                                    <div
-                                        class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-8 text-center shadow-xl backdrop-blur-sm"
-                                    >
-                                        <p class="text-slate-400">
-                                            Nenhum comentário ainda. Seja o primeiro a comentar!
-                                        </p>
-                                    </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {{-- Post Content --}}
+            <div class="prose prose-invert mb-6 max-w-none text-gray-300">
+                {!! Str::markdown($post->content) !!}
             </div>
-        </main>
 
-        <script>
-            // Voting functionality
-            async function vote(targetId, targetType, voteType) {
-                try {
-                    console.log('Enviando voto:', { targetId, targetType, voteType });
+            {{-- Post Actions --}}
+            <div class="flex items-center gap-3">
+                <div
+                    class="bg-dark-border flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span id="total-comments">{{ $post->comment_count }}</span>
+                    <span>comentários</span>
+                </div>
 
-                    const response = await fetch('/vote', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        },
-                        body: JSON.stringify({
-                            voteable_id: targetId,
-                            voteable_type: targetType,
-                            vote_type: voteType,
-                        }),
-                    });
+                @auth
+                    <button
+                        id="post-upvote"
+                        onclick="votePost({{ $post->id }}, 'up')"
+                        class="hover:bg-dark-hover bg-dark-border flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                            />
+                        </svg>
+                        <span id="post-upvote-count">{{ $post->likes_count }}</span>
+                    </button>
 
-                    console.log('Resposta recebida:', response.status, response.statusText);
+                    <button
+                        id="post-downvote"
+                        onclick="votePost({{ $post->id }}, 'down')"
+                        class="hover:bg-dark-hover bg-dark-border flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:text-white"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
+                            />
+                        </svg>
+                        <span id="post-downvote-count">{{ $post->dislikes_count }}</span>
+                    </button>
+                @endauth
+            </div>
+        </article>
 
-                    if (response.ok) {
-                        const data = await response.json();
+        {{-- Comments Section --}}
+        <div class="border-dark-border bg-dark-surface rounded-2xl border p-8">
+            <h2 class="font-display mb-6 text-2xl font-bold text-white">
+                Comentários (
+                <span id="total-comments-header">{{ $post->comment_count }}</span>
+                )
+            </h2>
 
-                        // Atualizar contadores de likes e dislikes
-                        const likesElement = document.getElementById(`likes-count-${targetId}`);
-                        const dislikesElement = document.getElementById(`dislikes-count-${targetId}`);
+            {{-- Comment Form --}}
+            @auth
+                <form
+                    id="comment-form"
+                    action="{{ route('comments.store', [$post->subreddit->slug, $post->slug]) }}"
+                    method="POST"
+                    class="mb-8"
+                >
+                    @csrf
+                    <textarea
+                        name="content"
+                        id="comment-content"
+                        rows="4"
+                        placeholder="Adicione um comentário..."
+                        class="border-dark-border bg-dark-bg mb-3 w-full rounded-xl border px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none"
+                        required
+                    ></textarea>
+                    <button
+                        type="submit"
+                        class="rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/40"
+                    >
+                        Comentar
+                    </button>
+                </form>
+            @else
+                <div class="border-dark-border bg-dark-bg mb-8 rounded-xl border p-6 text-center">
+                    <p class="mb-3 text-gray-400">Você precisa fazer login para comentar</p>
+                    <a
+                        href="{{ route('login') }}"
+                        class="inline-block rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/40"
+                    >
+                        Fazer Login
+                    </a>
+                </div>
+            @endauth
 
-                        if (likesElement) {
-                            likesElement.textContent = data.likes || 0;
-                            likesElement.classList.add('vote-count', 'updated');
-                            setTimeout(() => likesElement.classList.remove('updated'), 600);
+            {{-- Sort Filter --}}
+            <div class="mb-6 flex items-center gap-2">
+                <span class="text-sm text-gray-500">Ordenar por:</span>
+                <a
+                    href="?sort=new"
+                    class="{{ request('sort') === 'new' ? 'bg-orange-500/10 text-orange-500' : 'hover:bg-dark-border text-gray-500 hover:text-white' }} rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
+                >
+                    Mais novos
+                </a>
+                <a
+                    href="?sort=top"
+                    class="{{ request('sort') === 'top' || ! request('sort') ? 'bg-orange-500/10 text-orange-500' : 'hover:bg-dark-border text-gray-500 hover:text-white' }} rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
+                >
+                    Mais votados
+                </a>
+            </div>
+
+            {{-- Comments List --}}
+            <div id="comments-container" class="space-y-4">
+                @forelse ($comments as $comment)
+                    <x-comment :comment="$comment" :post="$post" />
+                @empty
+                    <div class="border-dark-border bg-dark-bg rounded-xl border p-8 text-center">
+                        <p class="text-gray-400">Nenhum comentário ainda.</p>
+                        <p class="mt-2 text-sm text-gray-600">Seja o primeiro a comentar!</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        // Vote Post
+        async function votePost(postId, voteType) {
+            const upButton = document.getElementById('post-upvote');
+            const downButton = document.getElementById('post-downvote');
+            const upCount = document.getElementById('post-upvote-count');
+            const downCount = document.getElementById('post-downvote-count');
+
+            try {
+                const response = await fetch('{{ route('vote') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voteable_type: 'post',
+                        voteable_id: postId,
+                        vote_type: voteType,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    upCount.textContent = data.likes_count || 0;
+                    downCount.textContent = data.dislikes_count || 0;
+
+                    upButton.classList.remove('!bg-emerald-500/10', '!text-emerald-500');
+                    downButton.classList.remove('!bg-red-500/10', '!text-red-500');
+
+                    if (data.action === 'added') {
+                        if (voteType === 'up') {
+                            upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                        } else {
+                            downButton.classList.add('!bg-red-500/10', '!text-red-500');
                         }
-                        if (dislikesElement) {
-                            dislikesElement.textContent = data.dislikes || 0;
-                            dislikesElement.classList.add('vote-count', 'updated');
-                            setTimeout(() => dislikesElement.classList.remove('updated'), 600);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao votar:', error);
+            }
+        }
+
+        // Vote Comment
+        async function voteComment(commentId, voteType) {
+            const upButton = document.getElementById(`comment-upvote-${commentId}`);
+            const downButton = document.getElementById(`comment-downvote-${commentId}`);
+            const upCount = document.getElementById(`comment-upvote-count-${commentId}`);
+            const downCount = document.getElementById(`comment-downvote-count-${commentId}`);
+
+            try {
+                const response = await fetch('{{ route('vote') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voteable_type: 'comment',
+                        voteable_id: commentId,
+                        vote_type: voteType,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    upCount.textContent = data.likes_count || 0;
+                    downCount.textContent = data.dislikes_count || 0;
+
+                    upButton.classList.remove('!bg-emerald-500/10', '!text-emerald-500');
+                    downButton.classList.remove('!bg-red-500/10', '!text-red-500');
+
+                    if (data.action === 'added') {
+                        if (voteType === 'up') {
+                            upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                        } else {
+                            downButton.classList.add('!bg-red-500/10', '!text-red-500');
                         }
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao votar:', error);
+            }
+        }
 
-                        // Update button states
-                        const buttons = document.querySelectorAll(`[data-target-id="${targetId}"]`);
-                        buttons.forEach((btn) => {
-                            // Reset all buttons to default state
-                            btn.classList.remove(
-                                'bg-green-500/20',
-                                'bg-red-500/20',
-                                'text-green-400',
-                                'text-red-400',
-                                'border-green-500/30',
-                                'border-red-500/30',
-                                'active',
-                            );
-                            btn.classList.add('text-slate-400', 'border-transparent');
+        // Toggle Reply Form
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`reply-form-${commentId}`);
+            if (form) {
+                form.classList.toggle('hidden');
+            }
+        }
 
-                            // Reset icon containers
-                            const iconContainer = btn.querySelector('div');
-                            if (iconContainer) {
-                                iconContainer.classList.remove(
-                                    'bg-green-500/20',
-                                    'bg-red-500/20',
-                                    'shadow-lg',
-                                    'shadow-md',
-                                    'shadow-green-500/20',
-                                    'shadow-red-500/20',
+        // Delete Comment
+        async function deleteComment(commentId) {
+            if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
+
+            try {
+                const response = await fetch(`/comments/${commentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                    if (commentElement) {
+                        commentElement.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao deletar:', error);
+            }
+        }
+
+        // Echo/Reverb Real-time
+        @auth
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Echo disponível:', typeof window.Echo !== 'undefined');
+
+                if (typeof window.Echo !== 'undefined') {
+                    console.log('Configurando listener para post {{ $post->id }}');
+
+                    window.Echo.channel('post.{{ $post->id }}').listen('.comment.created', (e) => {
+                        console.log('Novo comentário recebido:', e);
+                    const commentsContainer = document.getElementById('comments-container');
+                    if (commentsContainer && e.comment) {
+                        updateCommentCount(e.post.comment_count);
+
+                        const newComment = createCommentElement(e.comment, e.post);
+                        if (newComment) {
+                            if (e.comment.parent_id) {
+                                const parentComment = document.querySelector(
+                                    `[data-comment-id="${e.comment.parent_id}"]`,
                                 );
-                            }
-
-                            // Reset count spans
-                            const countSpan = btn.querySelector('span');
-                            if (countSpan) {
-                                countSpan.classList.remove('text-green-400', 'text-red-400');
-                                countSpan.classList.add('text-slate-400');
-                            }
-                        });
-
-                        if (data.vote_type) {
-                            const activeBtn = document.querySelector(
-                                `[data-target-id="${targetId}"][data-vote-type="${data.vote_type}"]`,
-                            );
-                            if (activeBtn) {
-                                // Apply active state
-                                activeBtn.classList.remove('text-slate-400', 'border-transparent');
-                                activeBtn.classList.add(
-                                    data.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
-                                    data.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
-                                    data.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
-                                );
-
-                                // Apply active state to icon container
-                                const iconContainer = activeBtn.querySelector('div');
-                                if (iconContainer) {
-                                    iconContainer.classList.add(
-                                        data.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
-                                        data.vote_type === 'up'
-                                            ? 'shadow-lg shadow-green-500/20'
-                                            : 'shadow-lg shadow-red-500/20',
-                                    );
-                                }
-
-                                // Apply active state to count span
-                                const countSpan = activeBtn.querySelector('span');
-                                if (countSpan) {
-                                    countSpan.classList.add(
-                                        data.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
-                                    );
-                                }
-
-                                // Add active class for pulse animation
-                                activeBtn.classList.add('active');
-
-                                // Apply specific pulse animation based on vote type
-                                if (data.vote_type === 'up') {
-                                    activeBtn.style.animation = 'pulse-glow 2s infinite';
+                                if (parentComment) {
+                                    let repliesContainer = parentComment.querySelector('.replies-container');
+                                    if (!repliesContainer) {
+                                        repliesContainer = document.createElement('div');
+                                        repliesContainer.className = 'mt-4 space-y-4 replies-container';
+                                        parentComment.appendChild(repliesContainer);
+                                    }
+                                    repliesContainer.appendChild(newComment);
                                 } else {
-                                    activeBtn.style.animation = 'pulse-glow-red 2s infinite';
+                                    commentsContainer.appendChild(newComment);
+                                }
+                            } else {
+                                const currentSort = new URLSearchParams(window.location.search).get('sort');
+                                if (currentSort === 'new') {
+                                    commentsContainer.insertBefore(newComment, commentsContainer.firstChild);
+                                } else {
+                                    commentsContainer.appendChild(newComment);
                                 }
                             }
                         }
                     }
-                } catch (error) {
-                    console.error('Erro ao votar:', error);
-                }
-            }
+                });
 
-            // Toggle reply form
-            function toggleReplyForm(commentId) {
-                const form = document.getElementById(`reply-form-${commentId}`);
-                if (form) {
-                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-                }
-            }
-
-            // Sort comments function
-            function sortComments(sortBy) {
-                const currentUrl = new URL(window.location);
-                currentUrl.searchParams.set('sort', sortBy);
-                window.location.href = currentUrl.toString();
-            }
-
-            // Debug: verificar se a página carregou corretamente
-
-            // Interceptar formulário de comentário para AJAX
-            document.getElementById('comment-form').addEventListener('submit', async function (e) {
-                e.preventDefault();
-
-                const form = this;
-                const content = document.getElementById('comment-content').value;
-                const submitBtn = document.getElementById('comment-submit');
-                const submitText = document.getElementById('comment-submit-text');
-                const submitLoading = document.getElementById('comment-submit-loading');
-
-                if (!content.trim()) {
-                    return;
-                }
-
-                // Mostrar loading
-                submitBtn.disabled = true;
-                submitText.classList.add('hidden');
-                submitLoading.classList.remove('hidden');
-
-                try {
-                    const formData = new FormData(form);
-
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                    });
-
-                    if (response.ok) {
-                        const responseData = await response.json().catch(() => ({}));
-
-                        // Limpar formulário
-                        document.getElementById('comment-content').value = '';
-
-                        // Atualizar contador de comentários
-                        const mainCount = document.getElementById('main-comment-count');
-                        if (mainCount) {
-                            const match = mainCount.textContent.match(/\d+/);
-                            const currentCount = match ? parseInt(match[0]) : 0;
-                            updateCommentCounts(currentCount + 1);
-                        }
-
-                        // Mostrar mensagem de sucesso
-                        showNotification('Comentário adicionado com sucesso!', 'success');
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || 'Erro ao enviar comentário');
-                    }
-                } catch (error) {
-                    showNotification('Erro ao enviar comentário. Tente novamente.', 'error');
-                } finally {
-                    // Restaurar botão
-                    submitBtn.disabled = false;
-                    submitText.classList.remove('hidden');
-                    submitLoading.classList.add('hidden');
-                }
-            });
-
-            // Função para atualizar contadores de comentários
-            function updateCommentCounts(count) {
-                const mainCount = document.getElementById('main-comment-count');
-                const sortCount = document.getElementById('sort-comment-count');
-
-                if (mainCount) {
-                    mainCount.textContent = `Comentários (${count})`;
-                }
-                if (sortCount) {
-                    sortCount.textContent = `Comentários (${count})`;
-                }
-            }
-
-            // Função para excluir comentário
-            async function deleteComment(commentId) {
-                if (!confirm('Tem certeza que deseja excluir este comentário?')) {
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/comments/${commentId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        },
-                    });
-
-                    if (response.ok) {
-                        const responseData = await response.json().catch(() => ({}));
-
-                        // Atualizar contadores
-                        if (responseData.comment_count !== undefined) {
-                            updateCommentCounts(responseData.comment_count);
-                        }
-
-                        // Remover comentário da lista
-                        const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                window.Echo.channel('post.{{ $post->id }}').listen('.comment.deleted', (e) => {
+                    if (e.comment_id) {
+                        const commentElement = document.querySelector(`[data-comment-id="${e.comment_id}"]`);
                         if (commentElement) {
                             commentElement.remove();
                         }
-
-                        showNotification('Comentário excluído com sucesso!', 'success');
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || 'Erro ao excluir comentário');
+                        if (e.comment_count !== undefined) {
+                            updateCommentCount(e.comment_count);
+                        }
                     }
-                } catch (error) {
-                    showNotification('Erro ao excluir comentário. Tente novamente.', 'error');
+                });
+                } else {
+                    console.error('Echo não está disponível!');
                 }
-            }
+            });
+        @endauth
 
-            // Função para responder comentário
-            function toggleReplyForm(commentId) {
-                const existingForm = document.getElementById(`reply-form-${commentId}`);
-                if (existingForm) {
-                    existingForm.remove();
-                    return;
-                }
+        function updateCommentCount(count) {
+            const totalComments = document.getElementById('total-comments');
+            const totalCommentsHeader = document.getElementById('total-comments-header');
+            if (totalComments) totalComments.textContent = count;
+            if (totalCommentsHeader) totalCommentsHeader.textContent = count;
+        }
 
-                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-                if (!commentElement) return;
+        function createCommentElement(comment, post) {
+            const div = document.createElement('div');
+            div.className = 'border-l-2 border-dark-border pl-4';
+            div.setAttribute('data-comment-id', comment.id);
 
-                const replyForm = document.createElement('div');
-                replyForm.id = `reply-form-${commentId}`;
-                replyForm.className = 'mt-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50';
-                replyForm.innerHTML = `
-                    <form onsubmit="submitReply(event, ${commentId})" class="space-y-3">
-                        <textarea
-                            id="reply-content-${commentId}"
-                            placeholder="Escreva sua resposta..."
-                            class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                            rows="3"
-                            required
-                        ></textarea>
-                        <div class="flex justify-end space-x-2">
-                            <button
-                                type="button"
-                                onclick="toggleReplyForm(${commentId})"
-                                class="rounded-lg px-4 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="submit"
-                                class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
-                            >
-                                Responder
-                            </button>
+            const canDelete = {{ Auth::id() ?? 'null' }} === comment.user.id || {{ Auth::id() ?? 'null' }} === {{ $post->user_id }};
+            const canReply = {{ Auth::check() ? 'true' : 'false' }} && comment.depth < 5;
+
+            div.innerHTML = `
+                <div class="flex items-start gap-3 mb-3">
+                    <div class="w-8 h-8 bg-dark-border rounded-full flex items-center justify-center text-sm flex-shrink-0">
+                        ${comment.user.profile_photo_url ? `<img src="${comment.user.profile_photo_url}" class="w-full h-full rounded-full object-cover">` : '😎'}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm font-semibold text-white">${comment.user.name}</span>
+                            <span class="text-xs text-gray-600">${new Date(comment.created_at).toLocaleDateString('pt-BR')}</span>
                         </div>
-                    </form>
-                `;
-
-                commentElement.appendChild(replyForm);
-                document.getElementById(`reply-content-${commentId}`).focus();
-            }
-
-            // Função para enviar resposta
-            async function submitReply(event, commentId) {
-                event.preventDefault();
-
-                const content = document.getElementById(`reply-content-${commentId}`).value.trim();
-                if (!content) return;
-
-                try {
-                    const response = await fetch(`/comments/${commentId}/reply`, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ content }),
-                    });
-
-                    if (response.ok) {
-                        const responseData = await response.json().catch(() => ({}));
-
-                        // Atualizar contadores
-                        if (responseData.comment_count !== undefined) {
-                            updateCommentCounts(responseData.comment_count);
+                        <p class="text-sm text-gray-300 mb-3">${comment.content}</p>
+                        <div class="flex items-center gap-2">
+                            ${
+                                {{ Auth::check() ? 'true' : 'false' }}
+                                    ? `
+                                <button onclick="voteComment(${comment.id}, 'up')" id="comment-upvote-${comment.id}" class="flex items-center gap-1 px-2 py-1 bg-dark-border rounded text-xs text-gray-500 hover:bg-dark-hover hover:text-white transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                                    </svg>
+                                    <span id="comment-upvote-count-${comment.id}">${comment.likes_count || 0}</span>
+                                </button>
+                                <button onclick="voteComment(${comment.id}, 'down')" id="comment-downvote-${comment.id}" class="flex items-center gap-1 px-2 py-1 bg-dark-border rounded text-xs text-gray-500 hover:bg-dark-hover hover:text-white transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                                    </svg>
+                                    <span id="comment-downvote-count-${comment.id}">${comment.dislikes_count || 0}</span>
+                                </button>
+                            `
+                                    : ''
+                            }
+                            ${canReply ? `<button onclick="toggleReplyForm(${comment.id})" class="text-xs text-gray-500 hover:text-orange-500 transition-colors">Responder</button>` : ''}
+                            ${canDelete ? `<button onclick="deleteComment(${comment.id})" class="text-xs text-red-500 hover:text-red-400 transition-colors">Excluir</button>` : ''}
+                        </div>
+                        ${
+                            canReply
+                                ? `
+                            <form id="reply-form-${comment.id}" action="/comments/${comment.id}/reply" method="POST" class="mt-4 hidden">
+                                <input type="hidden" name="_token" value="${csrfToken}">
+                                <textarea name="content" rows="3" placeholder="Sua resposta..." class="w-full rounded-lg border border-dark-border bg-dark-bg px-3 py-2 text-sm text-white placeholder-gray-600 focus:border-orange-500 focus:outline-none mb-2" required></textarea>
+                                <button type="submit" class="rounded-lg bg-orange-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-orange-600 transition-colors">Responder</button>
+                            </form>
+                        `
+                                : ''
                         }
+                    </div>
+                </div>
+            `;
 
-                        // Remover formulário de resposta
-                        const replyForm = document.getElementById(`reply-form-${commentId}`);
-                        if (replyForm) {
-                            replyForm.remove();
-                        }
+            return div;
+        }
 
-                        showNotification('Resposta enviada com sucesso!', 'success');
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || 'Erro ao enviar resposta');
+        // Submit comment via AJAX
+        document.getElementById('comment-form')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            console.log('=== ENVIANDO COMENTÁRIO ===');
+
+            const formData = new FormData(this);
+            const content = formData.get('content');
+
+            console.log('Conteúdo:', content);
+            console.log('Action URL:', this.action);
+            console.log('CSRF Token:', csrfToken);
+
+            if (!content || content.trim() === '') {
+                console.warn('Conteúdo vazio, abortando');
+                return;
+            }
+
+            try {
+                console.log('Iniciando fetch...');
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        Accept: 'application/json',
+                    },
+                    body: formData,
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const responseText = await response.text();
+                console.log('Response raw text:', responseText);
+
+                const data = JSON.parse(responseText);
+                console.log('Response JSON:', data);
+
+                if (data.success) {
+                    console.log('Comentário enviado com sucesso!');
+                    document.getElementById('comment-content').value = '';
+                    if (data.comment_count !== undefined) {
+                        updateCommentCount(data.comment_count);
                     }
-                } catch (error) {
-                    showNotification('Erro ao enviar resposta. Tente novamente.', 'error');
+                } else {
+                    console.error('Resposta indica falha:', data);
                 }
+            } catch (error) {
+                console.error('Erro ao comentar:', error);
+                console.error('Stack:', error.stack);
             }
+        });
 
-            // Função para mostrar notificações
-            function showNotification(message, type) {
-                const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                    type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-                }`;
-                notification.textContent = message;
-
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-
-            // Função para configurar Echo
-            function setupEcho() {
-                if (window.Echo) {
-                    try {
-                        const channel = window.Echo.channel('post.{{ $post->id }}');
-
-                        channel
-                            .listen('.comment.created', (e) => {
-                                // Atualizar contador de comentários
-                                if (e.post && e.post.comment_count !== undefined) {
-                                    updateCommentCounts(e.post.comment_count);
-                                }
-
-                                // Adicionar novo comentário à lista
-                                const commentsContainer = document.getElementById('comments-container');
-                                if (commentsContainer && e.comment) {
-                                    const newComment = createCommentElement(e.comment, e.post);
-                                    if (newComment) {
-                                        // Se é uma resposta (tem parent_id), adicionar como filho do comentário pai
-                                        if (e.comment.parent_id) {
-                                            const parentComment = document.querySelector(
-                                                `[data-comment-id="${e.comment.parent_id}"]`,
-                                            );
-                                            if (parentComment) {
-                                                // Encontrar o container de respostas do comentário pai
-                                                let repliesContainer = parentComment.querySelector('.mt-4.space-y-4');
-                                                if (!repliesContainer) {
-                                                    // Criar container de respostas se não existir
-                                                    repliesContainer = document.createElement('div');
-                                                    repliesContainer.className = 'mt-4 space-y-4';
-                                                    parentComment.appendChild(repliesContainer);
-                                                }
-                                                repliesContainer.appendChild(newComment);
-                                            } else {
-                                                // Se não encontrar o pai, adicionar no container principal
-                                                commentsContainer.appendChild(newComment);
-                                            }
-                                        } else {
-                                            // Se é um comentário principal, adicionar no container principal
-                                            const currentSort = new URLSearchParams(window.location.search).get('sort');
-                                            if (currentSort === 'new') {
-                                                commentsContainer.insertBefore(
-                                                    newComment,
-                                                    commentsContainer.firstChild,
-                                                );
-                                            } else {
-                                                commentsContainer.appendChild(newComment);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                // Mostrar notificação
-                                showNotification('Novo comentário adicionado!', 'success');
-                            })
-                            .listen('.comment.deleted', (e) => {
-                                // Atualizar contador de comentários
-                                if (e.post && e.post.comment_count !== undefined) {
-                                    updateCommentCounts(e.post.comment_count);
-                                }
-
-                                // Remover comentário da lista
-                                if (e.comment && e.comment.id) {
-                                    const commentElement = document.querySelector(
-                                        `[data-comment-id="${e.comment.id}"]`,
-                                    );
-                                    if (commentElement) {
-                                        commentElement.remove();
-                                    }
-                                }
-
-                                // Mostrar notificação
-                                showNotification('Comentário removido!', 'success');
-                            })
-                            .error((error) => {
-                                console.error('Erro no Echo:', error);
-                            });
-                    } catch (error) {
-                        console.error('Erro ao configurar canal:', error);
-                    }
-                }
-            }
-
-            // Definir ID do usuário atual para cálculos de permissão
-            window.currentUserId = {{ Auth::id() ?? 'null' }};
-
-            // Load user votes on page load
+        // Load user votes
+        @auth
             document.addEventListener('DOMContentLoaded', async function () {
                 try {
-                    // Carregar votos do post
-                    const postResponse = await fetch(`/vote/user?voteable_type=post&voteable_id={{ $post->id }}`);
-                    if (postResponse.ok) {
-                        const postVote = await postResponse.json();
-                        if (postVote.vote) {
-                            const button = document.querySelector(
-                                `[data-target-id="{{ $post->id }}"][data-vote-type="${postVote.vote.vote_type}"]`,
-                            );
-                            if (button) {
-                                button.classList.remove('text-slate-400', 'border-transparent');
-                                button.classList.add(
-                                    postVote.vote.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
-                                    postVote.vote.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
-                                    postVote.vote.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
-                                );
-                            }
-                        }
-                    }
+                    const response = await fetch('{{ route('vote.user') }}', {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
 
-                    // Carregar votos dos comentários
-                    const commentButtons = document.querySelectorAll('[data-vote-type][data-target-id]');
-                    for (const button of commentButtons) {
-                        const targetId = button.getAttribute('data-target-id');
-                        const response = await fetch(`/vote/user?voteable_type=comment&voteable_id=${targetId}`);
-                        if (response.ok) {
-                            const vote = await response.json();
-                            if (vote.vote) {
-                                button.classList.remove('text-slate-400', 'border-transparent');
-                                button.classList.add(
-                                    vote.vote.vote_type === 'up' ? 'bg-green-500/20' : 'bg-red-500/20',
-                                    vote.vote.vote_type === 'up' ? 'text-green-400' : 'text-red-400',
-                                    vote.vote.vote_type === 'up' ? 'border-green-500/30' : 'border-red-500/30',
-                                );
-                            }
-                        }
-                    }
+                    const data = await response.json();
 
-                    // Configurar Echo
-                    setupEcho();
+                    if (data.success && data.votes) {
+                        data.votes.forEach((vote) => {
+                            if (vote.voteable_type === 'post' && vote.voteable_id === {{ $post->id }}) {
+                                const upButton = document.getElementById('post-upvote');
+                                const downButton = document.getElementById('post-downvote');
+
+                                if (vote.vote_type === 'up' && upButton) {
+                                    upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                                } else if (vote.vote_type === 'down' && downButton) {
+                                    downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                                }
+                            }
+
+                            if (vote.voteable_type === 'comment') {
+                                const upButton = document.getElementById(`comment-upvote-${vote.voteable_id}`);
+                                const downButton = document.getElementById(`comment-downvote-${vote.voteable_id}`);
+
+                                if (vote.vote_type === 'up' && upButton) {
+                                    upButton.classList.add('!bg-emerald-500/10', '!text-emerald-500');
+                                } else if (vote.vote_type === 'down' && downButton) {
+                                    downButton.classList.add('!bg-red-500/10', '!text-red-500');
+                                }
+                            }
+                        });
+                    }
                 } catch (error) {
                     console.error('Erro ao carregar votos:', error);
                 }
             });
-
-            // Função para calcular permissões do comentário
-            function calculateCommentPermissions(commentData, postData) {
-                const currentUserId = window.currentUserId || null;
-                const commentUserId = commentData.user?.id;
-                const postUserId = postData?.user_id;
-
-                // Usuário pode deletar se for o autor do comentário ou do post
-                const canDelete = currentUserId && (currentUserId === commentUserId || currentUserId === postUserId);
-
-                // Usuário pode responder se estiver logado
-                const canReply = !!currentUserId;
-
-                return { canDelete, canReply };
-            }
-
-            // Função para criar elemento de comentário
-            function createCommentElement(commentData, postData = null) {
-                if (!commentData || !commentData.id) {
-                    console.error('Dados do comentário inválidos:', commentData);
-                    return null;
-                }
-
-                const commentDiv = document.createElement('div');
-                commentDiv.className = 'rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 backdrop-blur-sm';
-                commentDiv.style.marginLeft = `${(commentData.depth || 0) * 2}rem`;
-                commentDiv.setAttribute('data-comment-id', commentData.id);
-
-                const timeAgo = commentData.created_at
-                    ? new Date(commentData.created_at).toLocaleString('pt-BR')
-                    : 'Agora';
-
-                const userName = commentData.user?.name || 'Usuário';
-                const userPhoto =
-                    commentData.user?.profile_photo_url ||
-                    'https://ui-avatars.com/api/?name=' + encodeURIComponent(userName) + '&background=random&color=fff';
-                const content = commentData.content || '';
-                const likesCount = commentData.likes_count || 0;
-                const dislikesCount = commentData.dislikes_count || 0;
-
-                // Calcular permissões
-                const permissions = calculateCommentPermissions(commentData, postData);
-
-                commentDiv.innerHTML = `
-                    <div class="flex items-start space-x-4">
-                        <img
-                            src="${userPhoto}"
-                            alt="${userName}"
-                            class="h-10 w-10 rounded-full object-cover"
-                        />
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-2">
-                                <h4 class="font-medium text-white">${userName}</h4>
-                                <span class="text-sm text-slate-400">${timeAgo}</span>
-                            </div>
-                            <div class="mt-2 text-slate-300">
-                                ${content.replace(/\n/g, '<br>')}
-                            </div>
-                            <div class="mt-4 flex items-center space-x-4">
-                                <div class="flex items-center space-x-1">
-                                    <!-- Like Button -->
-                                    <button class="vote-btn group flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-slate-400 transition-all duration-200 hover:bg-green-500/15 hover:text-green-400 hover:border-green-500/30 border border-transparent focus:ring-2 focus:ring-green-500/30 focus:outline-none" data-target-id="${commentData.id}" data-vote-type="up">
-                                        <div class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/20">
-                                            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path>
-                                            </svg>
-                                        </div>
-                                        <span id="likes-count-${commentData.id}" class="text-xs font-bold transition-colors duration-200 group-hover:text-green-400">${likesCount}</span>
-                                    </button>
-
-                                    <!-- Dislike Button -->
-                                    <button class="vote-btn group flex items-center space-x-1.5 rounded-lg px-3 py-1.5 text-slate-400 transition-all duration-200 hover:bg-red-500/15 hover:text-red-400 hover:border-red-500/30 border border-transparent focus:ring-2 focus:ring-red-500/30 focus:outline-none" data-target-id="${commentData.id}" data-vote-type="down">
-                                        <div class="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-200 group-hover:bg-red-500/20 group-hover:shadow-md group-hover:shadow-red-500/20">
-                                            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </div>
-                                        <span id="dislikes-count-${commentData.id}" class="text-xs font-bold transition-colors duration-200 group-hover:text-red-400">${dislikesCount}</span>
-                                    </button>
-                                </div>
-                                ${
-                                    permissions.canReply
-                                        ? `
-                                    <button onclick="toggleReplyForm(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:bg-slate-700 hover:text-white">
-                                        Responder
-                                    </button>
-                                `
-                                        : ''
-                                }
-                                ${
-                                    permissions.canDelete
-                                        ? `
-                                    <button onclick="deleteComment(${commentData.id})" class="rounded-lg px-3 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300">
-                                        Excluir
-                                    </button>
-                                `
-                                        : ''
-                                }
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                return commentDiv;
-            }
-        </script>
-    </body>
-</html>
+        @endauth
+    </script>
+@endpush
+<?php 
