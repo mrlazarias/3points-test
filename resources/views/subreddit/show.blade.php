@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
 
 @section('title', $subreddit->name . ' - 3Pontos Community')
@@ -378,4 +379,3 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
-<?php 
