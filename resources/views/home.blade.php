@@ -428,19 +428,19 @@ declare(strict_types=1);
                             @endforeach
                         </div>
                     </div>
-                </div>
 
-                <!-- Suggested Communities -->
-                <div style="margin-top: 1.5rem">
-                    <div style="background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem">
+                    <!-- Suggested Communities -->
+                    <div
+                        style="
+                            margin-top: 1.5rem;
+                            background-color: #1f2937;
+                            border: 1px solid #374151;
+                            border-radius: 0.75rem;
+                        "
+                    >
                         <div style="padding: 1rem; border-bottom: 1px solid #374151">
                             <div style="display: flex; justify-content: space-between; align-items: center">
-                                <div>
-                                    <h3 style="font-weight: 500; color: #e5e7eb">🌟 Comunidades Sugeridas</h3>
-                                    <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.25rem">
-                                        Descubra novas comunidades interessantes
-                                    </p>
-                                </div>
+                                <h3 style="font-weight: 500; color: #e5e7eb">🌟 Comunidades Sugeridas</h3>
                                 <button
                                     onclick="refreshSuggestions()"
                                     style="
@@ -473,7 +473,6 @@ declare(strict_types=1);
                                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                                         ></path>
                                     </svg>
-                                    Atualizar
                                 </button>
                             </div>
                         </div>

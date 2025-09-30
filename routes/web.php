@@ -82,7 +82,7 @@ Route::get('/', function (): View|Factory {
         ->where('is_active', true)
         ->withCount(['posts', 'followers'])
         ->inRandomOrder()
-        ->limit(8)
+        ->limit(5)
         ->get();
 
     return view('home', [
@@ -98,7 +98,7 @@ Route::get('/suggested-communities', function () {
         ->where('is_active', true)
         ->withCount(['posts', 'followers'])
         ->inRandomOrder()
-        ->limit(8)
+        ->limit(5)
         ->get();
 
     return response()->json([
