@@ -534,5 +534,3 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
-
-<?php

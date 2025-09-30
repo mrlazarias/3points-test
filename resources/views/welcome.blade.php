@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+declare(strict_types=1); ?>
 @extends('layouts.app')
 
 @section('title', 'Home - Reddit Clone')
@@ -44,5 +45,4 @@ declare(strict_types=1);
         </div>
     </div>
 @endsection
-
 <?php 

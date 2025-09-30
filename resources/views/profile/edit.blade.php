@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+declare(strict_types=1); ?>
 @extends('layouts.app')
 
 @section('title', 'Editar Perfil')

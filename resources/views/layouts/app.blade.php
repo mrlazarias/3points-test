@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+declare(strict_types=1); ?>
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
     <head>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+declare(strict_types=1); ?>
 <header
     class="dark:border-dark-border dark:bg-dark-surface sticky top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8 transition-colors"
 >
