@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <aside class="sidebar">
     <a href="/" class="logo">
         <div class="logo-icon">3P</div>
@@ -176,4 +177,5 @@ declare(strict_types=1);
         border-radius: 12px;
     }
 </style>
-<?php 
+
+<?php

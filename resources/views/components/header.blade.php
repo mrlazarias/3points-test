@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <header class="header">
     <div></div>
     <div class="header-actions">
@@ -133,4 +134,5 @@ declare(strict_types=1);
         background: #252525;
     }
 </style>
-<?php 
+
+<?php
