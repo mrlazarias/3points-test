@@ -4,36 +4,72 @@ declare(strict_types=1);
 
 ?>
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-gray-50">
+<html lang="pt-BR">
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>@yield('title', 'Reddit Clone - Laravel')</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <title>@yield('title', '3Pontos Community')</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net" />
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+        <!-- Satoshi Font -->
+        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap" rel="stylesheet" />
 
-        <!-- Styles / Scripts -->
+        <!-- Cal Sans Font -->
+        <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500&display=swap" rel="stylesheet" />
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    'Satoshi',
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+                background-color: #0a0a0a;
+                color: #ffffff;
+                min-height: 100vh;
+            }
+
+            .cal-sans {
+                font-family: 'Cabinet Grotesk', 'Satoshi', sans-serif;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                min-height: 100vh;
+            }
+
+            .content-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 32px;
+            }
+
+            @yield('styles')
+        </style>
     </head>
-    <body class="min-h-full">
-        <!-- Navigation -->
-        <x-navbar />
+    <body>
+        <!-- Sidebar -->
+        <x-sidebar :subreddits="$subreddits ?? []" />
 
         <!-- Main Content -->
-        <main>
+        <main class="main-content">
+            <!-- Header -->
+            <x-header />
+
+            <!-- Page Content -->
             @yield('content')
         </main>
 
-        <!-- Footer -->
-        <footer class="mt-16 border-t bg-white">
-            <div class="container mx-auto px-4 py-8">
-                <div class="text-center text-gray-600">
-                    <p>&copy; 2025 Reddit Clone - Desenvolvido para 3Pontos Tech</p>
-                </div>
-            </div>
-        </footer>
+        @yield('scripts')
     </body>
 </html>
 <?php 
