@@ -4,564 +4,390 @@ declare(strict_types=1);
 
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Perfil - {{ $user->name }} - 3Pontos Community</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body style="background-color: #111827; color: #f9fafb; min-height: 100vh">
-        <!-- Header -->
-        <header style="background-color: #1f2937; border-bottom: 1px solid #374151; padding: 1rem 1.5rem">
-            <div
-                style="
-                    max-width: 80rem;
-                    margin: 0 auto;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                "
-            >
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <a
-                        href="/"
-                        style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit"
-                    >
-                        <div
-                            style="
-                                width: 2rem;
-                                height: 2rem;
-                                background-color: #f97316;
-                                border-radius: 0.5rem;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                            "
-                        >
-                            <span style="color: white; font-weight: bold; font-size: 0.875rem">3P</span>
-                        </div>
-                        <span style="font-size: 1.25rem; font-weight: 600">3Pontos</span>
-                        <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
-                    </a>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <button
-                        style="padding: 0.5rem; color: #9ca3af; border-radius: 0.5rem; background: none; border: none"
-                    >
-                        <svg
-                            style="width: 1.25rem; height: 1.25rem"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            ></path>
-                        </svg>
-                    </button>
-
-                    <!-- User Menu -->
-                    <div style="display: flex; align-items: center; gap: 0.75rem">
-                        <a
-                            href="{{ route('profile.show') }}"
-                            style="color: #d1d5db; text-decoration: none; font-size: 0.875rem"
-                            onmouseover="this.style.color='#f9fafb'"
-                            onmouseout="this.style.color='#d1d5db'"
-                        >
-                            Perfil
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" style="margin: 0">
-                            @csrf
-                            <button
-                                type="submit"
-                                style="
-                                    padding: 0.5rem 1rem;
-                                    background-color: #dc2626;
-                                    color: white;
-                                    border: none;
-                                    border-radius: 0.5rem;
-                                    font-size: 0.875rem;
-                                    cursor: pointer;
-                                    transition: background-color 0.2s;
-                                "
-                                onmouseover="this.style.backgroundColor='#b91c1c'"
-                                onmouseout="this.style.backgroundColor='#dc2626'"
-                            >
-                                Sair
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1.5rem">
-            <!-- Success Message -->
-            @if (session('success'))
-                <div
-                    style="
-                        background-color: #16a34a;
-                        border: 1px solid #22c55e;
-                        border-radius: 0.5rem;
-                        padding: 1rem;
-                        margin-bottom: 2rem;
-                    "
+@extends('layouts.app')
+@section('title', 'Perfil - ' . $user->getDisplayName())
+@section('content')
+<div class="mx-auto max-w-6xl px-4 py-8">
+    <!-- Success Message -->
+    @if (session('success'))
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+            <div class="flex items-center gap-2">
+                <svg
+                    class="h-5 w-5 text-green-600 dark:text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    <div style="display: flex; align-items: center; gap: 0.5rem">
-                        <svg
-                            style="width: 1.25rem; height: 1.25rem; color: white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M5 13l4 4L19 7"
-                            ></path>
-                        </svg>
-                        <span style="color: white; font-weight: 500">{{ session('success') }}</span>
-                    </div>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="font-semibold text-green-800 dark:text-green-200">{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+
+    <!-- Profile Header -->
+    <div class="relative mb-8">
+        <!-- Cover Photo -->
+        <div class="relative h-48 w-full rounded-2xl">
+            @if ($user->getCoverPhotoUrl())
+                <img
+                    src="{{ $user->getCoverPhotoUrl() }}"
+                    alt="Cover photo"
+                    class="h-full w-full rounded-2xl object-cover"
+                />
+            @else
+                <div
+                    class="flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600"
+                >
+                    <svg class="h-16 w-16 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                    </svg>
                 </div>
             @endif
 
-            <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
-                <!-- Sidebar - Profile Info -->
-                <div>
-                    <!-- Profile Card -->
-                    <div
-                        style="
-                            background-color: #1f2937;
-                            border: 1px solid #374151;
-                            border-radius: 0.75rem;
-                            padding: 2rem;
-                            margin-bottom: 1.5rem;
-                        "
+            <!-- Profile Picture - Positioned to overlap cover photo -->
+            <div class="absolute -bottom-12 left-6 z-10">
+                <div class="group relative">
+                    @if ($user->getProfilePictureUrl())
+                        <img
+                            src="{{ $user->getProfilePictureUrl() }}"
+                            alt="Profile picture"
+                            class="dark:border-dark-surface relative h-24 w-24 rounded-full border-4 border-white object-cover transition-all duration-300 group-hover:scale-110 group-hover:border-4 group-hover:border-orange-500 group-hover:shadow-lg group-hover:shadow-orange-500/50"
+                        />
+                    @else
+                        <div
+                            class="dark:border-dark-surface relative flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-orange-500 text-3xl font-bold text-white transition-all duration-300 group-hover:scale-110 group-hover:border-4 group-hover:border-orange-600 group-hover:shadow-lg group-hover:shadow-orange-500/50"
+                        >
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Edit Button (only for own profile) -->
+
+            @if ($isOwnProfile)
+                <div class="absolute right-4 bottom-4">
+                    <a
+                        href="{{ route('profile.edit') }}"
+                        class="dark:bg-dark-surface dark:hover:bg-dark-border inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-gray-50 dark:text-white"
                     >
-                        <div style="text-align: center; margin-bottom: 1.5rem">
-                            <div style="position: relative; display: inline-block; margin-bottom: 1rem">
-                                @if ($user->getFirstMedia('profile-pictures'))
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                        </svg>
+                        Editar Perfil
+                    </a>
+                </div>
+            @elseif (Auth::check() && $currentUser)
+                <!-- Follow Button (for other users) -->
+                <div class="absolute right-4 bottom-4">
+                    @php
+                        $isFollowing = $currentUser->isFollowing($user);
+                    @endphp
+
+                    <form
+                        method="POST"
+                        action="{{ $isFollowing ? route('users.unfollow', $user) : route('users.follow', $user) }}"
+                        class="inline"
+                    >
+                        @csrf
+                        @if ($isFollowing)
+                            @method('DELETE')
+                        @endif
+
+                        <button
+                            type="submit"
+                            class="{{ $isFollowing ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : 'bg-orange-500 text-white hover:bg-orange-600' }} inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold shadow-lg transition-all hover:-translate-y-0.5"
+                        >
+                            @if ($isFollowing)
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M20 12H4"
+                                    />
+                                </svg>
+                                Seguindo
+                            @else
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 4v16m8-8H4"
+                                    />
+                                </svg>
+                                Seguir
+                            @endif
+                        </button>
+                    </form>
+                </div>
+            @endif
+        </div>
+        <!-- Profile Info -->
+        <div class="mt-16 px-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="font-display text-3xl font-bold text-gray-900 dark:text-white">
+                        {{ $user->getDisplayName() }}
+                    </h1>
+                    @if ($user->username)
+                        <p class="font-medium text-orange-500">u/{{ $user->username }}</p>
+                    @endif
+
+                    @if ($user->bio)
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $user->bio }}</p>
+                    @endif
+
+                    <!-- Additional Info -->
+                    <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        @if ($user->location)
+                            <div class="flex items-center gap-2">
+                                @if ($user->getProfilePictureUrl())
                                     <img
-                                        src="{{ $user->getFirstMedia('profile-pictures')->getUrl('') }}"
-                                        alt="Foto de perfil"
-                                        style="
-                                            width: 4rem;
-                                            height: 4rem;
-                                            border-radius: 50%;
-                                            object-fit: cover;
-                                            border: 2px solid #374151;
-                                        "
+                                        src="{{ $user->getProfilePictureUrl() }}"
+                                        alt="Profile"
+                                        class="h-6 w-6 rounded-full object-cover"
                                     />
                                 @else
                                     <div
-                                        style="
-                                            width: 4rem;
-                                            height: 4rem;
-                                            background-color: #2563eb;
-                                            border-radius: 50%;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 1.5rem;
-                                            font-weight: bold;
-                                            color: white;
-                                        "
+                                        class="flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white"
                                     >
                                         {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </div>
                                 @endif
-
-                                <!-- Upload/Remove Photo Buttons -->
-                                <div
-                                    style="
-                                        position: absolute;
-                                        bottom: -0.5rem;
-                                        right: -0.5rem;
-                                        display: flex;
-                                        gap: 0.25rem;
-                                    "
-                                >
-                                    <form
-                                        method="POST"
-                                        action="{{ route('profile.upload-photo') }}"
-                                        enctype="multipart/form-data"
-                                        style="margin: 0"
-                                    >
-                                        @csrf
-                                        <input
-                                            type="file"
-                                            name="photo"
-                                            id="photo-upload"
-                                            accept="image/*"
-                                            style="display: none"
-                                            onchange="this.form.submit()"
-                                        />
-                                        <label
-                                            for="photo-upload"
-                                            style="
-                                                width: 1.5rem;
-                                                height: 1.5rem;
-                                                background-color: #2563eb;
-                                                border-radius: 50%;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                cursor: pointer;
-                                                border: 2px solid #1f2937;
-                                            "
-                                            title="Alterar foto"
-                                        >
-                                            <svg
-                                                style="width: 0.75rem; height: 0.75rem; color: white"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                                                ></path>
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                                                ></path>
-                                            </svg>
-                                        </label>
-                                    </form>
-
-                                    @if ($user->getFirstMedia('profile-pictures'))
-                                        <form
-                                            method="POST"
-                                            action="{{ route('profile.remove-photo') }}"
-                                            style="margin: 0"
-                                        >
-                                            @csrf
-                                            @method('DELETE')
-                                            <button
-                                                type="submit"
-                                                style="
-                                                    width: 1.5rem;
-                                                    height: 1.5rem;
-                                                    background-color: #dc2626;
-                                                    border-radius: 50%;
-                                                    display: flex;
-                                                    align-items: center;
-                                                    justify-content: center;
-                                                    cursor: pointer;
-                                                    border: 2px solid #1f2937;
-                                                    color: white;
-                                                "
-                                                title="Remover foto"
-                                                onclick="return confirm('Tem certeza que deseja remover sua foto de perfil?')"
-                                            >
-                                                <svg
-                                                    style="width: 0.75rem; height: 0.75rem"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    ></path>
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
+                                {{ $user->location }}
                             </div>
+                        @endif
 
-                            <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">
-                                {{ $user->name }}
-                            </h1>
-                            <p style="color: #9ca3af; margin: 0">{{ $user->email }}</p>
-                        </div>
-
-                        <div style="border-top: 1px solid #374151; padding-top: 1.5rem">
-                            <div
-                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem"
-                            >
-                                <div style="text-align: center">
-                                    <p style="font-size: 1.25rem; font-weight: bold; margin: 0; color: #60a5fa">
-                                        {{ $posts->total() }}
-                                    </p>
-                                    <p style="color: #9ca3af; font-size: 0.875rem; margin: 0.25rem 0 0 0">Posts</p>
-                                </div>
-                                <div style="text-align: center">
-                                    <p style="font-size: 1.25rem; font-weight: bold; margin: 0; color: #10b981">
-                                        {{ $subreddits->count() }}
-                                    </p>
-                                    <p style="color: #9ca3af; font-size: 0.875rem; margin: 0.25rem 0 0 0">
-                                        Comunidades
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem">
+                        @if ($user->website)
+                            <div class="flex items-center gap-1">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                    />
+                                </svg>
                                 <a
-                                    href="{{ route('profile.edit') }}"
-                                    style="
-                                        padding: 0.75rem;
-                                        background-color: #2563eb;
-                                        color: white;
-                                        text-decoration: none;
-                                        border-radius: 0.5rem;
-                                        text-align: center;
-                                        font-size: 0.875rem;
-                                        font-weight: 500;
-                                        transition: background-color 0.2s;
-                                    "
-                                    onmouseover="this.style.backgroundColor='#1d4ed8'"
-                                    onmouseout="this.style.backgroundColor='#2563eb'"
+                                    href="{{ $user->website }}"
+                                    target="_blank"
+                                    class="transition-colors hover:text-orange-500"
                                 >
-                                    Editar Perfil
-                                </a>
-                                <a
-                                    href="{{ route('profile.edit-password') }}"
-                                    style="
-                                        padding: 0.75rem;
-                                        background-color: #374151;
-                                        color: #e5e7eb;
-                                        text-decoration: none;
-                                        border-radius: 0.5rem;
-                                        text-align: center;
-                                        font-size: 0.875rem;
-                                        font-weight: 500;
-                                        transition: background-color 0.2s;
-                                    "
-                                    onmouseover="this.style.backgroundColor='#4b5563'"
-                                    onmouseout="this.style.backgroundColor='#374151'"
-                                >
-                                    Alterar Senha
+                                    {{ parse_url($user->website, PHP_URL_HOST) }}
                                 </a>
                             </div>
-                        </div>
-                    </div>
+                        @endif
 
-                    <!-- Created Subreddits -->
-                    @if ($subreddits->count() > 0)
-                        <div
-                            style="
-                                background-color: #1f2937;
-                                border: 1px solid #374151;
-                                border-radius: 0.75rem;
-                                padding: 1.5rem;
-                            "
-                        >
-                            <h3 style="font-weight: 500; color: #e5e7eb; margin: 0 0 1rem 0">Suas Comunidades</h3>
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem">
-                                @foreach ($subreddits as $subreddit)
-                                    <a
-                                        href="{{ route('subreddit.show', $subreddit->slug) }}"
-                                        style="
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: space-between;
-                                            padding: 0.75rem;
-                                            background-color: #374151;
-                                            border-radius: 0.5rem;
-                                            text-decoration: none;
-                                            color: inherit;
-                                            transition: background-color 0.2s;
-                                        "
-                                        onmouseover="this.style.backgroundColor='#4b5563'"
-                                        onmouseout="this.style.backgroundColor='#374151'"
-                                    >
-                                        <div style="display: flex; align-items: center; gap: 0.75rem">
-                                            <div
-                                                style="
-                                                    width: 2rem;
-                                                    height: 2rem;
-                                                    border-radius: 50%;
-                                                    display: flex;
-                                                    align-items: center;
-                                                    justify-content: center;
-                                                    font-size: 0.875rem;
-                                                    font-weight: bold;
-                                                    color: white;
-                                                "
-                                                style="background-color: {{ $subreddit->color }}"
-                                            >
-                                                {{ strtoupper(substr($subreddit->name, 0, 1)) }}
-                                            </div>
-                                            <span style="color: #e5e7eb">r/{{ $subreddit->slug }}</span>
-                                        </div>
-                                        <span style="color: #9ca3af; font-size: 0.875rem">
-                                            {{ $subreddit->posts_count }} posts
-                                        </span>
-                                    </a>
-                                @endforeach
+                        @if ($user->getAge())
+                            <div class="flex items-center gap-1">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                </svg>
+                                {{ $user->getAge() }} anos
                             </div>
+                        @endif
+
+                        <div class="flex items-center gap-1">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                            </svg>
+                            Membro desde {{ $user->created_at->format('M Y') }}
                         </div>
-                    @endif
-                </div>
-
-                <!-- Main Content - User Posts -->
-                <div>
-                    <div style="margin-bottom: 1.5rem">
-                        <h2 style="font-size: 1.25rem; font-weight: bold; margin: 0">
-                            Seus Posts ({{ $posts->total() }})
-                        </h2>
                     </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 1rem">
-                        @forelse ($posts as $post)
-                            <article
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    overflow: hidden;
-                                "
-                            >
-                                <div style="padding: 1.5rem">
-                                    <!-- Post Header -->
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
-                                        <div
-                                            style="
-                                                width: 2.5rem;
-                                                height: 2.5rem;
-                                                border-radius: 50%;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                font-size: 1.125rem;
-                                                font-weight: bold;
-                                                color: white;
-                                            "
-                                            style="background-color: {{ $post->subreddit->color }}"
-                                        >
-                                            {{ strtoupper(substr($post->subreddit->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 0.5rem">
-                                                <a
-                                                    href="{{ route('subreddit.show', $post->subreddit->slug) }}"
-                                                    style="font-weight: 500; color: #60a5fa; text-decoration: none"
-                                                    onmouseover="this.style.textDecoration='underline'"
-                                                    onmouseout="this.style.textDecoration='none'"
-                                                >
-                                                    r/{{ $post->subreddit->slug }}
-                                                </a>
-                                                <span style="color: #6b7280">•</span>
-                                                <span style="color: #9ca3af">
-                                                    {{ $post->created_at->diffForHumans() }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Post Content -->
-                                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
-                                        <a
-                                            href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
-                                            style="color: inherit; text-decoration: none"
-                                            onmouseover="this.style.color='#60a5fa'"
-                                            onmouseout="this.style.color='inherit'"
-                                        >
-                                            {{ $post->title }}
-                                        </a>
-                                    </h3>
-                                    <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem">
-                                        {{ Str::limit(strip_tags($post->content), 200) }}
-                                    </p>
-
-                                    <!-- Post Actions -->
-                                    <div style="display: flex; align-items: center; gap: 1.5rem">
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            <svg
-                                                style="width: 1.25rem; height: 1.25rem; color: #9ca3af"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                                ></path>
-                                            </svg>
-                                            <span style="color: #9ca3af; font-size: 0.875rem">
-                                                {{ $post->comment_count }}
-                                            </span>
-                                        </div>
-
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            <svg
-                                                style="width: 1.25rem; height: 1.25rem; color: #9ca3af"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M5 15l7-7 7 7"
-                                                ></path>
-                                            </svg>
-                                            <span style="font-size: 0.875rem; font-weight: 500">
-                                                {{ $post->vote_score }}
-                                            </span>
-                                            <svg
-                                                style="width: 1.25rem; height: 1.25rem; color: #9ca3af"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 9l-7 7-7-7"
-                                                ></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                        @empty
-                            <div
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    padding: 2rem;
-                                    text-align: center;
-                                "
-                            >
-                                <p style="color: #9ca3af; margin: 0">Você ainda não criou nenhum post.</p>
-                                <p style="color: #6b7280; font-size: 0.875rem; margin: 0.5rem 0 0 0">
-                                    Que tal compartilhar algo interessante?
-                                </p>
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <!-- Pagination -->
-                    @if ($posts->hasPages())
-                        <div style="margin-top: 2rem">
-                            {{ $posts->links() }}
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
-    </body>
-</html>
-
-<?php
+    </div>
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <!-- Stats Card -->
+            <div
+                class="dark:border-dark-border dark:bg-dark-surface mb-6 rounded-2xl border border-gray-200 bg-white p-6"
+            >
+                <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Estatísticas</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Posts</span>
+                        <span class="text-lg font-bold text-orange-500">{{ $posts->total() }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Comunidades</span>
+                        <span class="text-lg font-bold text-green-500">{{ $subreddits->count() }}</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Created Communities -->
+            @if ($subreddits->count() > 0)
+                <div
+                    class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6"
+                >
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Comunidades Criadas</h3>
+                    <div class="space-y-3">
+                        @foreach ($subreddits as $subreddit)
+                            <a
+                                href="{{ route('subreddit.show', $subreddit->slug) }}"
+                                class="dark:hover:bg-dark-border flex items-center gap-3 rounded-lg p-3 transition-all hover:bg-gray-50"
+                            >
+                                <div
+                                    class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
+                                    style="background-color: {{ $subreddit->color }}"
+                                >
+                                    {{ strtoupper(substr($subreddit->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-medium text-gray-900 dark:text-white">
+                                        r/{{ $subreddit->slug }}
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ $subreddit->posts_count }} posts
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Posts Section -->
+            <div class="mb-6">
+                <h2 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+                    Posts ({{ $posts->total() }})
+                </h2>
+            </div>
+            <div class="space-y-4">
+                @forelse ($posts as $post)
+                    <article
+                        class="dark:border-dark-border dark:bg-dark-surface dark:hover:border-dark-hover rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-gray-300"
+                    >
+                        <!-- Post Header -->
+                        <div class="mb-4 flex items-center gap-3">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-full text-xl"
+                                style="background-color: {{ $post->subreddit->color }}"
+                            >
+                                {{ strtoupper(substr($post->subreddit->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <a
+                                        href="{{ route('subreddit.show', $post->subreddit->slug) }}"
+                                        class="font-semibold text-orange-500 transition-colors hover:text-orange-600"
+                                    >
+                                        r/{{ $post->subreddit->slug }}
+                                    </a>
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ $post->created_at->diffForHumans() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Post Content -->
+                        <h3 class="mb-3 text-lg font-bold text-gray-900 dark:text-white">
+                            <a
+                                href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
+                                class="transition-colors hover:text-orange-500"
+                            >
+                                {{ $post->title }}
+                            </a>
+                        </h3>
+                        <p class="mb-4 line-clamp-3 text-gray-600 dark:text-gray-400">
+                            {{ Str::limit(strip_tags($post->content), 200) }}
+                        </p>
+                        <!-- Post Actions -->
+                        <div class="flex items-center gap-6">
+                            <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                    />
+                                </svg>
+                                {{ $post->comment_count }} comentários
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M5 15l7-7 7 7"
+                                    />
+                                </svg>
+                                <span class="font-medium">{{ $post->vote_score }}</span>
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <div
+                        class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-12 text-center"
+                    >
+                        <svg
+                            class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                        </svg>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">Nenhum post encontrado</h3>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">
+                            @if ($isOwnProfile)
+                                Você ainda não criou nenhum post. Que tal compartilhar algo interessante?
+                            @else
+                                    Este usuário ainda não criou nenhum post.
+                            @endif
+                        </p>
+                    </div>
+                @endforelse
+            </div>
+            <!-- Pagination -->
+            @if ($posts->hasPages())
+                <div class="mt-8">
+                    {{ $posts->links() }}
+                </div>
+            @endif
+        </div>
+    </div>
+</div>

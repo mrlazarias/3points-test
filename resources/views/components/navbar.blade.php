@@ -16,7 +16,6 @@ declare(strict_types=1);
                     <span class="text-xl font-bold text-gray-900">Reddit Clone</span>
                 </a>
             </div>
-
             <!-- Search Bar -->
             <div class="mx-8 max-w-2xl flex-1">
                 <div class="relative">
@@ -40,7 +39,6 @@ declare(strict_types=1);
                     </svg>
                 </div>
             </div>
-
             <!-- User Menu -->
             <div class="flex items-center space-x-4">
                 @auth
@@ -70,7 +68,6 @@ declare(strict_types=1);
                         ></path>
                     </svg>
                 </button>
-
                 <a
                     href="/admin"
                     class="rounded-full bg-orange-500 px-4 py-2 text-white transition-colors hover:bg-orange-600"
@@ -81,5 +78,3 @@ declare(strict_types=1);
         </div>
     </div>
 </header>
-
-<?php

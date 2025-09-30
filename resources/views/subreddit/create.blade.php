@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 ?>
+
 @extends('layouts.app')
-
 @section('title', 'Criar Comunidade - 3Pontos Community')
-
 @section('content')
     <div class="mx-auto max-w-3xl px-8 py-12">
         {{-- Header --}}
@@ -14,12 +13,10 @@ declare(strict_types=1);
             <h1 class="font-display mb-2 text-3xl font-bold text-white">Criar Nova Comunidade</h1>
             <p class="text-gray-400">Preencha as informações abaixo para criar sua comunidade</p>
         </div>
-
         {{-- Form --}}
         <div class="border-dark-border bg-dark-surface rounded-2xl border p-8">
             <form action="{{ route('subreddit.store') }}" method="POST" class="space-y-6">
                 @csrf
-
                 {{-- Name --}}
                 <div>
                     <label for="name" class="mb-2 block text-sm font-semibold text-white">
@@ -42,7 +39,6 @@ declare(strict_types=1);
 
                     <p class="mt-1 text-xs text-gray-500">O nome da sua comunidade (máximo 50 caracteres)</p>
                 </div>
-
                 {{-- Description --}}
                 <div>
                     <label for="description" class="mb-2 block text-sm font-semibold text-white">
@@ -68,7 +64,6 @@ declare(strict_types=1);
                         Uma breve descrição da sua comunidade (máximo 500 caracteres)
                     </p>
                 </div>
-
                 {{-- Color Picker --}}
                 <div>
                     <label for="color" class="mb-2 block text-sm font-semibold text-white">Cor da Comunidade</label>
@@ -89,7 +84,6 @@ declare(strict_types=1);
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
                 </div>
-
                 {{-- Preview --}}
                 <div class="border-dark-border bg-dark-bg rounded-xl border p-6">
                     <p class="mb-4 text-sm font-semibold text-gray-400">Preview da Comunidade</p>
@@ -108,7 +102,6 @@ declare(strict_types=1);
                         </div>
                     </div>
                 </div>
-
                 {{-- Actions --}}
                 <div class="flex items-center justify-end gap-4">
                     <a
@@ -138,17 +131,14 @@ declare(strict_types=1);
         const previewName = document.getElementById('preview-name');
         const previewDescription = document.getElementById('preview-description');
         const previewAvatar = document.getElementById('preview-avatar');
-
         nameInput?.addEventListener('input', function () {
             const value = this.value || 'Nome da Comunidade';
             previewName.textContent = `r/${value}`;
             previewAvatar.textContent = value.charAt(0).toUpperCase() || 'C';
         });
-
         descriptionInput?.addEventListener('input', function () {
             previewDescription.textContent = this.value || 'Descrição da comunidade...';
         });
-
         colorInput?.addEventListener('input', function () {
             // Usar uma variável CSS para a cor do preview
             document.documentElement.style.setProperty('--preview-color', this.value);
@@ -156,4 +146,3 @@ declare(strict_types=1);
         });
     </script>
 @endpush
-<?php 

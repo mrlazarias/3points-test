@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\NewPostCreated;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Subreddit;
@@ -87,6 +88,12 @@ final class PostController extends Controller
             'dislikes_count' => 0,
             'comment_count' => 0,
         ]);
+
+        // Carregar relacionamentos necessários
+        $post->load(['user', 'subreddit']);
+
+        // Disparar evento de notificação para seguidores
+        broadcast(new NewPostCreated(Auth::user(), $post));
 
         return redirect()
             ->route('post.show', ['subreddit' => $subreddit->slug, 'post' => $post->slug])

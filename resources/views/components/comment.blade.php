@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 ?>
+
 @props([
     'comment',
     'post',
 ])
-
 <div
     class="border-dark-border {{ ($comment->depth ?? 0) > 0 ? 'ml-' . ($comment->depth ?? 0) * 4 : '' }} border-l-2 pl-4"
     data-comment-id="{{ $comment->id }}"
@@ -25,19 +25,25 @@ declare(strict_types=1);
                 😎
             @endif
         </div>
-
         <div class="flex-1">
             {{-- User and Time --}}
             <div class="mb-2 flex items-center gap-2">
-                <span class="text-sm font-semibold text-white">{{ $comment->user->name }}</span>
+                @if ($comment->user->username)
+                    <a
+                        href="{{ route('profile.user', $comment->user->username) }}"
+                        class="text-sm font-semibold text-white hover:underline"
+                    >
+                        u/{{ $comment->user->username }}
+                    </a>
+                @else
+                    <span class="text-sm font-semibold text-white">{{ $comment->user->name }}</span>
+                @endif
                 <span class="text-xs text-gray-600">{{ $comment->created_at->diffForHumans() }}</span>
             </div>
-
             {{-- Comment Content --}}
             <div class="prose prose-invert prose-sm mb-3 max-w-none">
                 <p class="text-sm text-gray-300">{{ $comment->content }}</p>
             </div>
-
             {{-- Comment Actions --}}
             <div class="flex items-center gap-2">
                 @auth
@@ -62,7 +68,6 @@ declare(strict_types=1);
                         </svg>
                         <span id="comment-upvote-count-{{ $comment->id }}">{{ $comment->likes_count ?? 0 }}</span>
                     </button>
-
                     {{-- Downvote --}}
                     <button
                         id="comment-downvote-{{ $comment->id }}"
@@ -108,7 +113,6 @@ declare(strict_types=1);
                     </button>
                 @endif
             </div>
-
             {{-- Reply Form --}}
             @if ($comment->canBeRepliedToBy(Auth::user()))
                 <form
@@ -145,4 +149,3 @@ declare(strict_types=1);
         </div>
     </div>
 </div>
-<?php 

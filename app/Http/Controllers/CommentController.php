@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
 use App\Events\CommentCreated;
 use App\Events\CommentDeleted;
+use App\Events\CommentNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Subreddit;
@@ -32,18 +32,10 @@ final class CommentController extends Controller
 
     public function store(Request $request, Subreddit $subreddit, Post $post): RedirectResponse|JsonResponse
     {
-        Log::info('=== CommentController::store chamado ===');
-        Log::info('Request method: '.$request->method());
-        Log::info('Request wantsJson: '.($request->wantsJson() ? 'true' : 'false'));
-        Log::info('Request ajax: '.($request->ajax() ? 'true' : 'false'));
-        Log::info('Request headers:', $request->headers->all());
-
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:10000'],
             'parent_id' => ['nullable', 'exists:comments,id'],
         ]);
-
-        Log::info('Validação passou. Dados:', $validated);
 
         $comment = Comment::query()->create([
             'content' => $validated['content'],
@@ -57,32 +49,24 @@ final class CommentController extends Controller
             'is_deleted' => false,
         ]);
 
-        Log::info('Comentário criado com ID: '.$comment->id);
-
-        // Carregar relacionamentos para o broadcast
         $comment->load('user');
 
-        // Atualizar contador de comentários do post
+        $post->load('subreddit');
+
         $post->updateCommentCount();
 
-        Log::info('Contador atualizado. Total: '.$post->fresh()->comment_count);
-
-        // Disparar evento de broadcast
         broadcast(new CommentCreated($comment, $post));
-        Log::info('Evento CommentCreated disparado');
 
-        // Se for requisição AJAX, retornar JSON
+        // Disparar notificação para o dono do post
+        broadcast(new CommentNotification(Auth::user(), $post, $comment));
+
         if ($request->ajax() || $request->wantsJson()) {
-            Log::info('Retornando JSON response');
-
             return response()->json([
                 'success' => true,
                 'message' => 'Comentário adicionado com sucesso!',
                 'comment_count' => $post->fresh()->comment_count,
             ]);
         }
-
-        Log::info('Retornando redirect response');
 
         return redirect()
             ->route('post.show', ['subreddit' => $post->subreddit->slug, 'post' => $post->slug])

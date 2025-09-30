@@ -61,14 +61,17 @@ final class AuthController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'alpha_dash', 'min:3'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $user = User::query()->create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_public' => true, // Por padrão, perfis são públicos
         ]);
 
         event(new Registered($user));

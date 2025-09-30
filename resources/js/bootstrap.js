@@ -10,7 +10,7 @@ window.Pusher = Pusher;
 
 const echoConfig = {
     broadcaster: 'reverb',
-    key: 'macoc7uln6ue6ubarryd',
+    key: 'local',
     wsHost: window.location.hostname,
     wsPort: 8080,
     wssPort: 8080,
@@ -25,7 +25,7 @@ try {
     console.error('Erro ao inicializar Echo:', error);
     window.Echo = new Echo({
         broadcaster: 'reverb',
-        key: 'macoc7uln6ue6ubarryd',
+        key: 'local',
         wsHost: window.location.hostname,
         wsPort: 8080,
         forceTLS: false,

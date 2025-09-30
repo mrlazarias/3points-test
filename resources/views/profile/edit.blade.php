@@ -4,168 +4,308 @@ declare(strict_types=1);
 
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Editar Perfil - 3Pontos Community</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body style="background-color: #111827; color: #f9fafb; min-height: 100vh">
-        <!-- Header -->
-        <header style="background-color: #1f2937; border-bottom: 1px solid #374151; padding: 1rem 1.5rem">
-            <div
-                style="
-                    max-width: 80rem;
-                    margin: 0 auto;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                "
+@extends('layouts.app')
+@section('title', 'Editar Perfil')
+@section('content')
+<div class="mx-auto max-w-4xl px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="mb-4 flex items-center gap-4">
+            <a
+                href="{{ route('profile.show') }}"
+                class="inline-flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             >
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <a
-                        href="/"
-                        style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit"
-                    >
-                        <div
-                            style="
-                                width: 2rem;
-                                height: 2rem;
-                                background-color: #f97316;
-                                border-radius: 0.5rem;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                            "
-                        >
-                            <span style="color: white; font-weight: bold; font-size: 0.875rem">3P</span>
-                        </div>
-                        <span style="font-size: 1.25rem; font-weight: 600">3Pontos</span>
-                        <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
-                    </a>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <a
-                        href="{{ route('profile.show') }}"
-                        style="color: #9ca3af; text-decoration: none; font-size: 0.875rem"
-                        onmouseover="this.style.color='#f9fafb'"
-                        onmouseout="this.style.color='#9ca3af'"
-                    >
-                        ← Voltar ao perfil
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <div
-            style="
-                min-height: calc(100vh - 80px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 2rem 1.5rem;
-            "
-        >
-            <div style="width: 100%; max-width: 500px">
-                <!-- Edit Profile Card -->
-                <div
-                    style="background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem; padding: 2rem"
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Voltar ao perfil
+            </a>
+        </div>
+        <h1 class="font-display text-3xl font-bold text-gray-900 dark:text-white">Editar Perfil</h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">Atualize suas informações pessoais e configurações</p>
+    </div>
+    @if ($errors->any())
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+            <div class="mb-2 flex items-center gap-2">
+                <svg
+                    class="h-5 w-5 text-red-600 dark:text-red-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    <div style="text-align: center; margin-bottom: 2rem">
-                        <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">Editar Perfil</h1>
-                        <p style="color: #9ca3af; margin: 0">Atualize suas informações pessoais</p>
-                    </div>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+                <span class="font-semibold text-red-800 dark:text-red-200">Erro na validação</span>
+            </div>
+            <ul class="space-y-1 text-sm text-red-700 dark:text-red-300">
+                @foreach ($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                    @if ($errors->any())
-                        <div
-                            style="
-                                background-color: #dc2626;
-                                border: 1px solid #ef4444;
-                                border-radius: 0.5rem;
-                                padding: 1rem;
-                                margin-bottom: 1.5rem;
-                            "
-                        >
-                            <div style="display: flex; align-items: center; gap: 0.5rem">
-                                <svg
-                                    style="width: 1.25rem; height: 1.25rem; color: white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <div class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6">
+                <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Configurações</h3>
+                <nav class="space-y-2">
+                    <a
+                        href="{{ route('profile.edit') }}"
+                        class="flex items-center gap-3 rounded-lg bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"
+                    >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                        </svg>
+                        Informações Pessoais
+                    </a>
+                    <a
+                        href="{{ route('profile.edit-password') }}"
+                        class="dark:hover:bg-dark-border flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                            />
+                        </svg>
+                        Segurança
+                    </a>
+                </nav>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <div class="space-y-6">
+                <!-- Profile Photos -->
+                <div
+                    class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6"
+                >
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Fotos do Perfil</h3>
+                    <!-- Cover Photo -->
+                    <div class="mb-6">
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Foto de Capa
+                        </label>
+                        <div class="relative">
+                            @if ($user->getCoverPhotoUrl())
+                                <img
+                                    src="{{ $user->getCoverPhotoUrl() }}"
+                                    alt="Cover photo"
+                                    class="h-32 w-full rounded-lg object-cover"
+                                />
+                            @else
+                                <div
+                                    class="dark:bg-dark-border flex h-32 w-full items-center justify-center rounded-lg bg-gray-100"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    ></path>
-                                </svg>
-                                <span style="color: white; font-weight: 500">Erro na validação</span>
-                            </div>
-                            <ul style="color: white; font-size: 0.875rem; margin: 0.5rem 0 0 0; padding-left: 1.25rem">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                                    <svg
+                                        class="h-8 w-8 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+                            @endif
                         </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('profile.update') }}">
+                        <div class="mt-2 flex gap-2">
+                            <form
+                                method="POST"
+                                action="{{ route('profile.upload-cover-photo') }}"
+                                enctype="multipart/form-data"
+                                class="flex-1"
+                            >
+                                @csrf
+                                <input
+                                    type="file"
+                                    name="cover_photo"
+                                    accept="image/*"
+                                    onchange="this.form.submit()"
+                                    class="hidden"
+                                    id="cover-photo-input"
+                                />
+                                <label
+                                    for="cover-photo-input"
+                                    class="dark:bg-dark-border dark:hover:bg-dark-hover inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-300"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                        />
+                                    </svg>
+                                    Alterar Capa
+                                </label>
+                            </form>
+                            @if ($user->getCoverPhotoUrl())
+                                <form method="POST" action="{{ route('profile.remove-cover-photo') }}" class="flex-1">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button
+                                        type="submit"
+                                        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                            />
+                                        </svg>
+                                        Remover
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                    <!-- Profile Picture -->
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Foto de Perfil
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                @if ($user->getProfilePictureUrl())
+                                    <img
+                                        src="{{ $user->getProfilePictureUrl() }}"
+                                        alt="Profile picture"
+                                        class="h-20 w-20 rounded-full object-cover"
+                                    />
+                                @else
+                                    <div
+                                        class="flex h-20 w-20 items-center justify-center rounded-full bg-orange-500 text-2xl font-bold text-white"
+                                    >
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex gap-2">
+                                <form
+                                    method="POST"
+                                    action="{{ route('profile.upload-photo') }}"
+                                    enctype="multipart/form-data"
+                                >
+                                    @csrf
+                                    <input
+                                        type="file"
+                                        name="photo"
+                                        accept="image/*"
+                                        onchange="this.form.submit()"
+                                        class="hidden"
+                                        id="profile-photo-input"
+                                    />
+                                    <label
+                                        for="profile-photo-input"
+                                        class="dark:bg-dark-border dark:hover:bg-dark-hover inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-300"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                            />
+                                        </svg>
+                                        Alterar
+                                    </label>
+                                </form>
+                                @if ($user->getProfilePictureUrl())
+                                    <form method="POST" action="{{ route('profile.remove-photo') }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="submit"
+                                            class="inline-flex items-center gap-2 rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                                        >
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                />
+                                            </svg>
+                                            Remover
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Personal Information Form -->
+                <div
+                    class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6"
+                >
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Informações Pessoais</h3>
+                    <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
                         @csrf
                         @method('PUT')
-
-                        <!-- Name -->
-                        <div style="margin-bottom: 1.5rem">
-                            <label
-                                for="name"
-                                style="
-                                    display: block;
-                                    color: #e5e7eb;
-                                    font-size: 0.875rem;
-                                    font-weight: 500;
-                                    margin-bottom: 0.5rem;
-                                "
-                            >
-                                Nome completo
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value="{{ old('name', $user->name) }}"
-                                required
-                                autofocus
-                                style="
-                                    width: 100%;
-                                    padding: 0.75rem;
-                                    background-color: #374151;
-                                    border: 1px solid #4b5563;
-                                    border-radius: 0.5rem;
-                                    color: #f9fafb;
-                                    font-size: 0.875rem;
-                                    transition: border-color 0.2s;
-                                "
-                                onfocus="this.style.borderColor='#60a5fa'"
-                                onblur="this.style.borderColor='#4b5563'"
-                            />
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <!-- Name -->
+                            <div>
+                                <label
+                                    for="name"
+                                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    Nome completo *
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value="{{ old('name', $user->name) }}"
+                                    required
+                                    class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                />
+                            </div>
+                            <!-- Username -->
+                            <div>
+                                <label
+                                    for="username"
+                                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    Nome de usuário
+                                </label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    value="{{ old('username', $user->username) }}"
+                                    class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                    placeholder="ex: joao123"
+                                />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    Usado na URL do seu perfil: /u/joao123
+                                </p>
+                            </div>
                         </div>
-
                         <!-- Email -->
-                        <div style="margin-bottom: 1.5rem">
-                            <label
-                                for="email"
-                                style="
-                                    display: block;
-                                    color: #e5e7eb;
-                                    font-size: 0.875rem;
-                                    font-weight: 500;
-                                    margin-bottom: 0.5rem;
-                                "
-                            >
-                                Email
+                        <div>
+                            <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Email *
                             </label>
                             <input
                                 type="email"
@@ -173,68 +313,118 @@ declare(strict_types=1);
                                 name="email"
                                 value="{{ old('email', $user->email) }}"
                                 required
-                                style="
-                                    width: 100%;
-                                    padding: 0.75rem;
-                                    background-color: #374151;
-                                    border: 1px solid #4b5563;
-                                    border-radius: 0.5rem;
-                                    color: #f9fafb;
-                                    font-size: 0.875rem;
-                                    transition: border-color 0.2s;
-                                "
-                                onfocus="this.style.borderColor='#60a5fa'"
-                                onblur="this.style.borderColor='#4b5563'"
+                                class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
                             />
                         </div>
-
-                        <!-- Submit Button -->
-                        <button
-                            type="submit"
-                            style="
-                                width: 100%;
-                                padding: 0.75rem;
-                                background-color: #2563eb;
-                                color: white;
-                                border: none;
-                                border-radius: 0.5rem;
-                                font-size: 0.875rem;
-                                font-weight: 500;
-                                cursor: pointer;
-                                transition: background-color 0.2s;
-                            "
-                            onmouseover="this.style.backgroundColor='#1d4ed8'"
-                            onmouseout="this.style.backgroundColor='#2563eb'"
-                        >
-                            Salvar Alterações
-                        </button>
-                    </form>
-
-                    <!-- Password Change Link -->
-                    <div
-                        style="
-                            text-align: center;
-                            margin-top: 1.5rem;
-                            padding-top: 1.5rem;
-                            border-top: 1px solid #374151;
-                        "
-                    >
-                        <p style="color: #9ca3af; font-size: 0.875rem; margin: 0">
-                            Quer alterar sua senha?
-                            <a
-                                href="{{ route('profile.edit-password') }}"
-                                style="color: #60a5fa; text-decoration: none; font-weight: 500"
-                                onmouseover="this.style.textDecoration='underline'"
-                                onmouseout="this.style.textDecoration='none'"
+                        <!-- Bio -->
+                        <div>
+                            <label for="bio" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Biografia
+                            </label>
+                            <textarea
+                                id="bio"
+                                name="bio"
+                                rows="3"
+                                class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                placeholder="Conte um pouco sobre você..."
                             >
-                                Clique aqui
-                            </a>
-                        </p>
-                    </div>
+{{ old('bio', $user->bio) }}</textarea
+                            >
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Máximo 500 caracteres</p>
+                        </div>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <!-- Location -->
+                            <div>
+                                <label
+                                    for="location"
+                                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    Localização
+                                </label>
+                                <input
+                                    type="text"
+                                    id="location"
+                                    name="location"
+                                    value="{{ old('location', $user->location) }}"
+                                    class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                    placeholder="ex: São Paulo, Brasil"
+                                />
+                            </div>
+                            <!-- Website -->
+                            <div>
+                                <label
+                                    for="website"
+                                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    Website
+                                </label>
+                                <input
+                                    type="url"
+                                    id="website"
+                                    name="website"
+                                    value="{{ old('website', $user->website) }}"
+                                    class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                    placeholder="https://seusite.com"
+                                />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <!-- Birth Date -->
+                            <div>
+                                <label
+                                    for="birth_date"
+                                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    Data de nascimento
+                                </label>
+                                <input
+                                    type="date"
+                                    id="birth_date"
+                                    name="birth_date"
+                                    value="{{ old('birth_date', $user->birth_date?->format('Y-m-d')) }}"
+                                    class="dark:border-dark-border dark:bg-dark-surface w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-500"
+                                />
+                            </div>
+                            <!-- Privacy -->
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Privacidade
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="is_public"
+                                        name="is_public"
+                                        value="1"
+                                        {{ old('is_public', $user->is_public) ? 'checked' : '' }}
+                                        class="dark:border-dark-border dark:bg-dark-surface h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                    />
+                                    <label for="is_public" class="text-sm text-gray-700 dark:text-gray-300">
+                                        Perfil público (outros usuários podem ver)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="flex justify-end">
+                            <button
+                                type="submit"
+                                class="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-500/40"
+                            >
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                                Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </body>
-</html>
-
-<?php
+    </div>
+</div>

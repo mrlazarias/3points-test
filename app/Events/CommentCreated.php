@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Broadcasting\Channel;
@@ -21,7 +22,14 @@ final class CommentCreated implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(public Comment $comment, public Post $post) {}
+    public function __construct(public Comment $comment, public Post $post)
+    {
+        Log::info('CommentCreated event constructed', [
+            'comment_id' => $comment->id,
+            'post_id' => $post->id,
+            'channel' => 'post.'.$post->id,
+        ]);
+    }
 
     /**
      * Get the channels the event should broadcast on.
@@ -30,8 +38,15 @@ final class CommentCreated implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
+        $channel = 'post.'.$this->post->id;
+        Log::info('CommentCreated broadcasting on channel', [
+            'channel' => $channel,
+            'comment_id' => $this->comment->id,
+            'post_id' => $this->post->id,
+        ]);
+
         return [
-            new Channel('post.'.$this->post->id),
+            new Channel($channel),
         ];
     }
 

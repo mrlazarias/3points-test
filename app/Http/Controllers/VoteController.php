@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\PostLiked;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -51,8 +52,8 @@ final class VoteController extends Controller
                 return response()->json([
                     'success' => true,
                     'action' => 'removed',
-                    'likes' => $voteable->fresh()->likes_count,
-                    'dislikes' => $voteable->fresh()->dislikes_count,
+                    'likes_count' => $voteable->fresh()->likes_count,
+                    'dislikes_count' => $voteable->fresh()->dislikes_count,
                 ]);
             }
 
@@ -60,12 +61,17 @@ final class VoteController extends Controller
             $existingVote->update(['vote_type' => $request->vote_type]);
             $voteable->updateVoteScore();
 
+            // Disparar evento de notificação se for um post
+            if ($voteable instanceof Post) {
+                broadcast(new PostLiked($user, $voteable, $request->vote_type));
+            }
+
             return response()->json([
                 'success' => true,
                 'action' => 'updated',
                 'vote_type' => $request->vote_type,
-                'likes' => $voteable->fresh()->likes_count,
-                'dislikes' => $voteable->fresh()->dislikes_count,
+                'likes_count' => $voteable->fresh()->likes_count,
+                'dislikes_count' => $voteable->fresh()->dislikes_count,
             ]);
         }
 
@@ -79,12 +85,17 @@ final class VoteController extends Controller
 
         $voteable->updateVoteScore();
 
+        // Disparar evento de notificação se for um post
+        if ($voteable instanceof Post) {
+            broadcast(new PostLiked($user, $voteable, $request->vote_type));
+        }
+
         return response()->json([
             'success' => true,
-            'action' => 'created',
+            'action' => 'added',
             'vote_type' => $request->vote_type,
-            'likes' => $voteable->fresh()->likes_count,
-            'dislikes' => $voteable->fresh()->dislikes_count,
+            'likes_count' => $voteable->fresh()->likes_count,
+            'dislikes_count' => $voteable->fresh()->dislikes_count,
         ]);
     }
 
@@ -127,8 +138,8 @@ final class VoteController extends Controller
         return response()->json([
             'success' => true,
             'action' => 'removed',
-            'likes' => $voteable->fresh()->likes_count,
-            'dislikes' => $voteable->fresh()->dislikes_count,
+            'likes_count' => $voteable->fresh()->likes_count,
+            'dislikes_count' => $voteable->fresh()->dislikes_count,
         ]);
     }
 
@@ -143,7 +154,7 @@ final class VoteController extends Controller
         $votes = Vote::query()
             ->where('user_id', $user->id)
             ->get()
-            ->map(fn($vote): array => [
+            ->map(fn ($vote): array => [
                 'voteable_id' => $vote->voteable_id,
                 'voteable_type' => mb_strtolower(class_basename($vote->voteable_type)),
                 'vote_type' => $vote->vote_type,

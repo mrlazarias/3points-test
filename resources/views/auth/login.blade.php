@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -47,7 +48,6 @@ declare(strict_types=1);
                 </div>
             </div>
         </header>
-
         <div
             style="
                 min-height: calc(100vh - 80px);
@@ -66,7 +66,6 @@ declare(strict_types=1);
                         <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">Bem-vindo de volta!</h1>
                         <p style="color: #9ca3af; margin: 0">Faça login na sua conta</p>
                     </div>
-
                     @if ($errors->any())
                         <div
                             style="
@@ -103,7 +102,6 @@ declare(strict_types=1);
 
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-
                         <!-- Email -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -139,7 +137,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Password -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -173,7 +170,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Remember Me -->
                         <div
                             style="
@@ -201,7 +197,6 @@ declare(strict_types=1);
                                 Lembrar de mim
                             </label>
                         </div>
-
                         <!-- Submit Button -->
                         <button
                             type="submit"
@@ -223,7 +218,6 @@ declare(strict_types=1);
                             Entrar
                         </button>
                     </form>
-
                     <!-- Register Link -->
                     <div
                         style="
@@ -250,4 +244,3 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
-<?php 
