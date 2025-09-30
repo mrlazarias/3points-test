@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Events\CommentCreated;
+use App\Events\CommentNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -34,8 +35,8 @@ final class TestBroadcasting extends Command
             return 1;
         }
 
-        $this->info('Testing broadcasting for post: ' . $post->title);
-        $this->info('Using user: ' . $user->name);
+        $this->info('Testing broadcasting for post: '.$post->title);
+        $this->info('Using user: '.$user->name);
 
         // Criar um comentário de teste
         $comment = Comment::query()->create([
@@ -50,11 +51,16 @@ final class TestBroadcasting extends Command
 
         $comment->load('user');
 
-        $this->info('Comment created with ID: ' . $comment->id);
+        $post->load('subreddit');
 
-        // Disparar evento
-        $this->info('Broadcasting event...');
+        $this->info('Comment created with ID: '.$comment->id);
+
+        // Disparar eventos
+        $this->info('Broadcasting CommentCreated event...');
         broadcast(new CommentCreated($comment, $post));
+
+        $this->info('Broadcasting CommentNotification event...');
+        broadcast(new CommentNotification($user, $post, $comment));
 
         $this->info('Broadcast completed. Check logs for details.');
 

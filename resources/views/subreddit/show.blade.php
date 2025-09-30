@@ -3,17 +3,13 @@
 declare(strict_types=1);
 
 ?>
-
 @extends('layouts.app')
-
 @section('title', $subreddit->name . ' - 3Pontos Community')
-
 @section('content')
     {{-- Community Header with Gradient --}}
     <div
         class="to-dark-bg border-dark-border relative h-52 border-b bg-gradient-to-b from-[{{ $subreddit->color }}]/10"
     ></div>
-
     <div class="relative mx-auto -mt-12 max-w-screen-xl px-8">
         {{-- Community Info --}}
         <div class="mb-8">
@@ -23,7 +19,6 @@ declare(strict_types=1);
             >
                 😎
             </div>
-
             {{-- Community Title and Actions --}}
             <div class="mb-3 flex items-start justify-between">
                 <div>
@@ -31,7 +26,6 @@ declare(strict_types=1);
                         /r {{ $subreddit->name }}
                     </h1>
                     <p class="mb-4 text-base text-gray-700 dark:text-gray-400">{{ $subreddit->description }}</p>
-
                     {{-- Community Meta --}}
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-2 text-sm text-gray-600">
@@ -50,7 +44,6 @@ declare(strict_types=1);
                             </svg>
                             {{ number_format($followersCount) }}i de membros
                         </div>
-
                         <div class="flex items-center gap-2 text-sm text-gray-600">
                             <svg
                                 class="h-4 w-4 text-gray-600 dark:text-gray-500"
@@ -69,7 +62,6 @@ declare(strict_types=1);
                         </div>
                     </div>
                 </div>
-
                 {{-- Action Buttons --}}
                 <div class="flex gap-3">
                     @auth
@@ -99,12 +91,10 @@ declare(strict_types=1);
                 </div>
             </div>
         </div>
-
         {{-- Posts Section --}}
         <h2 class="font-display mb-6 text-2xl font-bold text-gray-900 dark:text-white">
             Veja todos os posts da comunidade
         </h2>
-
         @forelse ($posts as $post)
             <article
                 class="dark:border-dark-border dark:bg-dark-surface hover:border-dark-hover mb-4 rounded-2xl border border-gray-200 bg-white p-6 transition-all"
@@ -121,7 +111,6 @@ declare(strict_types=1);
                         <div class="text-xs text-gray-600">{{ $post->created_at->diffForHumans() }}</div>
                     </div>
                 </div>
-
                 {{-- Post Title --}}
                 <a
                     href="{{ route('post.show', [$subreddit->slug, $post->slug]) }}"
@@ -129,12 +118,10 @@ declare(strict_types=1);
                 >
                     {{ $post->title }}
                 </a>
-
                 {{-- Post Content --}}
                 <p class="mb-4 text-sm leading-relaxed text-gray-700 dark:text-gray-400">
                     {{ Str::limit(strip_tags($post->content), 200) }}
                 </p>
-
                 {{-- Post Actions --}}
                 <div class="flex items-center gap-3">
                     <button
@@ -175,7 +162,6 @@ declare(strict_types=1);
                             </svg>
                             <span id="upvote-count-{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span>
                         </button>
-
                         <button
                             id="downvote-{{ $post->id }}"
                             onclick="votePost({{ $post->id }}, 'down')"
@@ -216,7 +202,6 @@ declare(strict_types=1);
                             </svg>
                         </button>
                     @endauth
-
                     <a
                         href="{{ route('post.show', [$subreddit->slug, $post->slug]) }}"
                         class="dark:bg-dark-border dark:hover:bg-dark-hover rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:bg-gray-200 hover:text-gray-900 dark:text-gray-500 dark:text-white"
@@ -233,7 +218,6 @@ declare(strict_types=1);
                 <p class="text-sm text-gray-600 dark:text-gray-500">Seja o primeiro a postar aqui!</p>
             </div>
         @endforelse
-
         {{-- Pagination --}}
         @if ($posts->hasPages())
             <div class="mt-8">
@@ -246,13 +230,11 @@ declare(strict_types=1);
 @push('scripts')
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
         async function votePost(postId, voteType) {
             const upButton = document.getElementById(`upvote-${postId}`);
             const downButton = document.getElementById(`downvote-${postId}`);
             const upCount = document.getElementById(`upvote-count-${postId}`);
             const downCount = document.getElementById(`downvote-count-${postId}`);
-
             try {
                 const response = await fetch('{{ route('vote') }}', {
                     method: 'POST',
@@ -267,18 +249,14 @@ declare(strict_types=1);
                         vote_type: voteType,
                     }),
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     // Update counts
                     upCount.textContent = data.likes_count || 0;
                     downCount.textContent = data.dislikes_count || 0;
-
                     // Reset active states
                     upButton.classList.remove('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                     downButton.classList.remove('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
-
                     // Apply active state
                     if (data.action === 'added' || data.action === 'updated') {
                         if (voteType === 'up') {
@@ -293,15 +271,11 @@ declare(strict_types=1);
                 alert('Erro de conexão. Tente novamente.');
             }
         }
-
         async function toggleFollow(subredditId, subredditSlug) {
             const button = document.getElementById(`follow-btn-${subredditId}`);
             const text = document.getElementById(`follow-text-${subredditId}`);
-
             if (!button || !text) return;
-
             button.disabled = true;
-
             try {
                 const checkResponse = await fetch(`/communities/${subredditSlug}/follow-status`, {
                     method: 'GET',
@@ -310,12 +284,10 @@ declare(strict_types=1);
                         'Content-Type': 'application/json',
                     },
                 });
-
                 const checkData = await checkResponse.json();
                 const isFollowing = checkData.is_following;
                 const url = `/communities/${subredditSlug}/follow`;
                 const method = isFollowing ? 'DELETE' : 'POST';
-
                 const response = await fetch(url, {
                     method: method,
                     headers: {
@@ -323,12 +295,9 @@ declare(strict_types=1);
                         'Content-Type': 'application/json',
                     },
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     text.textContent = data.is_following ? 'Seguindo' : 'Entrar';
-
                     if (data.is_following) {
                         button.className =
                             'px-6 py-3 rounded-xl text-sm font-semibold transition-all bg-emerald-600 text-gray-900 dark:text-white hover:bg-emerald-700';
@@ -343,7 +312,6 @@ declare(strict_types=1);
                 button.disabled = false;
             }
         }
-
         // Load user votes on page load
         @auth
             document.addEventListener('DOMContentLoaded', async function () {
@@ -355,15 +323,12 @@ declare(strict_types=1);
                             Accept: 'application/json',
                         },
                     });
-
                     const data = await response.json();
-
                     if (data.success && data.votes) {
                         data.votes.forEach((vote) => {
                             if (vote.voteable_type === 'post') {
                                 const upButton = document.getElementById(`upvote-${vote.voteable_id}`);
                                 const downButton = document.getElementById(`downvote-${vote.voteable_id}`);
-
                                 if (vote.vote_type === 'up' && upButton) {
                                     upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                                 } else if (vote.vote_type === 'down' && downButton) {
@@ -379,3 +344,4 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
+<?php 

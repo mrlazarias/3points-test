@@ -1,3 +1,7 @@
-<article>
+<?php
 
-</article>
+declare(strict_types=1);
+
+?>
+<article></article>
+<?php 

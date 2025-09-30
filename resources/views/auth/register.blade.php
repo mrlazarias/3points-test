@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
@@ -48,7 +47,6 @@ declare(strict_types=1);
                 </div>
             </div>
         </header>
-
         <div
             style="
                 min-height: calc(100vh - 80px);
@@ -67,7 +65,6 @@ declare(strict_types=1);
                         <h1 style="font-size: 1.5rem; font-weight: bold; margin: 0 0 0.5rem 0">Criar conta</h1>
                         <p style="color: #9ca3af; margin: 0">Junte-se à nossa comunidade</p>
                     </div>
-
                     @if ($errors->any())
                         <div
                             style="
@@ -104,7 +101,6 @@ declare(strict_types=1);
 
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
-
                         <!-- Name -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -140,7 +136,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Username -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -179,7 +174,6 @@ declare(strict_types=1);
                                 Este será seu nome público na comunidade (u/nomeusuario)
                             </p>
                         </div>
-
                         <!-- Email -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -214,7 +208,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Password -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -248,7 +241,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Password Confirmation -->
                         <div style="margin-bottom: 1.5rem">
                             <label
@@ -282,7 +274,6 @@ declare(strict_types=1);
                                 onblur="this.style.borderColor='#4b5563'"
                             />
                         </div>
-
                         <!-- Submit Button -->
                         <button
                             type="submit"
@@ -304,7 +295,6 @@ declare(strict_types=1);
                             Criar conta
                         </button>
                     </form>
-
                     <!-- Login Link -->
                     <div
                         style="
@@ -331,3 +321,4 @@ declare(strict_types=1);
         </div>
     </body>
 </html>
+<?php 

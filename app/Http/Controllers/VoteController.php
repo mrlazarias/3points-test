@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Events\PostLiked;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -60,6 +61,11 @@ final class VoteController extends Controller
             $existingVote->update(['vote_type' => $request->vote_type]);
             $voteable->updateVoteScore();
 
+            // Disparar evento de notificação se for um post
+            if ($voteable instanceof Post) {
+                broadcast(new PostLiked($user, $voteable, $request->vote_type));
+            }
+
             return response()->json([
                 'success' => true,
                 'action' => 'updated',
@@ -78,6 +84,11 @@ final class VoteController extends Controller
         ]);
 
         $voteable->updateVoteScore();
+
+        // Disparar evento de notificação se for um post
+        if ($voteable instanceof Post) {
+            broadcast(new PostLiked($user, $voteable, $request->vote_type));
+        }
 
         return response()->json([
             'success' => true,

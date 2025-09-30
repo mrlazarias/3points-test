@@ -3,11 +3,9 @@
 declare(strict_types=1);
 
 ?>
-
 @props([
     'post',
 ])
-
 <article class="p-6 transition-colors hover:bg-gray-50">
     <div class="flex space-x-4">
         <!-- Vote Section -->
@@ -17,18 +15,15 @@ declare(strict_types=1);
                     <path d="M12 4l8 8h-6v8h-4v-8H4l8-8z" />
                 </svg>
             </button>
-
             <span class="text-sm font-medium text-gray-700">
                 {{ $post->vote_score }}
             </span>
-
             <button class="rounded p-1 text-gray-400 hover:bg-blue-50 hover:text-blue-500">
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 20l-8-8h6V4h4v8h6l-8 8z" />
                 </svg>
             </button>
         </div>
-
         <!-- Content -->
         <div class="min-w-0 flex-1">
             <!-- Header -->
@@ -60,14 +55,12 @@ declare(strict_types=1);
                     </span>
                 @endif
             </div>
-
             <!-- Title -->
             <h2 class="mb-2 text-lg font-semibold text-gray-900">
                 <a href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}" class="hover:text-blue-600">
                     {{ $post->title }}
                 </a>
             </h2>
-
             <!-- Content Preview -->
             @if ($post->content)
                 <div class="mb-4 line-clamp-3 text-gray-700">
@@ -98,6 +91,45 @@ declare(strict_types=1);
 
             <!-- Actions -->
             <div class="flex items-center space-x-4 text-sm text-gray-500">
+                @auth
+                    <!-- Voting Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <button
+                            class="vote-btn {{ $post->user_vote_type === 'up' ? 'text-green-600' : '' }} flex items-center space-x-1 transition-colors hover:text-green-600"
+                            data-voteable-type="post"
+                            data-voteable-id="{{ $post->id }}"
+                            data-vote-type="up"
+                        >
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M5 15l7-7 7 7"
+                                />
+                            </svg>
+                            <span class="vote-count">{{ $post->likes_count }}</span>
+                        </button>
+
+                        <button
+                            class="vote-btn {{ $post->user_vote_type === 'down' ? 'text-red-600' : '' }} flex items-center space-x-1 transition-colors hover:text-red-600"
+                            data-voteable-type="post"
+                            data-voteable-id="{{ $post->id }}"
+                            data-vote-type="down"
+                        >
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                            <span class="vote-count">{{ $post->dislikes_count }}</span>
+                        </button>
+                    </div>
+                @endauth
+
                 <a
                     href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
                     class="flex items-center space-x-1 hover:text-gray-700"
@@ -112,7 +144,6 @@ declare(strict_types=1);
                     </svg>
                     <span>{{ $post->comment_count }} comentários</span>
                 </a>
-
                 <button class="flex items-center space-x-1 hover:text-gray-700">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -128,3 +159,4 @@ declare(strict_types=1);
         </div>
     </div>
 </article>
+<?php 

@@ -31,16 +31,31 @@ final class ProfileController extends Controller
             ->paginate(10);
 
         // Buscar subreddits criados pelo usuário
-        $subreddits = Subreddit::query()
+        $userSubreddits = Subreddit::query()
             ->where('created_by', $user->id)
             ->withCount('posts')
             ->orderByDesc('created_at')
             ->get();
 
+        // Buscar subreddits para sidebar (comunidades que o usuário segue ou criou)
+        $sidebarSubreddits = Subreddit::query()
+            ->where('is_active', true)
+            ->where(function ($query) use ($user): void {
+                $query->where('created_by', $user->id)
+                    ->orWhereHas('followers', function ($followQuery) use ($user): void {
+                        $followQuery->where('user_id', $user->id);
+                    });
+            })
+            ->withCount(['posts', 'followers'])
+            ->orderByDesc('posts_count')
+            ->limit(10)
+            ->get();
+
         return view('profile.show', [
             'user' => $user,
             'posts' => $posts,
-            'subreddits' => $subreddits,
+            'subreddits' => $sidebarSubreddits,
+            'userSubreddits' => $userSubreddits,
             'isOwnProfile' => true,
         ]);
     }
@@ -65,17 +80,44 @@ final class ProfileController extends Controller
             ->paginate(10);
 
         // Buscar subreddits criados pelo usuário
-        $subreddits = Subreddit::query()
+        $userSubreddits = Subreddit::query()
             ->where('created_by', $user->id)
             ->withCount('posts')
             ->orderByDesc('created_at')
             ->get();
 
+        // Buscar subreddits para sidebar (comunidades que o usuário logado segue ou criou)
+        $sidebarSubreddits = collect();
+        if ($currentUser) {
+            $sidebarSubreddits = Subreddit::query()
+                ->where('is_active', true)
+                ->where(function ($query) use ($currentUser): void {
+                    $query->where('created_by', $currentUser->id)
+                        ->orWhereHas('followers', function ($followQuery) use ($currentUser): void {
+                            $followQuery->where('user_id', $currentUser->id);
+                        });
+                })
+                ->withCount(['posts', 'followers'])
+                ->orderByDesc('posts_count')
+                ->limit(10)
+                ->get();
+        } else {
+            // Se não logado, mostrar as mais populares
+            $sidebarSubreddits = Subreddit::query()
+                ->where('is_active', true)
+                ->withCount(['posts', 'followers'])
+                ->orderByDesc('posts_count')
+                ->limit(10)
+                ->get();
+        }
+
         return view('profile.show', [
             'user' => $user,
             'posts' => $posts,
-            'subreddits' => $subreddits,
+            'subreddits' => $sidebarSubreddits,
+            'userSubreddits' => $userSubreddits,
             'isOwnProfile' => $isOwnProfile,
+            'currentUser' => $currentUser,
         ]);
     }
 

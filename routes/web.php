@@ -5,92 +5,19 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityFollowController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubredditController;
+use App\Http\Controllers\UserFollowController;
 use App\Http\Controllers\VoteController;
-use App\Models\Post;
 use App\Models\Subreddit;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
-// Home - Lista posts das comunidades seguidas (ou todos se não logado)
-Route::get('/', function (): View|Factory {
-    $user = auth()->user();
-
-    if ($user) {
-        // Se logado, mostrar apenas posts das comunidades que o usuário segue
-        $followedCommunityIds = $user->followedCommunities()->pluck('subreddits.id');
-
-        if ($followedCommunityIds->isNotEmpty()) {
-            $posts = Post::query()
-                ->with(['subreddit', 'user'])
-                ->whereIn('subreddit_id', $followedCommunityIds)
-                ->orderByDesc('is_pinned')
-                ->orderByDesc('vote_score')
-                ->orderByDesc('created_at')
-                ->paginate(20);
-        } else {
-            // Se não segue nenhuma comunidade, mostrar posts vazios com mensagem
-            $posts = Post::query()
-                ->with(['subreddit', 'user'])
-                ->whereRaw('1 = 0') // Query que nunca retorna resultados
-                ->orderByDesc('is_pinned')
-                ->orderByDesc('vote_score')
-                ->orderByDesc('created_at')
-                ->paginate(20);
-        }
-    } else {
-        // Se não logado, mostrar todos os posts
-        $posts = Post::query()
-            ->with(['subreddit', 'user'])
-            ->whereNotNull('subreddit_id')
-            ->orderByDesc('is_pinned')
-            ->orderByDesc('vote_score')
-            ->orderByDesc('created_at')
-            ->paginate(20);
-    }
-
-    // Carregar comunidades para a sidebar
-    if ($user) {
-        // Se logado, mostrar apenas comunidades que o usuário criou ou segue
-        $subreddits = Subreddit::query()
-            ->where('is_active', true)
-            ->where(function ($query) use ($user): void {
-                $query->where('created_by', $user->id)
-                    ->orWhereHas('followers', function ($followQuery) use ($user): void {
-                        $followQuery->where('user_id', $user->id);
-                    });
-            })
-            ->withCount(['posts', 'followers'])
-            ->orderByDesc('posts_count')
-            ->limit(10)
-            ->get();
-    } else {
-        // Se não logado, mostrar as mais populares
-        $subreddits = Subreddit::query()
-            ->where('is_active', true)
-            ->withCount(['posts', 'followers'])
-            ->orderByDesc('posts_count')
-            ->limit(10)
-            ->get();
-    }
-
-    // Carregar comunidades sugeridas (aleatórias)
-    $suggestedSubreddits = Subreddit::query()
-        ->where('is_active', true)
-        ->withCount(['posts', 'followers'])
-        ->inRandomOrder()
-        ->limit(5)
-        ->get();
-
-    return view('home', [
-        'posts' => $posts,
-        'subreddits' => $subreddits,
-        'suggestedSubreddits' => $suggestedSubreddits,
-    ]);
-})->name('home');
+// Home - Lista posts (todos ou de usuários seguidos)
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Rota para buscar sugestões de comunidades (AJAX)
 Route::get('/suggested-communities', function () {
@@ -170,4 +97,10 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/communities/{subreddit:slug}/follow', [CommunityFollowController::class, 'follow'])->name('communities.follow');
     Route::delete('/communities/{subreddit:slug}/follow', [CommunityFollowController::class, 'unfollow'])->name('communities.unfollow');
     Route::get('/communities/{subreddit:slug}/follow-status', [CommunityFollowController::class, 'check'])->name('communities.follow-status');
+
+    // Rotas de Follow de Usuários
+    Route::post('/users/{user}/follow', [UserFollowController::class, 'follow'])->name('users.follow');
+    Route::delete('/users/{user}/follow', [UserFollowController::class, 'unfollow'])->name('users.unfollow');
+    Route::get('/u/{user:username}/followers', [UserFollowController::class, 'followers'])->name('users.followers');
+    Route::get('/u/{user:username}/following', [UserFollowController::class, 'following'])->name('users.following');
 });

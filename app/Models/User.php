@@ -88,12 +88,54 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     }
 
     /**
+     * @return HasMany<Vote, $this>
+     */
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    /**
      * @return BelongsToMany<Subreddit, $this>
      */
     public function followedCommunities(): BelongsToMany
     {
         return $this->belongsToMany(Subreddit::class, 'community_follows', 'user_id', 'subreddit_id')
             ->withTimestamps();
+    }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'user_follows', 'follower_id', 'following_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'user_follows', 'following_id', 'follower_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<Notification, $this>
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * @return HasMany<Notification, $this>
+     */
+    public function sentNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'from_user_id');
     }
 
     /**
@@ -134,6 +176,52 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         }
 
         return $this->birth_date->age;
+    }
+
+    /**
+     * Check if the user is following another user.
+     */
+    public function isFollowing(self $user): bool
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if the user is followed by another user.
+     */
+    public function isFollowedBy(self $user): bool
+    {
+        return $this->followers()->where('follower_id', $user->id)->exists();
+    }
+
+    /**
+     * Follow a user.
+     */
+    public function follow(self $user): bool
+    {
+        if ($this->isFollowing($user) || $this->id === $user->id) {
+            return false;
+        }
+
+        $this->following()->attach($user->id);
+
+        return true;
+    }
+
+    /**
+     * Unfollow a user.
+     */
+    public function unfollow(self $user): bool
+    {
+        return $this->following()->detach($user->id) > 0;
+    }
+
+    /**
+     * Get unread notifications count.
+     */
+    public function getUnreadNotificationsCount(): int
+    {
+        return $this->notifications()->where('is_read', false)->count();
     }
 
     /**

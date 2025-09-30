@@ -158,7 +158,32 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Justificativa**: Permite personalização da experiência do usuário e descoberta de conteúdo.
 
-### 11. Refatoração Completa para Tailwind v4 + Blade
+### 11. Sistema de Seguir Usuários
+
+**Decisão**: Implementei sistema completo de seguir usuários com:
+
+- **Tabela pivot**: `user_follows` para relacionamento many-to-many entre usuários
+- **Homepage personalizada**: Filtro "Seguindo" mostra apenas posts de usuários seguidos
+- **Interface dinâmica**: Botões que alternam entre "Seguir" e "Seguindo"
+- **AJAX interativo**: Follow/unfollow sem reload da página
+- **Notificações**: Sistema de notificações quando alguém te segue
+
+**Justificativa**: Permite personalização da experiência do usuário e descoberta de conteúdo de pessoas específicas.
+
+### 12. Sistema de Notificações Real-time
+
+**Decisão**: Implementei sistema completo de notificações com:
+
+- **Eventos de Broadcasting**: `UserFollowed`, `PostLiked`, `CommentNotification`, `NewPostCreated`
+- **Interface de Notificações**: Dropdown no header com badge de contagem
+- **Avatars Dinâmicos**: SVG inline como fallback para usuários sem foto
+- **Sistema de Lidas**: Notificações podem ser marcadas como lidas
+- **Navegação**: Clique nas notificações leva para o post específico
+- **Badge Inteligente**: Desaparece ao abrir o dropdown (indicando "visto")
+
+**Justificativa**: Melhora engajamento e mantém usuários informados sobre interações em tempo real.
+
+### 13. Refatoração Completa para Tailwind v4 + Blade
 
 **Decisão**: Migrei toda a aplicação para usar exclusivamente Tailwind v4:
 
@@ -171,7 +196,7 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Justificativa**: Manutenibilidade, consistência visual e performance otimizada.
 
-### 12. Sistema de Tema Claro/Escuro
+### 14. Sistema de Tema Claro/Escuro
 
 **Decisão**: Implementei toggle de tema completo com:
 
@@ -204,12 +229,19 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 15. **Sistema de temas** - Toggle claro/escuro com persistência
 16. **Organização de código** - Componentes Blade reutilizáveis e estrutura limpa
 
+### Etapas Concluídas Recentemente ✅
+
+17. **Sistema de Seguir Usuários** - Follow/unfollow entre usuários com homepage personalizada
+18. **Sistema de Notificações Real-time** - Notificações para curtidas, comentários, seguidores e novos posts
+19. **Interface de Notificações** - Dropdown com avatars, navegação e sistema de lidas
+20. **Correção de Bugs** - Header fixo, votação em posts, navegação de notificações
+
 ### Próximas Etapas 🚧
 
 1. **Página de perfil** - Edição de dados do usuário
 2. **Testes** - Cobertura de testes unitários e funcionais
 3. **Otimizações** - Performance e cache adicional
-4. **Features avançadas** - Notificações, moderação, etc.
+4. **Features avançadas** - Moderação, busca avançada, etc.
 5. **Páginas restantes** - Refatorar login/register/create para Tailwind v4
 6. **Mobile app** - API REST para aplicativo móvel
 
@@ -276,9 +308,16 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ✅ **Interatividade**: Todas as funcionalidades core implementadas
 ✅ **Broadcasting**: Comentários em tempo real com Laravel Reverb
 ✅ **Follow System**: Sistema completo de seguir comunidades
+✅ **Sistema de Seguir Usuários**: Follow/unfollow entre usuários com homepage personalizada
+✅ **Notificações Real-time**: Sistema completo de notificações em tempo real
+✅ **Interface de Notificações**: Dropdown com avatars e sistema de lidas
 ✅ **Tailwind v4**: Refatoração completa para Blade + Tailwind v4
 ✅ **Dark Mode**: Toggle claro/escuro funcional
 ✅ **Componentes**: Estrutura organizada e reutilizável
+✅ **Sistema de Seguir Usuários**: Follow/unfollow com homepage personalizada
+✅ **Notificações Real-time**: Sistema completo de notificações em tempo real
+✅ **Interface de Notificações**: Dropdown com avatars e sistema de lidas
+✅ **Correção de Bugs**: Header fixo, votação em posts, navegação
 🚧 **Perfil**: Página de edição de dados do usuário
 🚧 **Testes**: Cobertura de testes unitários e funcionais
 🚧 **Páginas restantes**: Login/register/create com Tailwind v4

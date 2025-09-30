@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Events\CommentCreated;
 use App\Events\CommentDeleted;
+use App\Events\CommentNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Subreddit;
@@ -50,9 +51,14 @@ final class CommentController extends Controller
 
         $comment->load('user');
 
+        $post->load('subreddit');
+
         $post->updateCommentCount();
 
         broadcast(new CommentCreated($comment, $post));
+
+        // Disparar notificação para o dono do post
+        broadcast(new CommentNotification(Auth::user(), $post, $comment));
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

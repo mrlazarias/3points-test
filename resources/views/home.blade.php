@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 ?>
-
 @extends('layouts.app')
-
 @section('title', '3Pontos Community - Home')
-
 @section('content')
     <div class="mx-auto max-w-screen-xl p-8">
         {{-- Welcome Section --}}
@@ -21,7 +18,6 @@ declare(strict_types=1);
             </h1>
             <p class="text-gray-600 dark:text-gray-500">Confira as estatísticas das comunidades que você segue</p>
         </div>
-
         {{-- Stats Grid --}}
         <div class="mb-12 grid grid-cols-3 gap-6">
             {{-- Users Stats --}}
@@ -50,7 +46,6 @@ declare(strict_types=1);
                 <div class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">10,000</div>
                 <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de usuários</div>
             </div>
-
             {{-- Posts Stats --}}
             <div
                 class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6 text-center"
@@ -78,7 +73,6 @@ declare(strict_types=1);
                 <div class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $posts->total() }}</div>
                 <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de posts</div>
             </div>
-
             {{-- Comments Stats --}}
             <div
                 class="dark:border-dark-border dark:bg-dark-surface rounded-2xl border border-gray-200 bg-white p-6 text-center"
@@ -103,7 +97,6 @@ declare(strict_types=1);
                 <div class="text-sm text-gray-600 dark:text-gray-500">Quantidade de replies</div>
             </div>
         </div>
-
         {{-- Posts Section Header --}}
         <div class="mb-6 flex items-center justify-between">
             <h2 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
@@ -117,7 +110,6 @@ declare(strict_types=1);
                     Veja os últimos posts das comunidades
                 @endauth
             </h2>
-
             @auth
                 <a
                     href="{{ route('subreddit.create') }}"
@@ -139,7 +131,6 @@ declare(strict_types=1);
                 </a>
             @endauth
         </div>
-
         {{-- Posts List --}}
         @forelse ($posts as $post)
             <article
@@ -162,7 +153,6 @@ declare(strict_types=1);
                         <div class="text-xs text-gray-600">{{ $post->created_at->diffForHumans() }}</div>
                     </div>
                 </div>
-
                 {{-- Post Title --}}
                 <a
                     href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
@@ -170,12 +160,10 @@ declare(strict_types=1);
                 >
                     {{ $post->title }}
                 </a>
-
                 {{-- Post Content --}}
                 <p class="mb-4 text-sm leading-relaxed text-gray-700 dark:text-gray-400">
                     {{ Str::limit(strip_tags($post->content), 200) }}
                 </p>
-
                 {{-- Post Actions --}}
                 <div class="flex items-center gap-3">
                     {{-- Comments --}}
@@ -196,7 +184,6 @@ declare(strict_types=1);
                         </svg>
                         <span id="comment-count-{{ $post->id }}">{{ $post->comment_count }}</span>
                     </button>
-
                     {{-- Upvote --}}
                     @auth
                         <button
@@ -219,7 +206,6 @@ declare(strict_types=1);
                             </svg>
                             <span id="upvote-count-{{ $post->id }}">{{ $post->likes_count }}</span>
                         </button>
-
                         {{-- Downvote --}}
                         <button
                             id="downvote-{{ $post->id }}"
@@ -261,7 +247,6 @@ declare(strict_types=1);
                             </svg>
                         </button>
                     @endauth
-
                     {{-- Ver Post --}}
                     <a
                         href="{{ route('post.show', [$post->subreddit->slug, $post->slug]) }}"
@@ -295,7 +280,6 @@ declare(strict_types=1);
                 </p>
             </div>
         @endforelse
-
         {{-- Pagination --}}
         @if ($posts->hasPages())
             <div class="mt-8">
@@ -308,14 +292,12 @@ declare(strict_types=1);
 @push('scripts')
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
         // Vote Post Function
         async function votePost(postId, voteType) {
             const upButton = document.getElementById(`upvote-${postId}`);
             const downButton = document.getElementById(`downvote-${postId}`);
             const upCount = document.getElementById(`upvote-count-${postId}`);
             const downCount = document.getElementById(`downvote-count-${postId}`);
-
             try {
                 const response = await fetch('{{ route('vote') }}', {
                     method: 'POST',
@@ -330,18 +312,14 @@ declare(strict_types=1);
                         vote_type: voteType,
                     }),
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     // Update counts
                     upCount.textContent = data.likes_count || 0;
                     downCount.textContent = data.dislikes_count || 0;
-
                     // Reset active states
             upButton.classList.remove('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
             downButton.classList.remove('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
-
                     // Apply active state
                     if (data.action === 'added' || data.action === 'updated') {
                         if (voteType === 'up') {
@@ -356,7 +334,6 @@ declare(strict_types=1);
                 alert('Erro de conexão. Tente novamente.');
             }
         }
-
         // Load user votes on page load
         @auth
             document.addEventListener('DOMContentLoaded', async function () {
@@ -368,15 +345,12 @@ declare(strict_types=1);
                             'Content-Type': 'application/json',
                         },
                     });
-
                     const data = await response.json();
-
                     if (data.success && data.votes) {
                         data.votes.forEach((vote) => {
                             if (vote.voteable_type === 'post') {
                                 const upButton = document.getElementById(`upvote-${vote.voteable_id}`);
                                 const downButton = document.getElementById(`downvote-${vote.voteable_id}`);
-
                                 if (vote.vote_type === 'up' && upButton) {
                                     upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                                 } else if (vote.vote_type === 'down' && downButton) {
@@ -392,3 +366,4 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
+<?php 

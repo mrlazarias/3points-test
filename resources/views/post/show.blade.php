@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 ?>
-
 @extends('layouts.app')
-
 @section('title', $post->title . ' - r/' . $post->subreddit->slug)
-
 @section('content')
     <div class="mx-auto max-w-screen-lg px-8 py-8">
         {{-- Back to Community --}}
@@ -28,7 +25,6 @@ declare(strict_types=1);
             </svg>
             Voltar para r/{{ $post->subreddit->slug }}
         </a>
-
         {{-- Post Card --}}
         <article class="border-dark-border bg-dark-surface mb-8 rounded-2xl border p-8">
             {{-- Post Header --}}
@@ -59,15 +55,12 @@ declare(strict_types=1);
                     </div>
                 </div>
             </div>
-
             {{-- Post Title --}}
             <h1 class="font-display mb-6 text-3xl font-bold text-gray-900 dark:text-white">{{ $post->title }}</h1>
-
             {{-- Post Content --}}
             <div class="prose prose-invert mb-6 max-w-none text-gray-300">
                 {!! Str::markdown($post->content) !!}
             </div>
-
             {{-- Post Actions --}}
             <div class="flex items-center gap-3">
                 <div
@@ -87,7 +80,6 @@ declare(strict_types=1);
                     <span id="total-comments">{{ $post->comment_count }}</span>
                     <span>comentários</span>
                 </div>
-
                 @auth
                     <button
                         id="post-upvote"
@@ -109,7 +101,6 @@ declare(strict_types=1);
                         </svg>
                         <span id="post-upvote-count">{{ $post->likes_count }}</span>
                     </button>
-
                     <button
                         id="post-downvote"
                         onclick="votePost({{ $post->id }}, 'down')"
@@ -133,7 +124,6 @@ declare(strict_types=1);
                 @endauth
             </div>
         </article>
-
         {{-- Comments Section --}}
         <div class="border-dark-border bg-dark-surface rounded-2xl border p-8">
             <h2 class="font-display mb-6 text-2xl font-bold text-gray-900 dark:text-white">
@@ -141,7 +131,6 @@ declare(strict_types=1);
                 <span id="total-comments-header">{{ $post->comment_count }}</span>
                 )
             </h2>
-
             {{-- Comment Form --}}
             @auth
                 <form
@@ -177,7 +166,6 @@ declare(strict_types=1);
                     </a>
                 </div>
             @endauth
-
             {{-- Sort Filter --}}
             <div class="mb-6 flex items-center gap-2">
                 <span class="text-sm text-gray-600 dark:text-gray-500">Ordenar por:</span>
@@ -194,7 +182,6 @@ declare(strict_types=1);
                     Mais votados
                 </a>
             </div>
-
             {{-- Comments List --}}
             <div id="comments-container" class="space-y-4">
                 @forelse ($comments as $comment)
@@ -213,14 +200,12 @@ declare(strict_types=1);
 @push('scripts')
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
         // Vote Post
         async function votePost(postId, voteType) {
             const upButton = document.getElementById('post-upvote');
             const downButton = document.getElementById('post-downvote');
             const upCount = document.getElementById('post-upvote-count');
             const downCount = document.getElementById('post-downvote-count');
-
             try {
                 const response = await fetch('{{ route('vote') }}', {
                     method: 'POST',
@@ -235,16 +220,12 @@ declare(strict_types=1);
                         vote_type: voteType,
                     }),
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     upCount.textContent = data.likes_count || 0;
                     downCount.textContent = data.dislikes_count || 0;
-
                     upButton.classList.remove('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                     downButton.classList.remove('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
-
                     if (data.action === 'added' || data.action === 'updated') {
                         if (voteType === 'up') {
                             upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
@@ -257,14 +238,12 @@ declare(strict_types=1);
                 console.error('Erro ao votar:', error);
             }
         }
-
         // Vote Comment
         async function voteComment(commentId, voteType) {
             const upButton = document.getElementById(`comment-upvote-${commentId}`);
             const downButton = document.getElementById(`comment-downvote-${commentId}`);
             const upCount = document.getElementById(`comment-upvote-count-${commentId}`);
             const downCount = document.getElementById(`comment-downvote-count-${commentId}`);
-
             try {
                 const response = await fetch('{{ route('vote') }}', {
                     method: 'POST',
@@ -279,16 +258,12 @@ declare(strict_types=1);
                         vote_type: voteType,
                     }),
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     upCount.textContent = data.likes_count || 0;
                     downCount.textContent = data.dislikes_count || 0;
-
                     upButton.classList.remove('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                     downButton.classList.remove('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
-
                     if (data.action === 'added' || data.action === 'updated') {
                         if (voteType === 'up') {
                             upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
@@ -301,7 +276,6 @@ declare(strict_types=1);
                 console.error('Erro ao votar:', error);
             }
         }
-
         // Toggle Reply Form
         function toggleReplyForm(commentId) {
             const form = document.getElementById(`reply-form-${commentId}`);
@@ -309,11 +283,9 @@ declare(strict_types=1);
                 form.classList.toggle('hidden');
             }
         }
-
         // Delete Comment
         async function deleteComment(commentId) {
             if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
-
             try {
                 const response = await fetch(`/comments/${commentId}`, {
                     method: 'DELETE',
@@ -322,9 +294,7 @@ declare(strict_types=1);
                         'Content-Type': 'application/json',
                     },
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
                     if (commentElement) {
@@ -335,16 +305,15 @@ declare(strict_types=1);
                 console.error('Erro ao deletar:', error);
             }
         }
-
         // Echo/Reverb Real-time
         @auth
             document.addEventListener('DOMContentLoaded', function() {
                 if (typeof window.Echo !== 'undefined') {
+
                     window.Echo.channel('post.{{ $post->id }}').listen('.comment.created', (e) => {
                     const commentsContainer = document.getElementById('comments-container');
                     if (commentsContainer && e.comment) {
                         updateCommentCount(e.post.comment_count);
-
                         const newComment = createCommentElement(e.comment, e.post);
                         if (newComment) {
                             if (e.comment.parent_id) {
@@ -373,7 +342,6 @@ declare(strict_types=1);
                         }
                     }
                 });
-
                 window.Echo.channel('post.{{ $post->id }}').listen('.comment.deleted', (e) => {
                     if (e.comment_id) {
                         const commentElement = document.querySelector(`[data-comment-id="${e.comment_id}"]`);
@@ -388,22 +356,18 @@ declare(strict_types=1);
                 }
             });
         @endauth
-
         function updateCommentCount(count) {
             const totalComments = document.getElementById('total-comments');
             const totalCommentsHeader = document.getElementById('total-comments-header');
             if (totalComments) totalComments.textContent = count;
             if (totalCommentsHeader) totalCommentsHeader.textContent = count;
         }
-
         function createCommentElement(comment, post) {
             const div = document.createElement('div');
             div.className = 'border-l-2 border-dark-border pl-4';
             div.setAttribute('data-comment-id', comment.id);
-
             const canDelete = {{ Auth::id() ?? 'null' }} === comment.user.id || {{ Auth::id() ?? 'null' }} === {{ $post->user_id }};
             const canReply = {{ Auth::check() ? 'true' : 'false' }} && comment.depth < 5;
-
             div.innerHTML = `
                 <div class="flex items-start gap-3 mb-3">
                     <div class="w-8 h-8 bg-gray-100 dark:bg-dark-border rounded-full flex items-center justify-center text-sm flex-shrink-0">
@@ -451,19 +415,14 @@ declare(strict_types=1);
                     </div>
                 </div>
             `;
-
             return div;
         }
-
         // Submit comment via AJAX
         document.getElementById('comment-form')?.addEventListener('submit', async function (e) {
             e.preventDefault();
-
             const formData = new FormData(this);
             const content = formData.get('content');
-
             if (!content || content.trim() === '') return;
-
             try {
                 const response = await fetch(this.action, {
                     method: 'POST',
@@ -474,9 +433,7 @@ declare(strict_types=1);
                     },
                     body: formData,
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     document.getElementById('comment-content').value = '';
                     if (data.comment_count !== undefined) {
@@ -487,7 +444,6 @@ declare(strict_types=1);
                 console.error('Erro ao comentar:', error);
             }
         });
-
         // Load user votes
         @auth
             document.addEventListener('DOMContentLoaded', async function () {
@@ -499,26 +455,21 @@ declare(strict_types=1);
                             'Content-Type': 'application/json',
                         },
                     });
-
                     const data = await response.json();
-
                     if (data.success && data.votes) {
                         data.votes.forEach((vote) => {
                             if (vote.voteable_type === 'post' && vote.voteable_id === {{ $post->id }}) {
                                 const upButton = document.getElementById('post-upvote');
                                 const downButton = document.getElementById('post-downvote');
-
                                 if (vote.vote_type === 'up' && upButton) {
                                     upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                                 } else if (vote.vote_type === 'down' && downButton) {
                                     downButton.classList.add('!bg-red-500/20', '!text-red-500', '!border-red-500/30');
                                 }
                             }
-
                             if (vote.voteable_type === 'comment') {
                                 const upButton = document.getElementById(`comment-upvote-${vote.voteable_id}`);
                                 const downButton = document.getElementById(`comment-downvote-${vote.voteable_id}`);
-
                                 if (vote.vote_type === 'up' && upButton) {
                                     upButton.classList.add('!bg-emerald-500/20', '!text-emerald-500', '!border-emerald-500/30');
                                 } else if (vote.vote_type === 'down' && downButton) {
@@ -534,3 +485,4 @@ declare(strict_types=1);
         @endauth
     </script>
 @endpush
+<?php 
