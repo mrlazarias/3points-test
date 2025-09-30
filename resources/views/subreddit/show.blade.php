@@ -10,575 +10,714 @@ declare(strict_types=1);
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="csrf-token" content="{{ csrf_token() }}" />
-        <title>r/{{ $subreddit->slug }} - 3Pontos Community</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body style="background-color: #111827; color: #f9fafb; min-height: 100vh">
-        <!-- Header -->
-        <header style="background-color: #1f2937; border-bottom: 1px solid #374151; padding: 1rem 1.5rem">
-            <div
-                style="
-                    max-width: 80rem;
-                    margin: 0 auto;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                "
-            >
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <a
-                        href="/"
-                        style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit"
-                    >
-                        <div
-                            style="
-                                width: 2rem;
-                                height: 2rem;
-                                background-color: #f97316;
-                                border-radius: 0.5rem;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                            "
-                        >
-                            <span style="color: white; font-weight: bold; font-size: 0.875rem">3P</span>
-                        </div>
-                        <span style="font-size: 1.25rem; font-weight: 600">3Pontos</span>
-                        <span style="color: #9ca3af; font-size: 0.875rem">Community</span>
-                    </a>
-                </div>
+        <title>{{ $subreddit->name }} - 3Pontos Community</title>
 
-                <div style="display: flex; align-items: center; gap: 1rem">
-                    <button
-                        style="padding: 0.5rem; color: #9ca3af; border-radius: 0.5rem; background: none; border: none"
+        <!-- Satoshi Font -->
+        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap" rel="stylesheet" />
+
+        <!-- Cal Sans Font -->
+        <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500&display=swap" rel="stylesheet" />
+
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    'Satoshi',
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+                background-color: #0a0a0a;
+                color: #ffffff;
+                min-height: 100vh;
+            }
+
+            .cal-sans {
+                font-family: 'Cabinet Grotesk', 'Satoshi', sans-serif;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                width: 240px;
+                height: 100vh;
+                background: #0e0e0e;
+                border-right: 1px solid #1a1a1a;
+                position: fixed;
+                left: 0;
+                top: 0;
+                padding: 24px 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 32px;
+            }
+
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 8px;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 14px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .logo-sub {
+                font-size: 14px;
+                color: #666;
+                font-weight: 400;
+            }
+
+            .nav-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                color: #888;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .nav-item:hover,
+            .nav-item.active {
+                background: #1a1a1a;
+                color: #fff;
+            }
+
+            .community-section {
+                margin-top: auto;
+            }
+
+            .community-section-title {
+                font-size: 12px;
+                color: #666;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 0 16px;
+                margin-bottom: 12px;
+            }
+
+            .community-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                color: #ccc;
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+
+            .community-item:hover {
+                background: #1a1a1a;
+            }
+
+            .community-badge {
+                background: #1a1a1a;
+                color: #888;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 2px 8px;
+                border-radius: 12px;
+            }
+
+            /* Main Content */
+            .main-content {
+                margin-left: 240px;
+                min-height: 100vh;
+            }
+
+            /* Header */
+            .header {
+                height: 64px;
+                background: #0e0e0e;
+                border-bottom: 1px solid #1a1a1a;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 32px;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+                background: #1a1a1a;
+                border: none;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #888;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .theme-toggle:hover {
+                background: #252525;
+                color: #fff;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #1a1a1a;
+                cursor: pointer;
+            }
+
+            /* Community Header */
+            .community-header {
+                position: relative;
+                height: 200px;
+                background: linear-gradient(180deg, {{ $subreddit->color }}20 0%, #0a0a0a 100%);
+                border-bottom: 1px solid #1a1a1a;
+            }
+
+            .community-info {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 32px;
+                position: relative;
+                transform: translateY(-48px);
+            }
+
+            .community-avatar {
+                width: 96px;
+                height: 96px;
+                background: {{ $subreddit->color }};
+                border-radius: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 42px;
+                font-weight: 700;
+                border: 4px solid #0a0a0a;
+                margin-bottom: 16px;
+            }
+
+            .community-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+
+            .community-name {
+                font-size: 32px;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            .community-description {
+                font-size: 16px;
+                color: #999;
+                margin: 0 0 16px 0;
+                line-height: 1.5;
+            }
+
+            .community-meta {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+
+            .community-meta-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                color: #666;
+            }
+
+            .community-meta-icon {
+                width: 16px;
+                height: 16px;
+                color: #888;
+            }
+
+            .btn-enter,
+            .btn-create-post {
+                padding: 12px 24px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .btn-enter {
+                background: {{ $isFollowing ? '#059669' : '#1A1A1A' }};
+                color: {{ $isFollowing ? '#FFF' : '#CCC' }};
+                border: 1px solid {{ $isFollowing ? '#059669' : '#2A2A2A' }};
+            }
+
+            .btn-enter:hover {
+                background: {{ $isFollowing ? '#047857' : '#252525' }};
+            }
+
+            .btn-create-post {
+                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+                color: #fff;
+            }
+
+            .btn-create-post:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+            }
+
+            /* Content Grid */
+            .content-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 32px;
+            }
+
+            .posts-section-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 24px;
+            }
+
+            /* Post Card */
+            .post-card {
+                background: #0e0e0e;
+                border: 1px solid #1a1a1a;
+                border-radius: 16px;
+                padding: 24px;
+                margin-bottom: 16px;
+                transition: all 0.2s;
+            }
+
+            .post-card:hover {
+                border-color: #2a2a2a;
+            }
+
+            .post-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #1a1a1a;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+            }
+
+            .post-author {
+                font-size: 14px;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            .post-time {
+                font-size: 12px;
+                color: #666;
+            }
+
+            .post-title {
+                font-size: 18px;
+                font-weight: 700;
+                margin-bottom: 12px;
+                color: #fff;
+                text-decoration: none;
+                display: block;
+            }
+
+            .post-title:hover {
+                color: #f97316;
+            }
+
+            .post-content {
+                font-size: 14px;
+                color: #999;
+                line-height: 1.6;
+                margin-bottom: 16px;
+            }
+
+            .post-footer {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .post-action {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                background: #1a1a1a;
+                border: none;
+                border-radius: 8px;
+                color: #888;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .post-action:hover {
+                background: #252525;
+                color: #fff;
+            }
+
+            .post-action svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .post-action.active-like {
+                background: #10b98120;
+                color: #10b981;
+            }
+
+            .post-action.active-dislike {
+                background: #ef444420;
+                color: #ef4444;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="/" class="logo">
+                <div class="logo-icon">3P</div>
+                <div>
+                    <div class="logo-text">3Pontos</div>
+                    <div class="logo-sub">Community</div>
+                </div>
+            </a>
+
+            <nav>
+                <a href="/" class="nav-item">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                     >
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    Home
+                </a>
+            </nav>
+
+            <div class="community-section">
+                <div class="community-section-title">Minhas comunidades</div>
+                @auth
+                    @php
+                        $userCommunities = Auth::user()
+                            ->followedCommunities()
+                            ->take(4)
+                            ->get();
+                    @endphp
+
+                    @foreach ($userCommunities as $community)
+                        <a href="{{ route('subreddit.show', $community->slug) }}" class="community-item">
+                            <span>{{ $community->name }}</span>
+                            <span class="community-badge">+{{ $community->posts_count ?? 0 }}</span>
+                        </a>
+                    @endforeach
+                @else
+                    <a href="/r/laravel" class="community-item">
+                        <span>UI/UX</span>
+                        <span class="community-badge">+999</span>
+                    </a>
+                @endauth
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div></div>
+                <div class="header-actions">
+                    <button class="theme-toggle">
                         <svg
-                            style="width: 1.25rem; height: 1.25rem"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            ></path>
+                            <circle cx="12" cy="12" r="5" />
+                            <line x1="12" y1="1" x2="12" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="23" />
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                            <line x1="1" y1="12" x2="3" y2="12" />
+                            <line x1="21" y1="12" x2="23" y2="12" />
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                         </svg>
                     </button>
 
                     @auth
-                        <!-- User Menu -->
-                        <div style="display: flex; align-items: center; gap: 0.75rem">
-                            <a
-                                href="{{ route('profile.show') }}"
+                        @if (Auth::user()->getFirstMedia('profile-pictures'))
+                            <img
+                                src="{{ Auth::user()->getFirstMedia('profile-pictures')->getUrl() }}"
+                                alt="Avatar"
+                                class="user-avatar"
+                            />
+                        @else
+                            <div
+                                class="user-avatar"
                                 style="
+                                    background: #2563eb;
                                     display: flex;
                                     align-items: center;
-                                    gap: 0.5rem;
-                                    color: #d1d5db;
-                                    text-decoration: none;
-                                    font-size: 0.875rem;
+                                    justify-content: center;
+                                    font-weight: 700;
+                                    font-size: 16px;
                                 "
-                                onmouseover="this.style.color='#f9fafb'"
-                                onmouseout="this.style.color='#d1d5db'"
                             >
-                                @if (Auth::user()->getFirstMedia('profile-pictures'))
-                                    <img
-                                        src="{{ Auth::user()->getFirstMedia('profile-pictures')->getUrl() }}"
-                                        alt="Foto de perfil"
-                                        style="
-                                            width: 1.5rem;
-                                            height: 1.5rem;
-                                            border-radius: 50%;
-                                            object-fit: cover;
-                                            border: 1px solid #374151;
-                                        "
-                                    />
-                                @else
-                                    <div
-                                        style="
-                                            width: 1.5rem;
-                                            height: 1.5rem;
-                                            background-color: #2563eb;
-                                            border-radius: 50%;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 0.75rem;
-                                            font-weight: bold;
-                                            color: white;
-                                        "
-                                    >
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                {{ Auth::user()->name }}
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" style="margin: 0">
-                                @csrf
-                                <button
-                                    type="submit"
-                                    style="
-                                        padding: 0.5rem 1rem;
-                                        background-color: #dc2626;
-                                        color: white;
-                                        border: none;
-                                        border-radius: 0.5rem;
-                                        font-size: 0.875rem;
-                                        cursor: pointer;
-                                        transition: background-color 0.2s;
-                                    "
-                                    onmouseover="this.style.backgroundColor='#b91c1c'"
-                                    onmouseout="this.style.backgroundColor='#dc2626'"
-                                >
-                                    Sair
-                                </button>
-                            </form>
-                        </div>
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </div>
+                        @endif
                     @else
-                        <!-- Auth Links -->
-                        <div style="display: flex; align-items: center; gap: 0.75rem">
-                            <a
-                                href="{{ route('login') }}"
-                                style="
-                                    color: #9ca3af;
-                                    text-decoration: none;
-                                    font-size: 0.875rem;
-                                    transition: color 0.2s;
-                                "
-                                onmouseover="this.style.color='#f9fafb'"
-                                onmouseout="this.style.color='#9ca3af'"
-                            >
-                                Entrar
-                            </a>
-                            <a
-                                href="{{ route('register') }}"
-                                style="
-                                    padding: 0.5rem 1rem;
-                                    background-color: #2563eb;
-                                    color: white;
-                                    text-decoration: none;
-                                    border-radius: 0.5rem;
-                                    font-size: 0.875rem;
-                                    transition: background-color 0.2s;
-                                "
-                                onmouseover="this.style.backgroundColor='#1d4ed8'"
-                                onmouseout="this.style.backgroundColor='#2563eb'"
-                            >
-                                Registrar
-                            </a>
-                        </div>
+                        <a href="{{ route('login') }}" class="btn-enter">Entrar</a>
                     @endauth
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1.5rem">
-            <!-- Subreddit Header -->
-            <div style="margin-bottom: 2rem">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem">
-                    <div
-                        style="
-                            width: 4rem;
-                            height: 4rem;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 1.5rem;
-                            font-weight: bold;
-                            color: white;
-                        "
-                        style="background-color: {{ $subreddit->color }}"
-                    >
-                        {{ strtoupper(substr($subreddit->name, 0, 1)) }}
-                    </div>
+            <!-- Community Header -->
+            <div class="community-header"></div>
+
+            <div class="community-info">
+                <div class="community-avatar">😎</div>
+
+                <div class="community-title">
                     <div>
-                        <h1 style="font-size: 2rem; font-weight: bold; margin: 0">r/{{ $subreddit->slug }}</h1>
-                        <p style="color: #9ca3af; margin: 0.25rem 0 0 0">{{ $subreddit->description }}</p>
+                        <h1 class="community-name cal-sans">/r {{ $subreddit->name }}</h1>
+                        <p class="community-description">{{ $subreddit->description }}</p>
+
+                        <div class="community-meta">
+                            <div class="community-meta-item">
+                                <svg
+                                    class="community-meta-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                {{ number_format($followersCount) }}i de membros
+                            </div>
+
+                            <div class="community-meta-item">
+                                <svg
+                                    class="community-meta-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                Criado em Jan, {{ $subreddit->created_at->format('Y') }}
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div
-                    style="
-                        background-color: #1f2937;
-                        border: 1px solid #374151;
-                        border-radius: 0.75rem;
-                        padding: 1.5rem;
-                    "
-                >
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem"
-                    >
-                        <div style="text-align: center">
-                            <p style="font-size: 1.5rem; font-weight: bold; margin: 0">{{ $posts->total() }}</p>
-                            <p style="color: #9ca3af; font-size: 0.875rem; margin: 0.25rem 0 0 0">Posts</p>
-                        </div>
-                        <div style="text-align: center">
-                            <p style="font-size: 1.5rem; font-weight: bold; margin: 0">
-                                {{ number_format(rand(1000, 5000)) }}
-                            </p>
-                            <p style="color: #9ca3af; font-size: 0.875rem; margin: 0.25rem 0 0 0">Membros</p>
-                        </div>
-                        <div style="text-align: center">
-                            <p style="font-size: 1.5rem; font-weight: bold; margin: 0">
-                                {{ $subreddit->created_at->format('Y') }}
-                            </p>
-                            <p style="color: #9ca3af; font-size: 0.875rem; margin: 0.25rem 0 0 0">Criado em</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem">
-                <!-- Main Content -->
-                <div>
-                    <div
-                        style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            margin-bottom: 1.5rem;
-                        "
-                    >
-                        <h2 style="font-size: 1.25rem; font-weight: bold; margin: 0">Posts da comunidade</h2>
-
+                    <div style="display: flex; gap: 12px">
                         @auth
-                            <a
-                                href="{{ route('post.create', $subreddit->slug) }}"
-                                style="
-                                    padding: 0.75rem 1.5rem;
-                                    background-color: #2563eb;
-                                    color: white;
-                                    text-decoration: none;
-                                    border-radius: 0.5rem;
-                                    font-size: 0.875rem;
-                                    font-weight: 500;
-                                    transition: background-color 0.2s;
-                                "
-                                onmouseover="this.style.backgroundColor='#1d4ed8'"
-                                onmouseout="this.style.backgroundColor='#2563eb'"
+                            <button
+                                id="follow-btn-{{ $subreddit->id }}"
+                                onclick="toggleFollow({{ $subreddit->id }}, '{{ $subreddit->slug }}')"
+                                class="btn-enter"
                             >
-                                + Criar Post
+                                <span id="follow-text-{{ $subreddit->id }}">
+                                    {{ $isFollowing ? 'Seguindo' : 'Entrar' }}
+                                </span>
+                            </button>
+                            <a href="{{ route('post.create', $subreddit->slug) }}" class="btn-create-post">
+                                Criar post
                             </a>
                         @else
-                            <a
-                                href="{{ route('login') }}"
-                                style="
-                                    padding: 0.75rem 1.5rem;
-                                    background-color: #374151;
-                                    color: #e5e7eb;
-                                    text-decoration: none;
-                                    border-radius: 0.5rem;
-                                    font-size: 0.875rem;
-                                    font-weight: 500;
-                                    transition: background-color 0.2s;
-                                "
-                                onmouseover="this.style.backgroundColor='#4b5563'"
-                                onmouseout="this.style.backgroundColor='#374151'"
-                            >
-                                + Criar Post
-                            </a>
+                            <a href="{{ route('login') }}" class="btn-enter">Entrar</a>
                         @endauth
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 1rem">
-                        @forelse ($posts as $post)
-                            <article
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    overflow: hidden;
-                                "
-                            >
-                                <div style="padding: 1.5rem">
-                                    <!-- Post Header -->
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
-                                        <div
-                                            style="
-                                                width: 2.5rem;
-                                                height: 2.5rem;
-                                                background-color: #374151;
-                                                border-radius: 50%;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                            "
-                                        >
-                                            <span style="font-size: 1.125rem">👨‍💻</span>
-                                        </div>
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 0.5rem">
-                                                <span style="font-weight: 500; color: #d1d5db">
-                                                    {{ $post->user->name }}
-                                                </span>
-                                                <span style="color: #6b7280; font-size: 0.875rem">
-                                                    {{ $post->created_at->diffForHumans() }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Post Content -->
-                                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
-                                        <a
-                                            href="{{ route('post.show', [$subreddit->slug, $post->slug]) }}"
-                                            style="color: inherit; text-decoration: none"
-                                            onmouseover="this.style.color='#60a5fa'"
-                                            onmouseout="this.style.color='inherit'"
-                                        >
-                                            {{ $post->title }}
-                                        </a>
-                                    </h3>
-                                    <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem">
-                                        {{ Str::limit(strip_tags($post->content), 200) }}
-                                    </p>
-
-                                    <!-- Post Actions -->
-                                    <div style="display: flex; align-items: center; gap: 1.5rem">
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            <button
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 0.25rem;
-                                                    color: #9ca3af;
-                                                    background: none;
-                                                    border: none;
-                                                    cursor: pointer;
-                                                "
-                                            >
-                                                <svg
-                                                    style="width: 1.25rem; height: 1.25rem"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                                    ></path>
-                                                </svg>
-                                                <span style="font-size: 0.875rem">{{ $post->comment_count }}</span>
-                                            </button>
-                                        </div>
-
-                                        <div style="display: flex; align-items: center; gap: 0.5rem">
-                                            @auth
-                                                <button
-                                                    onclick="votePost({{ $post->id }}, 'up')"
-                                                    id="upvote-{{ $post->id }}"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
-                                                >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M5 15l7-7 7 7"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            @else
-                                                <button
-                                                    onclick="showLoginAlert()"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
-                                                >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M5 15l7-7 7 7"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            @endauth
-
-                                            <span
-                                                id="vote-score-{{ $post->id }}"
-                                                style="
-                                                    font-size: 0.875rem;
-                                                    font-weight: 500;
-                                                    min-width: 2rem;
-                                                    text-align: center;
-                                                "
-                                            >
-                                                {{ $post->vote_score }}
-                                            </span>
-
-                                            @auth
-                                                <button
-                                                    onclick="votePost({{ $post->id }}, 'down')"
-                                                    id="downvote-{{ $post->id }}"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
-                                                >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 9l-7 7-7-7"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            @else
-                                                <button
-                                                    onclick="showLoginAlert()"
-                                                    style="
-                                                        padding: 0.5rem;
-                                                        color: #9ca3af;
-                                                        border-radius: 0.5rem;
-                                                        background: none;
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: all 0.2s;
-                                                    "
-                                                    onmouseover="this.style.backgroundColor='#374151'"
-                                                    onmouseout="this.style.backgroundColor='transparent'"
-                                                >
-                                                    <svg
-                                                        style="width: 1.25rem; height: 1.25rem"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 9l-7 7-7-7"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            @endauth
-                                        </div>
-
-                                        <button
-                                            style="
-                                                padding: 0.5rem 1rem;
-                                                background-color: #374151;
-                                                color: #e5e7eb;
-                                                border-radius: 0.5rem;
-                                                border: none;
-                                                font-size: 0.875rem;
-                                                cursor: pointer;
-                                            "
-                                        >
-                                            Responder
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-                        @empty
-                            <div
-                                style="
-                                    background-color: #1f2937;
-                                    border: 1px solid #374151;
-                                    border-radius: 0.75rem;
-                                    padding: 2rem;
-                                    text-align: center;
-                                "
-                            >
-                                <p style="color: #9ca3af; margin: 0">Nenhum post encontrado nesta comunidade.</p>
-                                <p style="color: #6b7280; font-size: 0.875rem; margin: 0.5rem 0 0 0">
-                                    Seja o primeiro a postar aqui!
-                                </p>
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <!-- Pagination -->
-                    @if ($posts->hasPages())
-                        <div style="margin-top: 2rem">
-                            {{ $posts->links() }}
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Sidebar -->
-                <div>
-                    <div
-                        style="
-                            background-color: #1f2937;
-                            border: 1px solid #374151;
-                            border-radius: 0.75rem;
-                            padding: 1.5rem;
-                        "
-                    >
-                        <h3 style="font-weight: 500; color: #e5e7eb; margin: 0 0 1rem 0">
-                            Sobre r/{{ $subreddit->slug }}
-                        </h3>
-                        <p style="color: #9ca3af; font-size: 0.875rem; line-height: 1.5; margin: 0 0 1rem 0">
-                            {{ $subreddit->description }}
-                        </p>
-                        <div style="border-top: 1px solid #374151; padding-top: 1rem">
-                            <p style="color: #6b7280; font-size: 0.75rem; margin: 0">
-                                Criado por {{ $subreddit->creator->name }} em
-                                {{ $subreddit->created_at->format('d/m/Y') }}
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- JavaScript para funcionalidade de votação -->
+            <!-- Posts Section -->
+            <div class="content-wrapper">
+                <h2 class="posts-section-title">Veja todos os posts da comunidade</h2>
+
+                <div class="posts-list">
+                    @forelse ($posts as $post)
+                        <article class="post-card">
+                            <div class="post-header">
+                                <div class="post-avatar">😎</div>
+                                <div>
+                                    <div class="post-author">/r/dev</div>
+                                    <div class="post-time">{{ $post->created_at->diffForHumans() }}</div>
+                                </div>
+                            </div>
+
+                            <a href="{{ route('post.show', [$subreddit->slug, $post->slug]) }}" class="post-title">
+                                {{ $post->title }}
+                            </a>
+
+                            <p class="post-content">{{ Str::limit(strip_tags($post->content), 200) }}</p>
+
+                            <div class="post-footer">
+                                <button class="post-action" id="comment-btn-{{ $post->id }}">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                    <span id="comment-count-{{ $post->id }}">{{ $post->comment_count }}</span>
+                                </button>
+
+                                @auth
+                                    <button
+                                        class="post-action"
+                                        id="upvote-{{ $post->id }}"
+                                        onclick="votePost({{ $post->id }}, 'up')"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path
+                                                d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    <button
+                                        class="post-action"
+                                        id="downvote-{{ $post->id }}"
+                                        onclick="votePost({{ $post->id }}, 'down')"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path
+                                                d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
+                                            />
+                                        </svg>
+                                    </button>
+                                @else
+                                    <button class="post-action" onclick="alert('Faça login para votar')">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <path
+                                                d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                                            />
+                                        </svg>
+                                    </button>
+                                @endauth
+
+                                <button class="post-action">Responder</button>
+                            </div>
+                        </article>
+                    @empty
+                        <div class="post-card" style="text-align: center; color: #666">
+                            <p>Nenhum post encontrado nesta comunidade.</p>
+                            <p style="font-size: 14px; margin-top: 8px">Seja o primeiro a postar aqui!</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                @if ($posts->hasPages())
+                    <div style="margin-top: 32px">
+                        {{ $posts->links() }}
+                    </div>
+                @endif
+            </div>
+        </main>
+
         <script>
-            // CSRF Token para requisições AJAX
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            // Função para votar em posts
             async function votePost(postId, voteType) {
+                const upButton = document.getElementById(`upvote-${postId}`);
+                const downButton = document.getElementById(`downvote-${postId}`);
+
                 try {
                     const response = await fetch('{{ route('vote') }}', {
                         method: 'POST',
@@ -597,58 +736,67 @@ declare(strict_types=1);
                     const data = await response.json();
 
                     if (data.success) {
-                        // Atualizar o score do voto
-                        const scoreElement = document.getElementById(`vote-score-${postId}`);
-                        if (scoreElement) {
-                            scoreElement.textContent = data.vote_score;
-                        }
+                        // Reset both buttons
+                        upButton.classList.remove('active-like');
+                        downButton.classList.remove('active-dislike');
 
-                        // Atualizar visual dos botões
-                        updateVoteButtons(postId, data.vote_type, data.action);
-                    } else {
-                        console.error('Erro ao votar:', data.message);
-                        alert('Erro ao votar. Tente novamente.');
+                        // Add active class if vote was added
+                        if (data.action === 'added') {
+                            if (voteType === 'up') {
+                                upButton.classList.add('active-like');
+                            } else {
+                                downButton.classList.add('active-dislike');
+                            }
+                        }
                     }
                 } catch (error) {
-                    console.error('Erro na requisição:', error);
+                    console.error('Erro ao votar:', error);
                     alert('Erro de conexão. Tente novamente.');
                 }
             }
 
-            // Função para atualizar visual dos botões de votação
-            function updateVoteButtons(postId, voteType, action) {
-                const upButton = document.getElementById(`upvote-${postId}`);
-                const downButton = document.getElementById(`downvote-${postId}`);
+            async function toggleFollow(subredditId, subredditSlug) {
+                const button = document.getElementById(`follow-btn-${subredditId}`);
+                const text = document.getElementById(`follow-text-${subredditId}`);
 
-                // Resetar todos os botões
-                if (upButton) {
-                    upButton.style.color = '#9ca3af';
-                    upButton.style.backgroundColor = 'transparent';
-                }
-                if (downButton) {
-                    downButton.style.color = '#9ca3af';
-                    downButton.style.backgroundColor = 'transparent';
-                }
+                if (!button || !text) return;
 
-                // Aplicar estilo baseado na ação
-                if (action === 'removed') {
-                    // Nenhum voto ativo
-                    return;
-                }
+                button.disabled = true;
 
-                if (voteType === 'up' && upButton) {
-                    upButton.style.color = '#10b981';
-                    upButton.style.backgroundColor = '#064e3b';
-                } else if (voteType === 'down' && downButton) {
-                    downButton.style.color = '#ef4444';
-                    downButton.style.backgroundColor = '#7f1d1d';
-                }
-            }
+                try {
+                    const checkResponse = await fetch(`/communities/${subredditSlug}/follow-status`, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
 
-            // Função para mostrar alerta de login
-            function showLoginAlert() {
-                alert('Você precisa fazer login para votar. Redirecionando...');
-                window.location.href = '{{ route('login') }}';
+                    const checkData = await checkResponse.json();
+                    const isFollowing = checkData.is_following;
+                    const url = `/communities/${subredditSlug}/follow`;
+                    const method = isFollowing ? 'DELETE' : 'POST';
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        text.textContent = data.is_following ? 'Seguindo' : 'Entrar';
+                        button.style.background = data.is_following ? '#059669' : '#1A1A1A';
+                        button.style.color = data.is_following ? '#FFF' : '#CCC';
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                } finally {
+                    button.disabled = false;
+                }
             }
         </script>
     </body>

@@ -9,6 +9,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -78,6 +79,15 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * @return BelongsToMany<Subreddit, $this>
+     */
+    public function followedCommunities(): BelongsToMany
+    {
+        return $this->belongsToMany(Subreddit::class, 'community_follows', 'user_id', 'subreddit_id')
+            ->withTimestamps();
     }
 
     /**
