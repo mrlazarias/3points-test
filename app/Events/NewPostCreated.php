@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use Illuminate\Support\Str;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -53,7 +54,7 @@ final class NewPostCreated implements ShouldBroadcastNow
         return [
             'type' => 'new_post',
             'notification' => [
-                'id' => uniqid(),
+                'id' => Str::uuid()->toString(),
                 'title' => 'Novo post de alguém que você segue!',
                 'message' => sprintf('%s criou um novo post: %s', $this->author->getDisplayName(), $this->post->title),
                 'from_user' => [

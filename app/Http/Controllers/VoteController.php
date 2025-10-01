@@ -19,7 +19,7 @@ final class VoteController extends Controller
     /**
      * Vota em um post ou comentário
      */
-    public function vote(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'voteable_type' => ['required', 'string', 'in:post,comment'],
@@ -102,7 +102,7 @@ final class VoteController extends Controller
     /**
      * Remove o voto do usuário
      */
-    public function removeVote(Request $request): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
         $request->validate([
             'voteable_type' => ['required', 'string', 'in:post,comment'],
@@ -146,7 +146,7 @@ final class VoteController extends Controller
     /**
      * Obtém todos os votos do usuário autenticado
      */
-    public function getUserVote(Request $request): JsonResponse
+    public function show(Request $request): JsonResponse
     {
         /** @var User $user */
         $user = Auth::user();

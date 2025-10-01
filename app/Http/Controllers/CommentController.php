@@ -74,7 +74,7 @@ final class CommentController extends Controller
             ->with('commented', true);
     }
 
-    public function reply(Request $request, Comment $comment): RedirectResponse|JsonResponse
+    public function create(Request $request, Comment $comment): RedirectResponse|JsonResponse
     {
         // Verificar se o usuário pode responder ao comentário
         abort_if(! $comment->canBeRepliedToBy(Auth::user()), 403);

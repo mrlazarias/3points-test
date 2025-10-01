@@ -20,7 +20,7 @@ final class AuthController extends Controller
     /**
      * Mostra o formulário de login
      */
-    public function showLoginForm(): View
+    public function create(): View
     {
         return view('auth.login');
     }
@@ -28,7 +28,7 @@ final class AuthController extends Controller
     /**
      * Processa o login do usuário
      */
-    public function login(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => ['required', 'email'],
@@ -49,7 +49,7 @@ final class AuthController extends Controller
     /**
      * Mostra o formulário de registro
      */
-    public function showRegisterForm(): View
+    public function edit(): View
     {
         return view('auth.register');
     }
@@ -57,7 +57,7 @@ final class AuthController extends Controller
     /**
      * Processa o registro do usuário
      */
-    public function register(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -84,7 +84,7 @@ final class AuthController extends Controller
     /**
      * Faz logout do usuário
      */
-    public function logout(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();
 

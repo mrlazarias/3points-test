@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-final class AddUsernamesToExistingUsers extends Command
+final class AddUsernamesToExistingUsersCommand extends Command
 {
     /**
      * The name and signature of the console command.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use Illuminate\Support\Str;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -56,7 +57,7 @@ final class PostLiked implements ShouldBroadcastNow
         return [
             'type' => 'post_liked',
             'notification' => [
-                'id' => uniqid(),
+                'id' => Str::uuid()->toString(),
                 'title' => 'Seu post foi curtido!',
                 'message' => sprintf('%s %s seu post: %s', $this->user->getDisplayName(), $action, $this->post->title),
                 'from_user' => [

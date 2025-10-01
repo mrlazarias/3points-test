@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class Comment extends Model
 {
+    /** @use HasFactory<CommentFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'content',
         'post_id',
@@ -85,7 +89,7 @@ final class Comment extends Model
      */
     public function canBeDeletedBy(?User $user): bool
     {
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return false;
         }
 
@@ -93,6 +97,7 @@ final class Comment extends Model
         if ($this->user_id === $user->id) {
             return true;
         }
+
         // Post author can delete any comment on their post
         return $this->post->user_id === $user->id;
     }
@@ -102,7 +107,7 @@ final class Comment extends Model
      */
     public function canBeRepliedToBy(?User $user): bool
     {
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return false;
         }
 
@@ -110,8 +115,9 @@ final class Comment extends Model
         if ($this->post->is_locked) {
             return false;
         }
+
         // Check if comment is deleted
-        return !$this->is_deleted;
+        return ! $this->is_deleted;
     }
 
     protected static function booted(): void

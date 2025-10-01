@@ -11,7 +11,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Console\Command;
 
-final class TestBroadcasting extends Command
+final class TestBroadcastingCommand extends Command
 {
     protected $signature = 'test:broadcasting {post_id}';
 
