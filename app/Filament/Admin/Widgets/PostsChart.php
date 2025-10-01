@@ -10,9 +10,12 @@ use Illuminate\Support\Carbon;
 
 final class PostsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Posts por Dia (Últimos 30 dias)';
-
     protected int|string|array $columnSpan = 'full';
+
+    public function getHeading(): string
+    {
+        return 'Posts por Dia (Últimos 30 dias)';
+    }
 
     protected function getData(): array
     {

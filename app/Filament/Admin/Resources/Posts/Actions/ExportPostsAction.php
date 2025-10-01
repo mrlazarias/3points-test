@@ -50,7 +50,7 @@ final class ExportPostsAction extends Action
                     'Bloqueado',
                     'Data de Criação',
                 ],
-                escape: '\\');
+                    escape: '\\');
 
                 // Dados
                 foreach ($posts as $post) {
@@ -66,13 +66,13 @@ final class ExportPostsAction extends Action
                         $post->is_locked ? 'Sim' : 'Não',
                         $post->created_at->format('d/m/Y H:i'),
                     ],
-                    escape: '\\');
+                        escape: '\\');
                 }
 
                 fclose($file);
 
                 // Força o download
-                return response()->download($filepath)->deleteFileAfterSend(true);
+                response()->download($filepath)->deleteFileAfterSend(true);
             });
         });
     }
