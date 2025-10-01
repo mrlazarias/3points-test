@@ -10,7 +10,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Console\Command;
 
-final class TestCommentNotification extends Command
+final class TestCommentNotificationCommand extends Command
 {
     protected $signature = 'test:comment-notification {post_id} {commenter_id}';
 

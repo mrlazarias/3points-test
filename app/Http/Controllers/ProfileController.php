@@ -11,11 +11,27 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 final class ProfileController extends Controller
 {
+    /**
+     * Faz upload da foto de perfil
+     */
+    public function __invoke(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        $user->addMediaFromRequest('photo')
+            ->toMediaCollection('profile-pictures');
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Foto de perfil atualizada com sucesso!');
+    }
+
     /**
      * Mostra a página de perfil do usuário logado
      */
@@ -30,95 +46,61 @@ final class ProfileController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        // Buscar subreddits criados pelo usuário
-        $userSubreddits = Subreddit::query()
-            ->where('created_by', $user->id)
-            ->withCount('posts')
-            ->orderByDesc('created_at')
-            ->get();
-
-        // Buscar subreddits para sidebar (comunidades que o usuário segue ou criou)
-        $sidebarSubreddits = Subreddit::query()
-            ->where('is_active', true)
-            ->where(function ($query) use ($user): void {
-                $query->where('created_by', $user->id)
-                    ->orWhereHas('followers', function ($followQuery) use ($user): void {
-                        $followQuery->where('user_id', $user->id);
-                    });
+        // Buscar comunidades seguidas
+        $followedCommunities = Subreddit::query()
+            ->whereHas('followers', function ($query) use ($user): void {
+                $query->where('user_id', $user->id);
             })
-            ->withCount(['posts', 'followers'])
-            ->orderByDesc('posts_count')
-            ->limit(10)
+            ->orderBy('name')
             ->get();
 
-        return view('profile.show', [
-            'user' => $user,
-            'posts' => $posts,
-            'subreddits' => $sidebarSubreddits,
-            'userSubreddits' => $userSubreddits,
-            'isOwnProfile' => true,
-        ]);
+        // Buscar usuários seguidos
+        $following = User::query()
+            ->whereHas('followers', function ($query) use ($user): void {
+                $query->where('follower_id', $user->id);
+            })
+            ->orderBy('name')
+            ->get();
+
+        // Buscar seguidores
+        $followers = User::query()
+            ->whereHas('following', function ($query) use ($user): void {
+                $query->where('following_id', $user->id);
+            })
+            ->orderBy('name')
+            ->get();
+
+        return view('profile.show', ['user' => $user, 'posts' => $posts, 'followedCommunities' => $followedCommunities, 'following' => $following, 'followers' => $followers]);
     }
 
     /**
      * Mostra a página de perfil de outro usuário
      */
-    public function showUser(string $username): View
+    public function index(string $username): View
     {
         $user = User::query()->where('username', $username)->firstOrFail();
         $currentUser = Auth::user();
         $isOwnProfile = $currentUser && $currentUser->id === $user->id;
 
-        // Se não for o próprio perfil e o perfil for privado, verificar se pode ver
-        abort_if(! $isOwnProfile && ! $user->is_public, 403, 'Este perfil é privado.');
+        // Se for o próprio perfil, redirecionar para a rota de perfil
+        if ($isOwnProfile) {
+            return redirect()->route('profile.show');
+        }
 
-        // Buscar posts do usuário
+        // Buscar posts do usuário (apenas públicos se não for o próprio perfil)
         $posts = Post::query()
             ->with(['subreddit'])
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        // Buscar subreddits criados pelo usuário
-        $userSubreddits = Subreddit::query()
-            ->where('created_by', $user->id)
-            ->withCount('posts')
-            ->orderByDesc('created_at')
-            ->get();
-
-        // Buscar subreddits para sidebar (comunidades que o usuário logado segue ou criou)
-        $sidebarSubreddits = collect();
+        // Verificar se o usuário atual está seguindo este usuário
+        $isFollowing = false;
         if ($currentUser) {
-            $sidebarSubreddits = Subreddit::query()
-                ->where('is_active', true)
-                ->where(function ($query) use ($currentUser): void {
-                    $query->where('created_by', $currentUser->id)
-                        ->orWhereHas('followers', function ($followQuery) use ($currentUser): void {
-                            $followQuery->where('user_id', $currentUser->id);
-                        });
-                })
-                ->withCount(['posts', 'followers'])
-                ->orderByDesc('posts_count')
-                ->limit(10)
-                ->get();
-        } else {
-            // Se não logado, mostrar as mais populares
-            $sidebarSubreddits = Subreddit::query()
-                ->where('is_active', true)
-                ->withCount(['posts', 'followers'])
-                ->orderByDesc('posts_count')
-                ->limit(10)
-                ->get();
+            $isFollowing = $user->isFollowedBy($currentUser);
         }
 
-        return view('profile.show', [
-            'user' => $user,
-            'posts' => $posts,
-            'subreddits' => $sidebarSubreddits,
-            'userSubreddits' => $userSubreddits,
-            'isOwnProfile' => $isOwnProfile,
-            'currentUser' => $currentUser,
-        ]);
+        return view('profile.show', ['user' => $user, 'posts' => $posts, 'isFollowing' => $isFollowing, 'isOwnProfile' => $isOwnProfile]);
     }
 
     /**
@@ -126,11 +108,13 @@ final class ProfileController extends Controller
      */
     public function edit(): View
     {
-        return view('profile.edit', ['user' => Auth::user()]);
+        $user = Auth::user();
+
+        return view('profile.edit', ['user' => $user]);
     }
 
     /**
-     * Atualiza os dados do perfil
+     * Atualiza o perfil do usuário
      */
     public function update(Request $request): RedirectResponse
     {
@@ -138,8 +122,7 @@ final class ProfileController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['nullable', 'string', 'max:255', 'unique:users,username,'.$user->id, 'alpha_dash'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'username' => ['required', 'string', 'max:255', 'alpha_dash', 'min:3', 'unique:users,username,'.$user->id],
             'bio' => ['nullable', 'string', 'max:500'],
             'location' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
@@ -148,14 +131,7 @@ final class ProfileController extends Controller
         ]);
 
         $user->update($request->only([
-            'name',
-            'username',
-            'email',
-            'bio',
-            'location',
-            'website',
-            'birth_date',
-            'is_public',
+            'name', 'username', 'bio', 'location', 'website', 'birth_date', 'is_public',
         ]));
 
         return redirect()->route('profile.show')
@@ -165,7 +141,7 @@ final class ProfileController extends Controller
     /**
      * Mostra o formulário de alteração de senha
      */
-    public function editPassword(): View
+    public function create(): View
     {
         return view('profile.edit-password');
     }
@@ -173,7 +149,7 @@ final class ProfileController extends Controller
     /**
      * Atualiza a senha do usuário
      */
-    public function updatePassword(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
 
@@ -191,31 +167,9 @@ final class ProfileController extends Controller
     }
 
     /**
-     * Faz upload da foto de perfil
-     */
-    public function uploadPhoto(Request $request): RedirectResponse
-    {
-        $user = Auth::user();
-
-        $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        ]);
-
-        // Remove foto anterior se existir
-        $user->clearMediaCollection('profile-pictures');
-
-        // Adiciona nova foto
-        $user->addMediaFromRequest('photo')
-            ->toMediaCollection('profile-pictures');
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Foto de perfil atualizada com sucesso!');
-    }
-
-    /**
      * Remove a foto de perfil
      */
-    public function removePhoto(): RedirectResponse
+    public function destroy(): RedirectResponse
     {
         $user = Auth::user();
 
@@ -223,40 +177,5 @@ final class ProfileController extends Controller
 
         return redirect()->route('profile.show')
             ->with('success', 'Foto de perfil removida com sucesso!');
-    }
-
-    /**
-     * Faz upload da foto de capa
-     */
-    public function uploadCoverPhoto(Request $request): RedirectResponse
-    {
-        $user = Auth::user();
-
-        $request->validate([
-            'cover_photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:5120'],
-        ]);
-
-        // Remove foto anterior se existir
-        $user->clearMediaCollection('cover-photos');
-
-        // Adiciona nova foto
-        $user->addMediaFromRequest('cover_photo')
-            ->toMediaCollection('cover-photos');
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Foto de capa atualizada com sucesso!');
-    }
-
-    /**
-     * Remove a foto de capa
-     */
-    public function removeCoverPhoto(): RedirectResponse
-    {
-        $user = Auth::user();
-
-        $user->clearMediaCollection('cover-photos');
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Foto de capa removida com sucesso!');
     }
 }

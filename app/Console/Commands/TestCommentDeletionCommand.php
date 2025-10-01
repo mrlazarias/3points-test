@@ -8,7 +8,7 @@ use App\Events\CommentDeleted;
 use App\Models\Post;
 use Illuminate\Console\Command;
 
-final class TestCommentDeletion extends Command
+final class TestCommentDeletionCommand extends Command
 {
     protected $signature = 'test:comment-deletion {post_id}';
 
@@ -19,7 +19,7 @@ final class TestCommentDeletion extends Command
         $postId = $this->argument('post_id');
         $post = Post::query()->findOrFail($postId);
 
-        $this->info('Testing comment deletion for post: ' . $post->title);
+        $this->info('Testing comment deletion for post: '.$post->title);
 
         // Buscar um comentário para deletar
         $comment = $post->comments()->first();
@@ -30,8 +30,8 @@ final class TestCommentDeletion extends Command
             return 1;
         }
 
-        $this->info('Deleting comment ID: ' . $comment->id);
-        $this->info('Comment content: ' . $comment->content);
+        $this->info('Deleting comment ID: '.$comment->id);
+        $this->info('Comment content: '.$comment->content);
 
         // Deletar o comentário
         $comment->delete();
@@ -43,7 +43,7 @@ final class TestCommentDeletion extends Command
         broadcast(new CommentDeleted($comment, $post));
 
         $this->info('Comment deleted and broadcast sent!');
-        $this->info('New comment count: ' . $post->fresh()->comment_count);
+        $this->info('New comment count: '.$post->fresh()->comment_count);
 
         return 0;
     }

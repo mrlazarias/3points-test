@@ -30,10 +30,16 @@ final class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'bio' => fake()->optional()->paragraph(),
+            'location' => fake()->optional()->city(),
+            'website' => fake()->optional()->url(),
+            'birth_date' => fake()->optional()->date('Y-m-d', '-18 years'),
+            'is_public' => fake()->boolean(80), // 80% chance of being public
         ];
     }
 

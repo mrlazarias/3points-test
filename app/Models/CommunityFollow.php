@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class CommunityFollow extends Model
 {
+    /** @use HasFactory<CommunityFollowFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'subreddit_id',
@@ -16,6 +20,7 @@ final class CommunityFollow extends Model
 
     /**
      * Relacionamento com o usuário que está seguindo
+     *
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
@@ -25,12 +30,14 @@ final class CommunityFollow extends Model
 
     /**
      * Relacionamento com a comunidade sendo seguida
+     *
      * @return BelongsTo<Subreddit, $this>
      */
     public function subreddit(): BelongsTo
     {
         return $this->belongsTo(Subreddit::class);
     }
+
     protected function casts(): array
     {
         return [

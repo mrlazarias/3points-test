@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -46,7 +47,7 @@ final class UserFollowed implements ShouldBroadcastNow
         return [
             'type' => 'follow',
             'notification' => [
-                'id' => uniqid(),
+                'id' => Str::uuid()->toString(),
                 'title' => 'Novo seguidor!',
                 'message' => $this->follower->getDisplayName().' começou a te seguir',
                 'from_user' => [

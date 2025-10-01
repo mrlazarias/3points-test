@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Events\CommentCreated;
 use App\Events\SimpleTestEvent;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
-use App\Events\CommentCreated;
 use Illuminate\Console\Command;
 
-final class TestReverb extends Command
+final class TestReverbCommand extends Command
 {
     protected $signature = 'test:reverb';
 

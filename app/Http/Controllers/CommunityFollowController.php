@@ -13,7 +13,7 @@ final class CommunityFollowController extends Controller
     /**
      * Seguir uma comunidade
      */
-    public function follow(Subreddit $subreddit): JsonResponse
+    public function store(Subreddit $subreddit): JsonResponse
     {
         $user = Auth::user();
 
@@ -44,7 +44,7 @@ final class CommunityFollowController extends Controller
     /**
      * Deixar de seguir uma comunidade
      */
-    public function unfollow(Subreddit $subreddit): JsonResponse
+    public function destroy(Subreddit $subreddit): JsonResponse
     {
         $user = Auth::user();
 
@@ -75,7 +75,7 @@ final class CommunityFollowController extends Controller
     /**
      * Verificar se o usuário está seguindo uma comunidade
      */
-    public function check(Subreddit $subreddit): JsonResponse
+    public function show(Subreddit $subreddit): JsonResponse
     {
         $user = Auth::user();
 
