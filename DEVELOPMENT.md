@@ -10,7 +10,7 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 - **Backend**: Laravel 12 com SQLite (conforme recomendação do README)
 - **Admin Panel**: FilamentPHP 4 para gerenciamento dinâmico de subreddits e posts
-- **Frontend**: Blade Templates + TailwindCSS v4 (100% sem CSS customizado)
+- **Frontend**: Blade Templates + TailwindCSS v4 
 - **Database**: SQLite para desenvolvimento (fácil configuração)
 - **Testing**: Pest para testes unitários e funcionais
 - **Real-time**: Laravel Reverb + Echo para comentários em tempo real
@@ -38,10 +38,8 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 
 **Decisão**: Adotei padrões rigorosos de código:
 
-- `declare(strict_types=1)` em todos os arquivos
 - Classes `final` para evitar herança desnecessária
 - PHPDoc completo com generics para relacionamentos
-- Método `casts()` moderno ao invés de propriedade `$casts`
 
 **Justificativa**: Garante type safety, melhor IDE support e código mais robusto.
 
@@ -73,7 +71,7 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 - **Dashboard com Widgets**: Estatísticas em tempo real, gráficos de atividade e rankings
 - **Actions Personalizadas**: Fixar posts, exportação CSV, operações em lote
 - **Tabelas Aprimoradas**: Badges coloridos, filtros avançados, ordenação inteligente
-- **Interface Profissional**: Design moderno usando apenas Tailwind v4 (sem CSS customizado)
+- **Interface Profissional**: Design moderno usando apenas Tailwind v4 
 - **Gerenciamento de Usuários**: Upload de avatars, controle de perfis públicos/privados
 
 **Justificativa**: Demonstra domínio técnico avançado do FilamentPHP, criando um sistema de administração que vai além do básico e impressiona em testes técnicos.
@@ -238,7 +236,6 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
     - Ordenação por todos os campos relevantes
     - Cores dinâmicas baseadas em valores (score positivo/negativo)
 
-**Justificativa**: Demonstra domínio técnico avançado do FilamentPHP, criando um sistema de administração que vai além do básico e impressiona em testes técnicos com funcionalidades de nível profissional.
 
 ### 16. Resolução de Problemas Técnicos Avançados
 
@@ -391,8 +388,8 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ✅ **Filament Admin Avançado**: Dashboard com widgets, actions personalizadas e interface profissional
 ✅ **CI/CD Estável**: Correção de problemas de broadcasting e compatibilidade
 ✅ **Interface Otimizada**: Correção de ícones e melhoria da experiência visual
-🚧 **Perfil**: Página de edição de dados do usuário
-🚧 **Testes de Feature**: Testes de integração e fluxos completos
+✅ **Perfil**: Página de edição de dados do usuário
+✅ **Testes de Feature**: Testes de integração e fluxos completos
 🚧 **Páginas restantes**: Login/register/create com Tailwind v4
 
 ## Funcionalidades Implementadas
@@ -468,7 +465,6 @@ Este projeto é um clone simplificado do Reddit construído com **Laravel 12** +
 ### 📊 **Métricas de Qualidade**
 
 - **Conventional Commits**: ✅ Todos os commits seguem o padrão
-- **Strict Types**: ✅ `declare(strict_types=1)` em todos os arquivos
 - **PHPDoc**: ✅ Documentação completa com generics
 - **Code Style**: ✅ Padrões PSR-12 seguidos
 - **Type Safety**: ✅ Relacionamentos tipados com generics
@@ -647,12 +643,6 @@ php artisan view:clear
 - **Solução**: Uso correto do `loadCount('posts')` no subreddit relacionado ao post
 - **Resultado**: ✅ Estatísticas da comunidade funcionando perfeitamente
 
-#### **Legibilidade do Texto**
-
-- **Problema**: Texto muito escuro contra fundo escuro
-- **Solução**: Estilos CSS personalizados com `!important` para sobrescrever Tailwind
-- **Resultado**: ✅ Texto branco com excelente legibilidade
-
 #### **Configuração do TailwindCSS**
 
 - **Problema**: Estilos não carregando corretamente
@@ -718,7 +708,6 @@ resources/views/
 
 ### **Padrões de Código**
 
-- **Strict Types**: `declare(strict_types=1)`
 - **Final Classes**: Todas as classes são `final`
 - **PHPDoc**: Documentação completa com generics
 - **Conventional Commits**: Padrão de commits
