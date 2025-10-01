@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1759283022693" clover="3.2.0">
-  <project timestamp="1759283022693" name="All files">
+<coverage generated="1759283205009" clover="3.2.0">
+  <project timestamp="1759283205009" name="All files">
     <metrics statements="118" coveredstatements="108" conditionals="69" coveredconditionals="52" methods="23" coveredmethods="17" elements="210" coveredelements="177" complexity="0" loc="118" ncloc="118" packages="1" files="3" classes="3"/>
     <file name="app.js" path="/Users/muriloazarias/Documents/Devstuff/3points-test/resources/js/app.js">
       <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
