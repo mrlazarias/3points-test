@@ -14,7 +14,7 @@ final class ExportPostsAction extends Action
         parent::setUp();
 
         $this->label('Exportar Posts');
-        $this->icon('heroicon-m-arrow-down-tray');
+        $this->icon('heroicon-o-arrow-down-tray');
         $this->color('success');
         $this->requiresConfirmation();
         $this->modalHeading('Exportar Posts');

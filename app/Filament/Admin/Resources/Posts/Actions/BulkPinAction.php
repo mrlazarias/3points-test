@@ -14,7 +14,7 @@ final class BulkPinAction extends BulkAction
         parent::setUp();
 
         $this->label('Fixar Posts Selecionados');
-        $this->icon('heroicon-m-pin');
+        $this->icon('heroicon-o-bookmark');
         $this->color('warning');
         $this->requiresConfirmation();
         $this->modalHeading('Fixar Posts');
@@ -39,7 +39,7 @@ final class BulkPinAction extends BulkAction
             $count = $this->getRecords()->count();
 
             Notification::make()
-                ->title($count . ' posts fixados com sucesso!')
+                ->title($count.' posts fixados com sucesso!')
                 ->success()
                 ->send();
         });

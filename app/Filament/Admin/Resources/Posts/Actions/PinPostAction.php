@@ -18,7 +18,7 @@ final class PinPostAction extends Action
         parent::setUp();
 
         $this->label('Fixar Post');
-        $this->icon('heroicon-m-pin');
+        $this->icon('heroicon-o-bookmark');
         $this->color('warning');
         $this->requiresConfirmation();
         $this->modalHeading('Fixar Post');
