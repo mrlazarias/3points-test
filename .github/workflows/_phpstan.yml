@@ -45,6 +45,8 @@ jobs:
         with:
           composer-options: ${{ inputs.COMPOSER_FLAGS }}
           custom-cache-key: ${{ inputs.CACHE_KEY }}
+        env:
+          BROADCAST_CONNECTION: null
 
       - name: Run Phpstan
         run: |

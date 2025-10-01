@@ -51,6 +51,8 @@ jobs:
         with:
           composer-options: ${{ inputs.COMPOSER_FLAGS }}
           custom-cache-key: ${{ inputs.CACHE_KEY }}
+        env:
+          BROADCAST_CONNECTION: null
 
       - name: Run Tests
         env:
@@ -89,6 +91,8 @@ jobs:
         with:
           composer-options: ${{ inputs.COMPOSER_FLAGS }}
           custom-cache-key: ${{ inputs.CACHE_KEY }}
+        env:
+          BROADCAST_CONNECTION: null
 
       - name: Install Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
