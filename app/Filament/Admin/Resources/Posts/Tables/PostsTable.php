@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Posts\Tables;
 
+use App\Filament\Admin\Resources\Posts\Actions\BulkPinAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -98,6 +99,7 @@ final class PostsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkPinAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ])

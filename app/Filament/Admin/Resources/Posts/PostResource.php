@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Posts;
 
+use App\Filament\Admin\Resources\Posts\Actions\ExportPostsAction;
 use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
 use App\Filament\Admin\Resources\Posts\Pages\EditPost;
 use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
@@ -20,7 +21,7 @@ final class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
     public static function form(Schema $schema): Schema
     {
@@ -36,6 +37,13 @@ final class PostResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getActions(): array
+    {
+        return [
+            ExportPostsAction::make(),
         ];
     }
 
