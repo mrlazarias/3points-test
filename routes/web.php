@@ -63,11 +63,11 @@ Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->nam
 Route::get('/r/{subreddit:slug}/{post:slug}', [PostController::class, 'show'])->name('post.show');
 
 // Rotas de Autenticação
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login', [AuthController::class, 'store']);
+Route::get('/register', [AuthController::class, 'edit'])->name('register');
+Route::post('/register', [AuthController::class, 'update']);
+Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
 // Rotas de Perfil (protegidas por autenticação)
 Route::middleware('auth')->group(function (): void {
