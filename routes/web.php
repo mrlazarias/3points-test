@@ -2,6 +2,105 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommunityFollowController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SubredditController;
+use App\Http\Controllers\UserFollowController;
+use App\Http\Controllers\VoteController;
+use App\Models\Subreddit;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'));
+// Home - Lista posts (todos ou de usuários seguidos)
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Rota para buscar sugestões de comunidades (AJAX)
+Route::get('/suggested-communities', function () {
+    $suggestedSubreddits = Subreddit::query()
+        ->where('is_active', true)
+        ->withCount(['posts', 'followers'])
+        ->inRandomOrder()
+        ->limit(5)
+        ->get();
+
+    return response()->json([
+        'suggestedSubreddits' => $suggestedSubreddits,
+    ]);
+});
+
+// Rota de teste
+Route::get('/test', fn () => 'Teste funcionando!');
+
+// Rota de teste para criação de posts
+Route::get('/test-create', function (): Factory|View {
+    $subreddit = Subreddit::query()->where('slug', 'laravel')->first();
+
+    return view('post.create', ['subreddit' => $subreddit]);
+});
+
+// Rota pública para visualizar perfil de usuário
+Route::get('/u/{username}', [ProfileController::class, 'showUser'])->name('profile.user');
+
+// Subreddit - Posts de uma comunidade específica
+Route::get('/r/{subreddit:slug}', [SubredditController::class, 'show'])->name('subreddit.show');
+
+// Criação de comunidades (protegida por autenticação)
+Route::middleware('auth')->group(function (): void {
+    Route::get('/create-community', [SubredditController::class, 'create'])->name('subreddit.create');
+    Route::post('/create-community', [SubredditController::class, 'store'])->name('subreddit.store');
+});
+
+// Criação de posts (protegida por autenticação)
+Route::get('/r/{subreddit:slug}/create', [PostController::class, 'create'])->name('post.create');
+Route::post('/r/{subreddit:slug}/create', [PostController::class, 'store'])->name('post.store');
+
+// Post - Visualização de um post específico
+Route::get('/r/{subreddit:slug}/{post:slug}', [PostController::class, 'show'])->name('post.show');
+
+// Rotas de Autenticação
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login', [AuthController::class, 'store']);
+Route::get('/register', [AuthController::class, 'edit'])->name('register');
+Route::post('/register', [AuthController::class, 'update']);
+Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+
+// Rotas de Perfil (protegidas por autenticação)
+Route::middleware('auth')->group(function (): void {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit-password');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.upload-photo');
+    Route::delete('/profile/photo', [ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
+    Route::post('/profile/cover-photo', [ProfileController::class, 'uploadCoverPhoto'])->name('profile.upload-cover-photo');
+    Route::delete('/profile/cover-photo', [ProfileController::class, 'removeCoverPhoto'])->name('profile.remove-cover-photo');
+
+    // Rotas de Votação
+    Route::post('/vote', [VoteController::class, 'vote'])->name('vote');
+    Route::delete('/vote', [VoteController::class, 'removeVote'])->name('vote.remove');
+    Route::get('/vote/user', [VoteController::class, 'getUserVote'])->name('vote.user');
+
+    // Rotas de Comentários
+    Route::get('/posts/{subreddit:slug}/{post:slug}/comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::post('/posts/{subreddit:slug}/{post:slug}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Rotas de Follow de Comunidades
+    Route::post('/communities/{subreddit:slug}/follow', [CommunityFollowController::class, 'follow'])->name('communities.follow');
+    Route::delete('/communities/{subreddit:slug}/follow', [CommunityFollowController::class, 'unfollow'])->name('communities.unfollow');
+    Route::get('/communities/{subreddit:slug}/follow-status', [CommunityFollowController::class, 'check'])->name('communities.follow-status');
+
+    // Rotas de Follow de Usuários
+    Route::post('/users/{user}/follow', [UserFollowController::class, 'follow'])->name('users.follow');
+    Route::delete('/users/{user}/follow', [UserFollowController::class, 'unfollow'])->name('users.unfollow');
+    Route::get('/u/{user:username}/followers', [UserFollowController::class, 'followers'])->name('users.followers');
+    Route::get('/u/{user:username}/following', [UserFollowController::class, 'following'])->name('users.following');
+});

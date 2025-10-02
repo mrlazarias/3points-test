@@ -58,6 +58,8 @@ jobs:
         with:
           composer-options: ${{ steps.setup.outputs.COMPOSER_FLAGS }}
           custom-cache-key: ${{ steps.cache.outputs.key }}
+        env:
+          BROADCAST_CONNECTION: null
 
   pint:
     name: Perform Pint format
